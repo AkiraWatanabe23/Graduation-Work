@@ -33,7 +33,7 @@ public class AudioManager
 
     //外部のクラスで参照するBGMAudioSource
     public AudioSource BGMSource => _isUseMainSource ? _mainBGMSource : _subBGMSource;
-    public List<AudioSource> SeSource => _seSources;
+    public List<AudioSource> SeSources => _seSources;
 
     public static AudioManager Instance
     {
@@ -72,7 +72,7 @@ public class AudioManager
 
     /// <summary> BGM再生 </summary>
     /// <param name="bgm"> どのBGMか </param>
-    /// <param name="isLoop"> ループ再生するか（基本的にループする） </param>
+    /// <param name="isLoop"> ループ再生するか（基本的にループする想定のためtrue） </param>
     public void PlayBGM(BGMType bgm, bool isLoop = true)
     {
         var index = -1;
@@ -207,6 +207,7 @@ public class AudioManager
 }
 
 #region Audio Extension
+/// <summary> Audio再生に関する拡張メソッドをまとめたクラス </summary>
 public static class AudioExtensions
 {
     private static bool _isFadePlaying = false;
