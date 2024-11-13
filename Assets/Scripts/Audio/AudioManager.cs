@@ -60,7 +60,6 @@ public class AudioManager
         _seSources = new() { se.AddComponent<AudioSource>() };
         se.transform.parent = _audioObject.transform;
 
-        //Editor時にしか対応していないため、修正
         _soundHolder = Resources.Load<AudioHolder>("AudioHolder");
 
         //初期音量設定（データ引き継ぎ等に対応する必要有）
@@ -86,7 +85,7 @@ public class AudioManager
         Source.Stop();
 
         Source.loop = isLoop;
-        Source.clip = _soundHolder.BGMClips[index].BGMClip;
+        Source.clip = _soundHolder.BGMClips[index].Clip;
         Source.Play();
     }
 
@@ -102,7 +101,7 @@ public class AudioManager
         }
         if (index >= _soundHolder.SEClips.Length) { Debug.LogError("指定したSEが見つかりませんでした"); return; }
         //再生するSEを追加
-        _seQueue.Enqueue(_soundHolder.SEClips[index].SEClip);
+        _seQueue.Enqueue(_soundHolder.SEClips[index].Clip);
 
         //再生するSEがあれば、最後に追加したSEを再生
         if (_seQueue.Count > 0)
@@ -140,7 +139,7 @@ public class AudioManager
             if (clip.BGMType == bgm) { break; }
         }
 
-        return _soundHolder.BGMClips[index].BGMClip;
+        return _soundHolder.BGMClips[index].Clip;
     }
 
     /// <summary> BGMの再生終了待機 </summary>
@@ -226,12 +225,12 @@ public static class AudioExtensions
         var targetVolume = source.volume;
         var endVolume = 0f;
 
-        var fadeOut = Task.Run(() => AudioFadeAsync(source, endVolume, duration));
+        var audioFadeOut = Task.Run(() => AudioFadeAsync(source, endVolume, duration));
         AudioManager.Instance.ChangeBGMSource(next);
-        var fadeIn = Task.Run(() => AudioFadeAsync(AudioManager.Instance.BGMSource, targetVolume, duration));
+        var audioFadeIn = Task.Run(() => AudioFadeAsync(AudioManager.Instance.BGMSource, targetVolume, duration));
 
         //複数のTaskを並列実行し、全てが終了するまで待機する
-        await Task.WhenAll(fadeOut, fadeIn);
+        await Task.WhenAll(audioFadeOut, audioFadeIn);
     }
 
     /// <summary> 音量を徐々に変更する </summary>
