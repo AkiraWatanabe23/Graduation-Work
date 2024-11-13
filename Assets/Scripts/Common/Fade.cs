@@ -13,19 +13,36 @@ public class Fade : SingletonMonoBehaviour<Fade>
     [SerializeField]
     private float _fadeTime = 1f;
 
+    private Action[] _onComplete = default;
+
     protected override bool DontDestroyOnLoad => true;
 
     /// <summary> フェードイン開始 </summary>
-    public void StartFadeIn(params Action[] onCompleteFadeIn) => StartCoroutine(FadeIn(onCompleteFadeIn));
+    public Fade StartFadeIn()
+    {
+        StartCoroutine(FadeIn());
+        return this;
+    }
 
     /// <summary> フェードアウト開始 </summary>
-    public void StartFadeOut(params Action[] onCompleteFadeOut) => StartCoroutine(FadeOut(onCompleteFadeOut));
+    public Fade StartFadeOut()
+    {
+        StartCoroutine(FadeOut());
+        return this;
+    }
 
-    private IEnumerator FadeIn(params Action[] onCompleteFadeIn)
+    /// <summary> フェード処理終了時に実行する処理がある場合、これを呼び出す </summary>
+    public Fade OnComplete(params Action[] onComplete)
+    {
+        _onComplete = onComplete;
+        return this;
+    }
+
+    private IEnumerator FadeIn()
     {
         _fadePanel.gameObject.SetActive(true);
 
-        //α値(透明度)を 1 → 0 にする(少しずつ明るくする)
+        //α値（透明度）を 1 → 0 にする（少しずつ明るくする）
         float alpha = 1f;
         Color color = _fadePanel.color;
 
@@ -42,17 +59,18 @@ public class Fade : SingletonMonoBehaviour<Fade>
 
         _fadePanel.gameObject.SetActive(false);
 
-        if (onCompleteFadeIn != null)
+        if (_onComplete != null)
         {
-            foreach (var action in onCompleteFadeIn) { action?.Invoke(); }
+            foreach (var action in _onComplete) { action?.Invoke(); }
         }
+        _onComplete = null;
     }
 
-    private IEnumerator FadeOut(params Action[] onCompleteFadeOut)
+    private IEnumerator FadeOut()
     {
         _fadePanel.gameObject.SetActive(true);
 
-        //α値(透明度)を 0 → 1 にする(少しずつ暗くする)
+        //α値（透明度）を 0 → 1 にする（少しずつ暗くする）
         float alpha = 0f;
         Color color = _fadePanel.color;
 
@@ -67,9 +85,10 @@ public class Fade : SingletonMonoBehaviour<Fade>
             yield return null;
         }
 
-        if (onCompleteFadeOut != null)
+        if (_onComplete != null)
         {
-            foreach (var action in onCompleteFadeOut) { action?.Invoke(); }
+            foreach (var action in _onComplete) { action?.Invoke(); }
         }
+        _onComplete = null;
     }
 }

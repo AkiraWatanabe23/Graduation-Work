@@ -11,10 +11,10 @@ public class AudioHolder : MonoBehaviour
         [SerializeField]
         private BGMType _bgmType = default;
         [SerializeField]
-        private AudioClip _bgmClip = default;
+        private AudioClip _clip = default;
 
         public BGMType BGMType => _bgmType;
-        public AudioClip BGMClip => _bgmClip;
+        public AudioClip Clip => _clip;
     }
 
     [Serializable]
@@ -23,10 +23,10 @@ public class AudioHolder : MonoBehaviour
         [SerializeField]
         private SEType _seType = default;
         [SerializeField]
-        private AudioClip _seClip = default;
+        private AudioClip _clip = default;
 
         public SEType SEType => _seType;
-        public AudioClip SEClip => _seClip;
+        public AudioClip Clip => _clip;
     }
     #endregion
 
