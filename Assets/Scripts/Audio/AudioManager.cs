@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using Debug = UnityEngine.Debug;
-#else
-using Debug = Constants.EditorDebug;
-#endif
+using Debug = Constants.ConsoleLogs;
 
 /// <summary> ゲーム内のサウンド管理クラス </summary>
 public class AudioManager
