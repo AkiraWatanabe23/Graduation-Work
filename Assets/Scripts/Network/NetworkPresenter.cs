@@ -1,4 +1,5 @@
 ﻿using Network;
+using System;
 using UnityEngine;
 
 using Debug = Constants.ConsoleLogs;
@@ -23,6 +24,7 @@ public class NetworkPresenter : MonoBehaviour
 
     private string[] _otherPlayersIPAddress = default;
 
+    public string PlayerID => _playerID;
 
     private void Start()
     {
@@ -32,9 +34,9 @@ public class NetworkPresenter : MonoBehaviour
     private void Initialize()
     {
         _networkModel.Initialize(_playersCount);
-        _networkView.Initialize();
-
         SelfRequest(RequestType.GenerateID);
+
+        _networkView.Initialize(this);
     }
 
     /// <summary> 各プレイヤーのIPAddressを取得する </summary>
@@ -45,19 +47,6 @@ public class NetworkPresenter : MonoBehaviour
         {
             _otherPlayersIPAddress[i] = _networkView.IPAddressFields[i].text.Trim();
         }
-    }
-
-    public void DevelopmentPasswordApply()
-    {
-        if (!_networkModel.UnlockDevelopMode(_networkView.PasswordField.text))
-        {
-            Debug.Log("password is not correct");
-            _networkView.PasswordField.text = "";
-
-            return;
-        }
-
-        _networkModel.SetActivate(_networkView.DeveloperPanel, true);
     }
 
     private async void SelfRequest(RequestType requestType)
@@ -88,13 +77,32 @@ public class NetworkPresenter : MonoBehaviour
         form.AddField("UserID", _playerID);
         form.AddField("RequestMessage", request.RequestType.ToString());
 
-        var requestResult = await _networkModel.SendPostRequest(form);
+        SetPlayersIPAddress();
+        var requestResult = await _networkModel.SendPostRequest(form, _otherPlayersIPAddress);
         Debug.Log(requestResult);
     }
 
     public async void SendPutRequest(RequestButton request, params string[] parameters)
     {
-        var requestResult = await _networkModel.SendPutRequest($"{_playerID},{string.Join(",", parameters)}", request.RequestType.ToString());
+        SetPlayersIPAddress();
+        var requestResult
+            = await _networkModel.SendPutRequest(
+                $"{_playerID},{string.Join(",", parameters)}", request.RequestType.ToString(), _otherPlayersIPAddress);
         Debug.Log(requestResult);
     }
+
+    public void DevelopmentPasswordApply()
+    {
+        if (!_networkModel.UnlockDevelopMode(_networkView.PasswordField.text))
+        {
+            Debug.Log("password is not correct");
+            _networkView.PasswordField.text = "";
+
+            return;
+        }
+
+        _networkModel.SetActivate(_networkView.DeveloperPanel, true);
+    }
+
+    public void PassingRoomID(string id) => _networkModel.ReceiveRoomID(id);
 }
