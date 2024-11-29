@@ -101,7 +101,9 @@ namespace Network
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPostRequest(WWWForm form, string[] addresses, CancellationToken token = default)
         {
-            for (int i = 0; i < addresses.Length; i++)
+            int loopCount = _hostURL == "" ? addresses.Length : 1;
+
+            for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
@@ -151,7 +153,9 @@ namespace Network
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPutRequest(string json, string requestMessage, string[] addresses, CancellationToken token = default)
         {
-            for (int i = 0; i < addresses.Length; i++)
+            int loopCount = _hostURL == "" ? addresses.Length : 1;
+
+            for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
@@ -221,7 +225,7 @@ namespace Network
             Debug.Log($"{id} {requestMessage}");
             return requestMessage switch
             {
-                "CloseClient" => await CloseClient(id),
+                "ExitRoom" => await ExitRoom(id),
                 _ => ""
             };
         }
@@ -347,7 +351,7 @@ namespace Network
         /// <summary> ルームから退出する </summary>
         /// <param name="id"> 退出するプレイヤーのID </param>
         /// <returns> 退出処理が正常に行われたらSuccess </returns>
-        private async Task<string> CloseClient(string id)
+        private async Task<string> ExitRoom(string id)
         {
             //渡されたIDのプレイヤーがルームに存在しない場合、失敗
             if (!_roomPlayers.Contains(id)) { return $"You`re not exist in this room : {_roomID}"; }
@@ -390,9 +394,12 @@ namespace Network
     public enum RequestType
     {
         None,
+        //Self
         CreateRoom,
         GenerateID,
-        CloseClient,
+        //Post
+        ExitRoom,
+        //Put
         JoinRoom,
         PlayAudio,
     }
