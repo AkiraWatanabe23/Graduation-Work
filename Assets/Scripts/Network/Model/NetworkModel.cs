@@ -27,7 +27,7 @@ namespace Network
         [Range(0, 10)]
         [SerializeField]
         private int _rerunCount = 1;
-        [Tooltip("1回あたりのリクエストの実行時間")]
+        [Tooltip("1回あたりのリクエストの実行時間（sec）")]
         [Range(1f, 10f)]
         [SerializeField]
         private float _executionTime = 1f;
