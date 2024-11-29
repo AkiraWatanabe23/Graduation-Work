@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -36,6 +38,9 @@ namespace Network
         [ReadOnly]
         [SerializeField]
         private string _hostURL = "";
+
+        private Stream _responseOutput = default;
+        private HttpListener _listener = default;
 
         private CancellationTokenSource _cancellationTokenSource = default;
         /// <summary> 処理の実行時間を調べる </summary>
@@ -74,6 +79,8 @@ namespace Network
             return Dns.GetHostAddresses(hostname)[1].ToString();
         }
 
+        public void ReceiveRoomID(string id) => _roomID = id;
+
         /// <summary> パスワードのマッチ確認 </summary>
         /// <param name="enteredWord"> 入力された文字列 </param>
         /// <returns> 入力がパスワードとマッチしているかどうか </returns>
@@ -88,74 +95,17 @@ namespace Network
 
         /// <summary> リクエストに対する一連の処理が正常に流れた時に返す文字列 </summary>
         private const string Success = "Request Success";
+
         #region Data Send
-
-        /// <summary> Getリクエストを送信する </summary>
-        /// <returns> アクセスに成功したか </returns>
-        public async Task<bool> SendGetRequest(CancellationToken token = default)
-        {
-            try
-            {
-                if (token == default) { token = _cancellationTokenSource.Token; }
-                _stopWatch.Start();
-
-                //GetRequest ... 接続先のURLのみを指定してリクエストを送信する（固有のパラメータ等は渡せない）
-                using UnityWebRequest request = UnityWebRequest.Get(_hostURL);
-                var send = request.SendWebRequest();
-
-                //接続結果が返ってくるまで待機
-                while (!send.isDone)
-                {
-                    if (token.IsCancellationRequested) { break; }
-                    //リクエストの待機時間が一定時間を超えた場合
-                    if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
-                    {
-                        //指定回数分だけ再実行する
-                        if (_runCount < _rerunCount)
-                        {
-                            _runCount++;
-                            _stopWatch.Reset();
-                            return await SendGetRequest(_cancellationTokenSource.Token);
-                        }
-                        else { break; }
-                    }
-                    await Task.Delay(1, token);
-                }
-
-                //返ってきた結果が Success ではない → 何か問題があった
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogError($"{request.result} : {request.error}");
-                    return false;
-                }
-                else
-                {
-                    var result = request.downloadHandler.text;
-                    Debug.Log($"Request Result : {result}");
-                    if (result == Success) { return true; }
-                    else { return false; }
-                }
-            }
-            catch (Exception exception)
-            {
-                //通信に不備があった場合等にここを通る
-                Debug.LogError($"Failed : {exception.Message}");
-                return false;
-            }
-            finally
-            {
-                //再帰実行に用いたデータのリセット
-                _runCount = 0;
-                _stopWatch.Reset();
-            }
-        }
-
         /// <summary> Postリクエストを送信する </summary>
         /// <returns> 実行結果の文字列 </returns>
-        public async Task<string> SendPostRequest(WWWForm form, CancellationToken token = default)
+        public async Task<string> SendPostRequest(WWWForm form, string[] addresses, CancellationToken token = default)
         {
-            try
+            for (int i = 0; i < addresses.Length; i++)
             {
+                if (addresses[i] == "") { continue; }
+                _hostURL = CreateConnectionURL(addresses[i], _roomID);
+
                 if (token == default) { token = _cancellationTokenSource.Token; }
                 _stopWatch.Start();
 
@@ -171,9 +121,9 @@ namespace Network
                             _runCount++;
                             _stopWatch.Reset();
 
-                            return await SendPostRequest(form, _cancellationTokenSource.Token);
+                            return await SendPostRequest(form, addresses, _cancellationTokenSource.Token);
                         }
-                        else { break; }
+                        else { continue; }
                     }
                     await Task.Delay(1, token);
                 }
@@ -181,35 +131,31 @@ namespace Network
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     Debug.LogError(request.error);
-                    return "None";
+                    continue;
                 }
                 else
                 {
                     var result = request.downloadHandler.text;
                     Debug.Log($"Request Result : {result}");
+
+                    _runCount = 0;
+                    _stopWatch.Reset();
                     return result;
                 }
             }
-            catch (Exception exception)
-            {
-                var message = exception.Message;
-
-                Debug.LogError($"Failed : {message}");
-                return message;
-            }
-            finally
-            {
-                _runCount = 0;
-                _stopWatch.Reset();
-            }
+            //各URLに対してそれぞれリクエスト処理を行い、どこにも合致しなかったらリクエスト失敗
+            return "None";
         }
 
         /// <summary> Putリクエストを送信する </summary>
         /// <returns> 実行結果の文字列 </returns>
-        public async Task<string> SendPutRequest(string json, string requestMessage, CancellationToken token = default)
+        public async Task<string> SendPutRequest(string json, string requestMessage, string[] addresses, CancellationToken token = default)
         {
-            try
+            for (int i = 0; i < addresses.Length; i++)
             {
+                if (addresses[i] == "") { continue; }
+                _hostURL = CreateConnectionURL(addresses[i], _roomID);
+
                 if (token == default) { token = _cancellationTokenSource.Token; }
                 _stopWatch.Start();
 
@@ -226,9 +172,9 @@ namespace Network
                             _runCount++;
                             _stopWatch.Reset();
 
-                            return await SendPutRequest(json, requestMessage, _cancellationTokenSource.Token);
+                            return await SendPutRequest(json, requestMessage, addresses, _cancellationTokenSource.Token);
                         }
-                        else { break; }
+                        else { continue; }
                     }
                     await Task.Delay(1, token);
                 }
@@ -236,27 +182,20 @@ namespace Network
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     Debug.LogError(request.error);
-                    return "None";
+                    continue;
                 }
                 else
                 {
                     var result = request.downloadHandler.text;
                     Debug.Log($"Request Result : {result}");
+
+                    _runCount = 0;
+                    _stopWatch.Reset();
                     return result;
                 }
             }
-            catch (Exception exception)
-            {
-                var message = exception.Message;
-
-                Debug.LogError($"Failed : {message}");
-                return message;
-            }
-            finally
-            {
-                _runCount = 0;
-                _stopWatch.Reset();
-            }
+            //各URLに対してそれぞれリクエスト処理を行い、どこにも合致しなかったらリクエスト失敗
+            return "None";
         }
         #endregion
 
@@ -320,7 +259,73 @@ namespace Network
             _roomID = _random.Next(0, 10000).ToString("F4");
             _hostURL = CreateConnectionURL(SelfIPAddress, _roomID);
 
+            //ここでルームへの入室待機処理の開始を行う
+            string redirectURL = $"http://*:{_roomID}/";
+
+            _listener = new();
+            try
+            {
+                _listener.Prefixes.Add(redirectURL);
+                _listener.Start();
+                Debug.Log("Server started");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(exception.Message);
+                return exception.Message;
+            }
+            //同時アクセスに対応できるように複数スレッドで実行する
+            for (int i = 0; i < _maxConnectableCount - 1; i++) { AccessWaiting(); }
+
             return _roomID;
+        }
+
+        private void AccessWaiting()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    if (!_listener.IsListening) { _listener.Start(); }
+
+                    var context = await _listener.GetContextAsync();
+                    var response = context.Response;
+
+                    // 受け取ったリダイレクトURLをログに出力する
+                    Debug.Log($"redirectURI: {context.Request.Url}");
+
+                    // 受け取ったリダイレクトURLのクエリパラメータからcodeを取得する
+                    var query = context.Request.Url.Query;
+                    var code = HttpUtility.ParseQueryString(query).Get("code");
+
+                    string responseString = "";
+                    //クライアントからのリクエストを判定
+                    if (context.Request.HttpMethod == "POST")
+                    {
+                        //送信されてきたデータ配列
+                        var reader = new StreamReader(context.Request.InputStream).ReadToEnd().Split(',');
+                        var requestData = reader[0].Split('&');
+                        var id = requestData[0].Split('=')[1];
+                        var requestMessage = requestData[1].Split('=')[1];
+
+                        //受けたリクエストに対して処理を実行する
+                        responseString = await ReceivePostRequest(id, requestMessage);
+                    }
+                    else if (context.Request.HttpMethod == "PUT")
+                    {
+                        responseString = await ReceivePutRequest(new StreamReader(context.Request.InputStream).ReadToEnd());
+                    }
+
+                    var buffer = Encoding.UTF8.GetBytes(responseString);
+                    response.ContentLength64 = buffer.Length;
+                    _responseOutput = response.OutputStream;
+                    await _responseOutput.WriteAsync(buffer, 0, buffer.Length);
+
+                    //複数端末からの処理を待機するために再起実行
+                    AccessWaiting();
+                }
+                catch (Exception exception) { Debug.LogError(exception.Message); }
+            });
         }
 
         /// <summary> IDの新規生成 </summary>
