@@ -215,6 +215,7 @@ namespace Network
             {
                 "CreateRoom" => CreateRoom(id),
                 "GenerateID" => await GenerateID(),
+                "RequestSuspended" => RequestSuspended(),
                 _ => ""
             };
         }
@@ -240,8 +241,8 @@ namespace Network
             Debug.Log($"Request : {message}");
             return message switch
             {
-                "JoinRoom" => JoinRoom(requestData),
-                "PlayAudio" => await PlayAudio(),
+                "JoinRoom" => await JoinRoom(requestData),
+                "RecalculateTowerState" => await RecalculateTowerState(requestData),
                 _ => ""
             };
         }
@@ -261,7 +262,6 @@ namespace Network
             //ルームIDを新規発行する
             _random ??= new();
             _roomID = _random.Next(0, 10000).ToString("F4");
-            _hostURL = CreateConnectionURL(SelfIPAddress, _roomID);
 
             //ここでルームへの入室待機処理の開始を行う
             string redirectURL = $"http://*:{_roomID}/";
@@ -345,6 +345,18 @@ namespace Network
             });
             return newID;
         }
+
+        /// <summary> 実行中のリクエスト処理を中断する </summary>
+        private string RequestSuspended()
+        {
+            Debug.Log("送信中のリクエストを中断します");
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource?.Dispose();
+
+            _cancellationTokenSource = new();
+
+            return Success;
+        }
         #endregion
 
         #region Post Request
@@ -367,24 +379,37 @@ namespace Network
         /// <summary> 作成済のルームに対する参加リクエスト </summary>
         /// <param name="requestData"> ルーム参加に必要なデータ（PlayerID, RoomID） </param>
         /// <returns> ルーム参加が正常に行われたらSuccess </returns>
-        private string JoinRoom(string requestData)
+        private async Task<string> JoinRoom(string requestData)
         {
             var splitData = requestData.Split(',');
             var playerID = splitData[0];
             var roomID = splitData[1];
 
-            //現在プレイ中 or ルームIDが異なる or ルームが満員→ルーム参加拒否
-            if (roomID != _roomID) { return "RoomID is not correct."; }
+            //現在プレイ中 or ルームIDが異なる or ルームが満員→ルーム参加失敗
+
+            //===============================================================================
+            //todo : if (_isPlaying) { return "Game Playing"; } 的な処理で返す
+            //===============================================================================
+
+            if (roomID != _roomID) { return $"RoomID is not correct. {roomID}"; }
             else if (_roomPlayers.Count + 1 > _maxConnectableCount) { return "Room is full."; }
 
+            await Task.Yield();
             _roomPlayers?.Add(playerID);
             return Success;
         }
 
-        /// <summary> プレイヤーのアクションに応じた音の再生を行う </summary>
-        /// <returns> 再生が正常に行われたらSuccess </returns>
-        private async Task<string> PlayAudio()
+        /// <summary> ブロックの更新、それに伴う倒壊率の再計算 </summary>
+        /// <param name="requestData"> 更新するデータ群 </param>
+        /// <returns> 処理が正常に行われたらSuccess </returns>
+        private async Task<string> RecalculateTowerState(string requestData)
         {
+            var splitData = requestData.Split(',');
+
+            //===============================================================================
+            //todo : ここで更新処理、計算処理を行う
+            //===============================================================================
+
             await Task.Yield();
             return Success;
         }
@@ -397,10 +422,11 @@ namespace Network
         //Self
         CreateRoom,
         GenerateID,
+        RequestSuspended,
         //Post
         ExitRoom,
         //Put
         JoinRoom,
-        PlayAudio,
+        RecalculateTowerState,
     }
 }
