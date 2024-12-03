@@ -21,7 +21,7 @@ public class JengaManager : MonoBehaviour
 
     /// <summary>IDをキーにしてジェンガブロックを保持する辞書型</summary>
     private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
-    /// <summary>ジェンガの穴あき具合を確認するチェックシート</summary>
+    /// <summary>ジェンガブロックがどの位置にあるかを確認するチェックシート</summary>
     private List<int[]> _blockExistsChecker = new List<int[]>();
 
     private void Start()
@@ -179,13 +179,11 @@ public class JengaManager : MonoBehaviour
 
     private bool IsJengaUnstable()
     {
-        bool isNotCenterExist = true;
-        int zeroCounter = 0;
-
-        for (int i = 0; i < _blockExistsChecker.Count; i++)
+        for (int i = 0; i < _blockExistsChecker.Count - 1; i++)
         {
             if (_blockExistsChecker[i] == null) continue;
-            zeroCounter = 0;
+            bool isNotCenterExist = true;
+            int zeroCounter = 0;
 
             for (int k = 0; k < _blockExistsChecker[i].Length; k++)
             {
@@ -196,7 +194,7 @@ public class JengaManager : MonoBehaviour
 
             if (isNotCenterExist && zeroCounter >= 2) return true;
 
-            Debug.Log($"Height:{i},Counter:{zeroCounter},CenterExist{isNotCenterExist}");
+            Debug.Log($"Height:{i},Counter:{zeroCounter},IsNotCenterExist{isNotCenterExist}");
         }
         return false;
     }
