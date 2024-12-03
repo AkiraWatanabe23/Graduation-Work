@@ -43,7 +43,7 @@ public class NetworkPresenter : MonoBehaviour
     private void SetPlayersIPAddress()
     {
         _otherPlayersIPAddress = new string[_playersCount - 1];
-        for (int i = 0; i < _playersCount; i++)
+        for (int i = 0; i < _otherPlayersIPAddress.Length; i++)
         {
             _otherPlayersIPAddress[i] = _networkView.IPAddressFields[i].text.Trim();
         }
