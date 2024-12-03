@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 public class JengaManager : MonoBehaviour
@@ -184,18 +182,21 @@ public class JengaManager : MonoBehaviour
         bool isNotCenterExist = true;
         int zeroCounter = 0;
 
-        foreach (var listItem in _blockExistsChecker)
+        for (int i = 0; i < _blockExistsChecker.Count; i++)
         {
-            if(listItem == null) continue;
+            if (_blockExistsChecker[i] == null) continue;
             zeroCounter = 0;
 
-            for (int i = 0; i < listItem.Length; i++)
+            for (int k = 0; k < _blockExistsChecker[i].Length; k++)
             {
-                if (listItem[i] == 0) zeroCounter++;
-                if (0 < i && i < listItem.Length - 1 && listItem[i] != 0) isNotCenterExist = false;
+                if (_blockExistsChecker[i][k] == 0) zeroCounter++;
+                if (0 < k && k < _blockExistsChecker[i].Length - 1 && _blockExistsChecker[i][k] != 0)
+                    isNotCenterExist = false;
             }
 
             if (isNotCenterExist && zeroCounter >= 2) return true;
+
+            Debug.Log($"Height:{i},Counter:{zeroCounter},CenterExist{isNotCenterExist}");
         }
         return false;
     }
@@ -206,18 +207,21 @@ public class JengaManager : MonoBehaviour
     {
         float sumAllStability = 0f;
 
-        foreach (var listItem in _blockExistsChecker)
+        for (int i = 0; i < _blockExistsChecker.Count; i++)
         {
-            if(listItem == null) continue;
+            if (_blockExistsChecker[i] == null) continue;
 
-            for (int k = 0; k < listItem.Length; k++)
+            float cash = 0f;
+
+            for (int k = 0; k < _blockExistsChecker[i].Length; k++)
             {
-                sumAllStability += listItem[k] switch
+                cash += _blockExistsChecker[i][k] switch
                 {
-                    0 => listItem[k],
-                    _ => _blocks[listItem[k]].Stability,
+                    0 => _blockExistsChecker[i][k],
+                    _ => _blocks[_blockExistsChecker[i][k]].Stability,
                 };
             }
+            sumAllStability += cash * (1.0f - 0.01f * i);
         }
         return 1f - (sumAllStability / (_blockExistsChecker.Count - 1));
     }
