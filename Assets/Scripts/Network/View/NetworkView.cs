@@ -13,6 +13,9 @@ namespace Network
         [SerializeField]
         private InputField[] _ipAddressFields = default;
 
+        [field: SerializeField]
+        public GameObject PasswordPanel { get; private set; }
+
         [Header("Join Room")]
         [SerializeField]
         private InputField _roomIDField = default;

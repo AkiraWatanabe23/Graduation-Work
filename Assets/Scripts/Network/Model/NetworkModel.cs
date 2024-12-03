@@ -261,10 +261,11 @@ namespace Network
             _roomPlayers.Add(hostID);
             //ルームIDを新規発行する
             _random ??= new();
-            _roomID = _random.Next(0, 10000).ToString("F4");
+            _roomID = _random.Next(0, 10000).ToString("0000");
 
             //ここでルームへの入室待機処理の開始を行う
             string redirectURL = $"http://*:{_roomID}/";
+            Debug.Log(redirectURL);
 
             _listener = new();
             try
