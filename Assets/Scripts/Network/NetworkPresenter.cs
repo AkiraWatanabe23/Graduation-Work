@@ -101,6 +101,7 @@ public class NetworkPresenter : MonoBehaviour
             return;
         }
 
+        _networkModel.SetActivate(_networkView.PasswordPanel, false);
         _networkModel.SetActivate(_networkView.DeveloperPanel, true);
     }
 
