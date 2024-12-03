@@ -9,29 +9,23 @@ public class ObjectSelector : MonoBehaviour
     private Ray _ray = new();
     private RaycastHit _hitResult = new();
     private const int MAX_RAYCAST_DISTANCE = 100;
-    private RaycastHit _saveHitResult = new();
-
-    private JengaManager _manager = null;
 
     private void Start()
     {
         _mainCamera = Camera.main;
-        _manager = FindFirstObjectByType<JengaManager>();
     }
 
     private void Update()
     {
         _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (Input.GetMouseButtonDown(0)
-            && Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE, _layerMask))
-        {
-            if(_hitResult.collider.TryGetComponent(out Jenga.BlockData data))
-            {
-                var jenga = _manager.Blocks[data.BlockID];
-                _manager.Place(ref jenga);
-            }
-        }
+        if (DataContainer.Instance.IsGameFinish) return;
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE, _layerMask)) return;
+        if (!_hitResult.collider.TryGetComponent(out BlockData data)) return;
+
+        DataContainer.Instance.SelectedBlockId = data.BlockId;
+        DataContainer.Instance.CollapseProbability = Random.Range(0f, 1f);
     }
 
     private void OnDrawGizmos()

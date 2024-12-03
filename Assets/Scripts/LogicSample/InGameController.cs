@@ -1,23 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class InGameController : MonoBehaviour
+namespace LogicSample
 {
-    [SerializeField]
-    private BlockSystem _blockSystem = new();
-    [SerializeField]
-    private Button _calcButton = default;
-
-    private void Start()
+    public class InGameController : MonoBehaviour
     {
-        _blockSystem.Initialize();
-        if (_calcButton != null)
+        [SerializeField]
+        private BlockSystem _blockSystem = new();
+        [SerializeField]
+        private Button _calcButton = default;
+
+        private void Start()
         {
-            _calcButton.onClick.AddListener(() =>
+            _blockSystem.Initialize();
+            if (_calcButton != null)
             {
-                var result = _blockSystem.FloorCalculation();
-                for (int i = 0; i < result.Length; i++) { Debug.Log(string.Join(" ", result[i])); }
-            });
+                _calcButton.onClick.AddListener(() =>
+                {
+                    var result = _blockSystem.FloorCalculation();
+                    for (int i = 0; i < result.Length; i++) { Debug.Log(string.Join(" ", result[i])); }
+                });
+            }
         }
     }
 }
