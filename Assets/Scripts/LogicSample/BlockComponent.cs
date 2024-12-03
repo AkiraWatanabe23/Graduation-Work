@@ -1,42 +1,45 @@
 ﻿using UnityEngine;
 
-/// <summary> 各ブロックが保持するコンポーネント </summary>
-public class BlockComponent : MonoBehaviour
+namespace LogicSample
 {
-    [SerializeField]
-    private MaterialType _materialType = MaterialType.Wood;
-    [SerializeField]
-    private Direciton[] _direcitons = default;
-
-    private BlockData _blockData = default;
-
-    public MaterialType MaterialType => _materialType;
-    public Direciton[] Direcitons => _direcitons;
-    public BlockData BlockData => _blockData;
-
-    public void Initiaize(BlockData initialBlock)
+    /// <summary> 各ブロックが保持するコンポーネント </summary>
+    public class BlockComponent : MonoBehaviour
     {
-        _blockData = initialBlock;
+        [SerializeField]
+        private MaterialType _materialType = MaterialType.Wood;
+        [SerializeField]
+        private Direciton[] _direcitons = default;
 
-        if (!gameObject.TryGetComponent(out Collider _))
+        private BlockData _blockData = default;
+
+        public MaterialType MaterialType => _materialType;
+        public Direciton[] Direcitons => _direcitons;
+        public BlockData BlockData => _blockData;
+
+        public void Initiaize(BlockData initialBlock)
         {
-            _ = gameObject.AddComponent<BoxCollider>();
+            _blockData = initialBlock;
 
-            //ここでブロックのサイズに合わせた値の設定をしたい
+            if (!gameObject.TryGetComponent(out Collider _))
+            {
+                _ = gameObject.AddComponent<BoxCollider>();
+
+                //ここでブロックのサイズに合わせた値の設定をしたい
+            }
+        }
+
+        public void UpdateMaterial(BlockData next)
+        {
+            _materialType = next.MaterialType;
+            _blockData = next;
         }
     }
 
-    public void UpdateMaterial(BlockData next)
+    public enum Direciton
     {
-        _materialType = next.MaterialType;
-        _blockData = next;
+        Up,
+        Down,
+        Left,
+        Right,
     }
-}
-
-public enum Direciton
-{
-    Up,
-    Down,
-    Left,
-    Right,
 }
