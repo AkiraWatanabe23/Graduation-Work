@@ -1,7 +1,6 @@
 ﻿using Network;
 using System;
 using UnityEngine;
-
 using Debug = Constants.ConsoleLogs;
 using NetworkView = Network.NetworkView;
 

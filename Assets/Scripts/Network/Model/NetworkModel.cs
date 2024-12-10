@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using UnityEngine;
 using UnityEngine.Networking;
-
 using Debug = Constants.ConsoleLogs;
 using Random = System.Random;
 
@@ -79,6 +78,16 @@ namespace Network
             return Dns.GetHostAddresses(hostname)[1].ToString();
         }
 
+        /// <summary> 文字列がURLとして成立しているか </summary>
+        private bool IsValidURL(string candidateURL)
+        {
+            if (Uri.TryCreate(candidateURL, UriKind.Absolute, out Uri result))
+            {
+                return (result.Scheme == Uri.UriSchemeHttp || result.Scheme == Uri.UriSchemeHttps);
+            }
+            return false;
+        }
+
         public void ReceiveRoomID(string id) => _roomID = id;
 
         /// <summary> パスワードのマッチ確認 </summary>
@@ -107,6 +116,7 @@ namespace Network
             {
                 if (addresses[i] == "") { continue; }
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
+                if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
                 if (token == default) { token = _cancellationTokenSource.Token; }
                 _stopWatch.Start();
@@ -159,6 +169,7 @@ namespace Network
             {
                 if (addresses[i] == "") { continue; }
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
+                if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
                 if (token == default) { token = _cancellationTokenSource.Token; }
                 _stopWatch.Start();
