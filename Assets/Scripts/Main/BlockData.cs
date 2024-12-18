@@ -17,14 +17,16 @@ public class BlockData : MonoBehaviour
     /// <summary>このブロックの重さ</summary>
     public int Weight {  get => _weight; set => _weight = value; }
 
-    [SerializeField, Tooltip("このブロックに与えられたID")]
+    [SerializeField, Tooltip("自分に与えられたID")]
     private int _blockId = -1;
-    [SerializeField, Tooltip("このブロックが何段目にいるか")]
+    [SerializeField, Tooltip("自分が何段目にいるか")]
     private int _height = -1;
-    [SerializeField, Tooltip("このブロックがジェンガ全体に及ぼす影響度")]
+    [SerializeField, Tooltip("自分がジェンガ全体に及ぼす影響度")]
     private float _stability = -1;
     [SerializeField, Tooltip("チェックシート内における自分の添え字")]
     private int _assignedIndex = -1;
-    [SerializeField, Tooltip("このブロックの重さ")]
+    [SerializeField, Tooltip("自分の重さ")]
     private int _weight = -1;
+    [SerializeField, Tooltip("自分の材質に対応するマテリアル")]
+    private Material _myMaterial = null;
 }
