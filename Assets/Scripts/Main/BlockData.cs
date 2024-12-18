@@ -1,32 +1,41 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class BlockData : MonoBehaviour
 {
-    /// <summary>‚±‚ÌƒuƒƒbƒN‚É—^‚¦‚ç‚ê‚½IDi1n‚Ü‚èj</summary>
+    /// <summary>ã“ã®ãƒ–ãƒ­ãƒƒã‚¯ã«ä¸ãˆã‚‰ã‚ŒãŸIDï¼ˆ1å§‹ã¾ã‚Šï¼‰</summary>
     public int BlockId { get => _blockId; set => _blockId = value; }
 
-    /// <summary>‚±‚ÌƒuƒƒbƒN‚ª‰½’i–Ú‚É‚¢‚é‚©i1n‚Ü‚èj</summary>
+    /// <summary>ã“ã®ãƒ–ãƒ­ãƒƒã‚¯ãŒä½•æ®µç›®ã«ã„ã‚‹ã‹ï¼ˆ1å§‹ã¾ã‚Šï¼‰</summary>
     public int Height { get => _height; set => _height = value; }
 
-    /// <summary>‚±‚ÌƒuƒƒbƒN‚ğˆø‚«”²‚¢‚½‚Æ‚«AƒWƒFƒ“ƒKƒ^ƒ[‚É‹y‚Ú‚·‰e‹¿“xiˆÀ’è“xj</summary>
+    /// <summary>ã“ã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’å¼•ãæŠœã„ãŸã¨ãã€ã‚¸ã‚§ãƒ³ã‚¬ã‚¿ãƒ¯ãƒ¼ã«åŠã¼ã™å½±éŸ¿åº¦ï¼ˆå®‰å®šåº¦ï¼‰</summary>
     public float Stability { get => _stability; set => _stability = value; }
 
-    /// <summary>ƒ`ƒFƒbƒNƒV[ƒg“à‚É‚¨‚¯‚é©•ª‚Ì“Y‚¦ši0n‚Ü‚èj</summary>
+    /// <summary>ãƒã‚§ãƒƒã‚¯ã‚·ãƒ¼ãƒˆå†…ã«ãŠã‘ã‚‹è‡ªåˆ†ã®æ·»ãˆå­—ï¼ˆ0å§‹ã¾ã‚Šï¼‰</summary>
     public int AssignedIndex { get => _assignedIndex; set => _assignedIndex = value; }
 
-    /// <summary>‚±‚ÌƒuƒƒbƒN‚Ìd‚³</summary>
+    /// <summary>ã“ã®ãƒ–ãƒ­ãƒƒã‚¯ã®é‡ã•</summary>
     public int Weight {  get => _weight; set => _weight = value; }
 
-    [SerializeField, Tooltip("©•ª‚É—^‚¦‚ç‚ê‚½ID")]
+    [SerializeField, Tooltip("è‡ªåˆ†ã«ä¸ãˆã‚‰ã‚ŒãŸID")]
     private int _blockId = -1;
-    [SerializeField, Tooltip("©•ª‚ª‰½’i–Ú‚É‚¢‚é‚©")]
+    [SerializeField, Tooltip("è‡ªåˆ†ãŒä½•æ®µç›®ã«ã„ã‚‹ã‹")]
     private int _height = -1;
-    [SerializeField, Tooltip("©•ª‚ªƒWƒFƒ“ƒK‘S‘Ì‚É‹y‚Ú‚·‰e‹¿“x")]
+    [SerializeField, Tooltip("è‡ªåˆ†ãŒã‚¸ã‚§ãƒ³ã‚¬å…¨ä½“ã«åŠã¼ã™å½±éŸ¿åº¦")]
     private float _stability = -1;
-    [SerializeField, Tooltip("ƒ`ƒFƒbƒNƒV[ƒg“à‚É‚¨‚¯‚é©•ª‚Ì“Y‚¦š")]
+    [SerializeField, Tooltip("ãƒã‚§ãƒƒã‚¯ã‚·ãƒ¼ãƒˆå†…ã«ãŠã‘ã‚‹è‡ªåˆ†ã®æ·»ãˆå­—")]
     private int _assignedIndex = -1;
-    [SerializeField, Tooltip("©•ª‚Ìd‚³")]
+    [SerializeField, Tooltip("è‡ªåˆ†ã®é‡ã•")]
     private int _weight = -1;
-    [SerializeField, Tooltip("©•ª‚ÌŞ¿‚É‘Î‰‚·‚éƒ}ƒeƒŠƒAƒ‹")]
-    private Material _myMaterial = null;
+
+    private MeshRenderer _renderer = default;
+
+    /// <summary> ãƒ–ãƒ­ãƒƒã‚¯ã®æè³ªå¤‰åŒ–ã‚’è¡Œã† </summary>
+    public void ChangeMaterial((int Weight, Material Material) target)
+    {
+        if (_renderer == null) { _renderer = GetComponent<MeshRenderer>(); }
+
+        Weight = target.Weight;
+        _renderer.material = target.Material;
+    }
 }
