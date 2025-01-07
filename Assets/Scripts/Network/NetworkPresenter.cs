@@ -23,8 +23,6 @@ public class NetworkPresenter : MonoBehaviour
 
     private string[] _otherPlayersIPAddress = default;
 
-    public string PlayerID => _playerID;
-
     private void Start()
     {
         Initialize();
@@ -92,16 +90,7 @@ public class NetworkPresenter : MonoBehaviour
 
     public void DevelopmentPasswordApply()
     {
-        if (!_networkModel.UnlockDevelopMode(_networkView.PasswordField.text))
-        {
-            Debug.Log("password is not correct");
-            _networkView.PasswordField.text = "";
-
-            return;
-        }
-
-        _networkModel.SetActivate(_networkView.PasswordPanel, false);
-        _networkModel.SetActivate(_networkView.DeveloperPanel, true);
+        _networkView.SetActivate(_networkView.DeveloperPanel, true);
     }
 
     public void PassingRoomID(string id) => _networkModel.ReceiveRoomID(id);
