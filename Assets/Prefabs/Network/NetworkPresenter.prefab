@@ -47,9 +47,8 @@ MonoBehaviour:
   _networkView: {fileID: 0}
   _playerID: 
   _networkModel:
-    _developerPassword: 
     _rerunCount: 1
     _executionTime: 1
     _runCount: 0
     _hostURL: 
-  _playersCount: 2
+  _playersCount: 3

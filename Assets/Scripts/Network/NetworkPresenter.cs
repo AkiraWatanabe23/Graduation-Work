@@ -46,10 +46,9 @@ public class NetworkPresenter : MonoBehaviour
         }
     }
 
-    private async void SelfRequest(RequestType requestType)
+    public async void SelfRequest(RequestType requestType)
     {
         var requestResult = await _networkModel.ReceiveSelfRequest(_playerID, requestType.ToString());
-        Debug.Log(requestResult);
         if (_playerID == "")
         {
             _playerID = requestResult;
@@ -57,34 +56,24 @@ public class NetworkPresenter : MonoBehaviour
         }
     }
 
-    public async void SelfRequest(RequestButton request)
-    {
-        var requestResult = await _networkModel.ReceiveSelfRequest(_playerID, request.RequestType.ToString());
-        if (_playerID == "")
-        {
-            _playerID = requestResult;
-            Debug.Log($"PlayerIDが発行されました : {_playerID}");
-        }
-    }
-
-    public async void SendPostRequest(RequestButton request)
+    public async void SendPostRequest(RequestType requestType)
     {
         //「誰が」「何をしたいか」を送信する
         var form = new WWWForm();
         form.AddField("UserID", _playerID);
-        form.AddField("RequestMessage", request.RequestType.ToString());
+        form.AddField("RequestMessage", requestType.ToString());
 
         SetPlayersIPAddress();
         var requestResult = await _networkModel.SendPostRequest(form, _otherPlayersIPAddress);
         Debug.Log(requestResult);
     }
 
-    public async void SendPutRequest(RequestButton request, params string[] parameters)
+    public async void SendPutRequest(RequestType requestType, params string[] parameters)
     {
         SetPlayersIPAddress();
         var requestResult
             = await _networkModel.SendPutRequest(
-                $"{_playerID},{string.Join(",", parameters)}", request.RequestType.ToString(), _otherPlayersIPAddress);
+                $"{_playerID},{string.Join(",", parameters)}", requestType.ToString(), _otherPlayersIPAddress);
         Debug.Log(requestResult);
     }
 
