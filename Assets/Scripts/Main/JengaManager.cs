@@ -1,37 +1,36 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 public class JengaManager : MonoBehaviour
 {
-    [SerializeField, Tooltip("¶¬‚·‚éƒWƒFƒ“ƒK‚ÌƒIƒuƒWƒFƒNƒg")]
-    private BlockData _jenga = null;
-    [SerializeField, Tooltip("‰½’iAƒWƒFƒ“ƒK‚ğ¶¬‚·‚é‚©")]
+    [SerializeField, Tooltip("ç”Ÿæˆã™ã‚‹ã‚¸ã‚§ãƒ³ã‚¬")]
+    private BlockData _blockPrefab = null;
+    [SerializeField, Tooltip("ä½•æ®µã€ã‚¸ã‚§ãƒ³ã‚¬ã‚’ç”Ÿæˆã™ã‚‹ã‹")]
     private int _floorLevel = 10;
-    [SerializeField, Tooltip("1’i“–‚½‚è‚ÌƒWƒFƒ“ƒK‚ÌŒÂ”")]
+    [SerializeField, Tooltip("1æ®µå½“ãŸã‚Šã®ã‚¸ã‚§ãƒ³ã‚¬ã®å€‹æ•°")]
     private int _itemsPerLevel = 3;
+    [SerializeField]
+    private MaterialController _mateCtrler = new MaterialController();
 
-    private Vector3 _generatePos = Vector3.zero;
-    private (float X, float Z) _saveXZ = (0f, 0f);
+    private Vector3 _updatePos = Vector3.zero;
+    private Quaternion _updateRot = Quaternion.identity;
     private int _blockIndexCounter = 0;
     private int _placeCount = 0;
-
     private bool _isGameFinish = false;
 
-    /// <summary>ID‚ğƒL[‚É‚µ‚ÄƒWƒFƒ“ƒKƒuƒƒbƒN‚ğ•Û‚·‚é«‘Œ^</summary>
+    /// <summary>IDã‚’ã‚­ãƒ¼ã«ã—ã¦ã‚¸ã‚§ãƒ³ã‚¬ãƒ–ãƒ­ãƒƒã‚¯ã‚’ä¿æŒã™ã‚‹è¾æ›¸å‹</summary>
     private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
-    /// <summary>ƒWƒFƒ“ƒKƒuƒƒbƒN‚ª‚Ç‚ÌˆÊ’u‚É‚ ‚é‚©‚ğŠm”F‚·‚éƒ`ƒFƒbƒNƒV[ƒg</summary>
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ãƒ–ãƒ­ãƒƒã‚¯ãŒã©ã®ä½ç½®ã«ã‚ã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹ãƒã‚§ãƒƒã‚¯ã‚·ãƒ¼ãƒˆ</summary>
     private List<int[]> _blockExistsChecker = new List<int[]>();
 
     private void Start()
     {
-        if (_jenga == null) throw new System.NullReferenceException($"jenga is not found");
+        if (_blockPrefab == null) throw new NullReferenceException($"Prefab is not found");
 
-        _saveXZ = (_generatePos.x, _generatePos.z);
-
-        Build();
+        BuildUp();
         InitBlockExistsChecker();
+        _mateCtrler.Initialize();
     }
 
     private void Update()
@@ -52,59 +51,52 @@ public class JengaManager : MonoBehaviour
         }
     }
 
-    /// <summary>ƒWƒFƒ“ƒK‚ğw’è‚³‚ê‚½ŠK‘w‚Ì•ª‚¾‚¯‘g‚İ—§‚Ä‚é</summary>
-    private void Build()
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ã‚’æŒ‡å®šã•ã‚ŒãŸéšå±¤ã®åˆ†ã ã‘çµ„ã¿ç«‹ã¦ã‚‹</summary>
+    private void BuildUp()
     {
         BlockData jenga = null;
         GameObject blockParent = new GameObject("Blocks");
 
         for (int i = 1; i <= _floorLevel * _itemsPerLevel; i++)
         {
-            jenga = Instantiate(_jenga, blockParent.transform);
+            jenga = Instantiate(_blockPrefab, blockParent.transform);
             jenga.BlockId = i;
-            jenga.AssignedIndex = IndexCounter();
+            jenga.AssignedIndex = AssignedIndexCounter();
             _blocks.Add(i, jenga);
             Place(jenga.BlockId);
         }
     }
 
-    /// <summary>ƒWƒFƒ“ƒK‚ğ”z’u‚·‚é</summary>
-    /// <param name="target">”z’u‚·‚é‘ÎÛ‚ÌƒuƒƒbƒN</param>
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ã‚’é…ç½®ã™ã‚‹</summary>
+    /// <param name="target">é…ç½®ã™ã‚‹å¯¾è±¡ã®ãƒ–ãƒ­ãƒƒã‚¯</param>
     private void Place(int targetBlockId)
     {
         BlockData target = _blocks[targetBlockId];
 
-        if (_placeCount == 0) _generatePos.x--;
-        else if (_placeCount < _itemsPerLevel) _generatePos.x++;
-        else if (_placeCount == _itemsPerLevel) _generatePos.z--;
-        else if (_placeCount < _itemsPerLevel * 2) _generatePos.z++;
+        //ãƒ–ãƒ­ãƒƒã‚¯ã®åº§æ¨™ã®å¤‰æ›´å…ˆã‚’æ›´æ–°ã™ã‚‹
+        if (_placeCount == 0) { _updatePos.x -= _itemsPerLevel / 2; }
+        else if (_placeCount < _itemsPerLevel) { _updatePos.x++; }
+        else if (_placeCount == _itemsPerLevel) { _updatePos.z -= _itemsPerLevel / 2; }
+        else if (_placeCount < _itemsPerLevel * 2) { _updatePos.z++; }
 
-        if (_placeCount < _itemsPerLevel) 
-            target.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        else if (_itemsPerLevel <= _placeCount 
-            && _placeCount < _itemsPerLevel * 2 
-            && target.transform.rotation.y != 90f) 
-            target.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+        //ãƒ–ãƒ­ãƒƒã‚¯ã‚’ï¼‘æ®µã”ã¨ã«äº’ã„é•ã„ã¨ãªã‚‹ã‚ˆã†ã€å‘ãã‚’ 90Â°å›è»¢ã•ã›ã‚‹
+        if (_placeCount % _itemsPerLevel == 0)
+            _updateRot = Quaternion.AngleAxis(90.0f * _updatePos.y, Vector3.up);
 
-        if(_placeCount == 0
-            || _placeCount == _itemsPerLevel - 1
-            || _placeCount == _itemsPerLevel
-            || _placeCount == _itemsPerLevel * 2 - 1) target.Stability = 0.45f;
-        else target.Stability = 0.1f;
-
-        target.transform.position = _generatePos;
-        target.Height = (int)_generatePos.y + 1;
+        //ãƒ–ãƒ­ãƒƒã‚¯ã®åº§æ¨™ãƒ»å›è»¢ã‚’æ›´æ–°
+        target.transform.position = _updatePos;
+        target.transform.rotation = _updateRot;
         _placeCount++;
 
-        if (_placeCount % _itemsPerLevel == 0) _generatePos.Set(_saveXZ.X, ++_generatePos.y, _saveXZ.Z);
+        if (_placeCount % _itemsPerLevel == 0) _updatePos.Set(0.0f, ++_updatePos.y, 0.0f);
         if (_placeCount % (_itemsPerLevel * 2) == 0) _placeCount = 0;
     }
 
     private int _oldBlockId = -1;
 
-    /// <summary>ƒvƒŒƒC’†‚É‘I‘ğ‚³‚ê‚½ƒuƒƒbƒN‚ÌID‚ªV‚µ‚­‘I‘ğ‚³‚ê‚½‚à‚Ì‚©‚Ç‚¤‚©</summary>
-    /// <param name="newBlockId">V‚µ‚­‘I‘ğ‚³‚ê‚½ƒuƒƒbƒN‚¾‚Á‚½ê‡A‚»‚ÌƒuƒƒbƒN‚ÌID‚ğ•Ô‚·</param>
-    /// <returns>V‚µ‚­‘I‘ğ‚³‚ê‚½ƒuƒƒbƒN‚©‚Ç‚¤‚©‚Ì^‹U’l‚ğ•Ô‚·</returns>
+    /// <summary>ãƒ—ãƒ¬ã‚¤ä¸­ã«é¸æŠã•ã‚ŒãŸãƒ–ãƒ­ãƒƒã‚¯ã®IDãŒæ–°ã—ãé¸æŠã•ã‚ŒãŸã‚‚ã®ã‹ã©ã†ã‹</summary>
+    /// <param name="newBlockId">æ–°ã—ãé¸æŠã•ã‚ŒãŸãƒ–ãƒ­ãƒƒã‚¯ã ã£ãŸå ´åˆã€ãã®ãƒ–ãƒ­ãƒƒã‚¯ã®IDã‚’è¿”ã™</param>
+    /// <returns>æ–°ã—ãé¸æŠã•ã‚ŒãŸãƒ–ãƒ­ãƒƒã‚¯ã‹ã©ã†ã‹ã®çœŸå½å€¤ã‚’è¿”ã™</returns>
     private bool IsNewBlockSelected(out int newBlockId)
     {
         int selectedBlockId = DataContainer.Instance.SelectedBlockId;
@@ -116,7 +108,7 @@ public class JengaManager : MonoBehaviour
         return true;
     }
 
-    /// <summary>ƒWƒFƒ“ƒKƒuƒƒbƒN‚ª‚Ç‚±‚É‚ ‚é‚©‚ğ‹L˜^‚·‚éƒ`ƒFƒbƒNƒV[ƒg‚Ì‰Šú‰»</summary>
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ãƒ–ãƒ­ãƒƒã‚¯ãŒã©ã“ã«ã‚ã‚‹ã‹ã‚’è¨˜éŒ²ã™ã‚‹ãƒã‚§ãƒƒã‚¯ã‚·ãƒ¼ãƒˆã®åˆæœŸåŒ–</summary>
     private void InitBlockExistsChecker()
     {
         for (int i = 0, blockId = 1; i <= _floorLevel; i++)
@@ -136,8 +128,8 @@ public class JengaManager : MonoBehaviour
         }
     }
 
-    /// <summary>ƒWƒFƒ“ƒKƒuƒƒbƒN‚ª‚Ç‚±‚É‚ ‚é‚©‚ğ‹L˜^‚·‚éƒ`ƒFƒbƒNƒV[ƒg‚ÌXV</summary>
-    /// <param name="targetBlockId">‘ÎÛ‚ÌƒWƒFƒ“ƒKƒuƒƒbƒN‚ÌID</param>
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ãƒ–ãƒ­ãƒƒã‚¯ãŒã©ã“ã«ã‚ã‚‹ã‹ã‚’è¨˜éŒ²ã™ã‚‹ãƒã‚§ãƒƒã‚¯ã‚·ãƒ¼ãƒˆã®æ›´æ–°</summary>
+    /// <param name="targetBlockId">å¯¾è±¡ã®ã‚¸ã‚§ãƒ³ã‚¬ãƒ–ãƒ­ãƒƒã‚¯ã®ID</param>
     private void UpdateBlockExistsChecker(int targetBlockId)
     {
         if (_blockExistsChecker.Count <= _blocks[targetBlockId].Height)
@@ -146,29 +138,28 @@ public class JengaManager : MonoBehaviour
             Array.Fill(blockCheckItem, 0);
             _blockExistsChecker.Add(blockCheckItem);
         }
-        _blocks[targetBlockId].AssignedIndex = IndexCounter();
+        _blocks[targetBlockId].AssignedIndex = AssignedIndexCounter();
     }
 
-    private void DebugBlockExistChecker()
-    {
-        StringBuilder debugMessage = new StringBuilder();
+    //private void DebugBlockExistChecker()
+    //{
+    //    StringBuilder debugMessage = new StringBuilder();
 
-        foreach (var listItem in _blockExistsChecker)
-        {
-            if (listItem == null) continue;
+    //    foreach (var listItem in _blockExistsChecker)
+    //    {
+    //        if (listItem == null) continue;
 
-            for (int k = 0; k < listItem.Length; k++)
-            {
-                debugMessage.Append(listItem[k]);
-            }
-            debugMessage.Append('\n');
-        }
-        Debug.Log(debugMessage);
-    }
+    //        for (int k = 0; k < listItem.Length; k++)
+    //        {
+    //            debugMessage.Append(listItem[k]);
+    //        }
+    //        debugMessage.Append('\n');
+    //    }
+    //    Debug.Log(debugMessage);
+    //}
 
-    /// <summary></summary>
-    /// <returns></returns>
-    private int IndexCounter()
+    /// <summary>ãƒ–ãƒ­ãƒƒã‚¯ã«ä¸ãˆã‚‹æ·»ãˆå­—ã‚’ã‚«ã‚¦ãƒ³ãƒˆã™ã‚‹</summary>
+    private int AssignedIndexCounter()
     {
         if (_blockIndexCounter % _itemsPerLevel == 0)
         {
@@ -177,30 +168,39 @@ public class JengaManager : MonoBehaviour
         return _blockIndexCounter++;
     }
 
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ãŒå´©ã‚Œã¦ã‚‚ãŠã‹ã—ããªã„çŠ¶æ…‹ã‹ã‚’åˆ¤å®šã™ã‚‹</summary>
     private bool IsJengaUnstable()
     {
-        for (int i = 0; i < _blockExistsChecker.Count - 1; i++)
-        {
-            if (_blockExistsChecker[i] == null) continue;
-            bool isNotCenterExist = true;
-            int zeroCounter = 0;
+        bool isNotCenterExist = true;   // æ¤œç´¢ã™ã‚‹æ®µã«ä¸­å¤®ã®ãƒ–ãƒ­ãƒƒã‚¯ãŒå­˜åœ¨ã™ã‚‹ã‹
+        int blockCounter = 0;           // æ¤œç´¢ã™ã‚‹æ®µã«ãƒ–ãƒ­ãƒƒã‚¯ãŒã„ãã¤æ®‹ã£ã¦ã„ã‚‹ã‹
 
-            for (int k = 0; k < _blockExistsChecker[i].Length; k++)
+        foreach (var listItem in _blockExistsChecker)
+        {
+            if (listItem == null) continue;
+
+            // å¤‰æ•°ã‚’ä½¿ã„ã¾ã‚ã™ãŸã‚åˆæœŸåŒ–ã™ã‚‹
+            isNotCenterExist = true;
+            blockCounter = 0;
+
+            // ï¼‘æ®µãšã¤ãƒ–ãƒ­ãƒƒã‚¯ã®æœ‰ç„¡ã‚’ç¢ºèªã™ã‚‹
+            for (int k = 0; k < listItem.Length; k++)
             {
-                if (_blockExistsChecker[i][k] == 0) zeroCounter++;
-                if (0 < k && k < _blockExistsChecker[i].Length - 1 && _blockExistsChecker[i][k] != 0)
-                    isNotCenterExist = false;
+                if (listItem[k] != 0)
+                {
+                    blockCounter++;
+
+                    if (0 < k && k < listItem.Length - 1)
+                        isNotCenterExist = false;
+                }
             }
 
-            if (isNotCenterExist && zeroCounter >= 2) return true;
-
-            Debug.Log($"Height:{i},Counter:{zeroCounter},IsNotCenterExist{isNotCenterExist}");
+            // ï¼‘æ®µã«ã€Œä¸­å¤®ã®ãƒ–ãƒ­ãƒƒã‚¯ãŒãªã„ã€&&ã€Œæ®‹ã‚Šãƒ–ãƒ­ãƒƒã‚¯ãŒï¼‘ã¤ã ã‘ã€ã®æ™‚ã¯å€’å£Šã™ã‚‹
+            if (isNotCenterExist && blockCounter < 2) return true;
         }
         return false;
     }
 
-    /// <summary>ƒuƒƒbƒN‚ğˆø‚«”²‚¢‚½‚Æ‚«AƒWƒFƒ“ƒK‚ª•ö‰ó‚·‚éŠm—¦‚ğŒvZ‚·‚é</summary>
-    /// <returns></returns>
+    /// <summary>ãƒ–ãƒ­ãƒƒã‚¯ã‚’å¼•ãæŠœã„ãŸã¨ãã€ã‚¸ã‚§ãƒ³ã‚¬ãŒå´©å£Šã™ã‚‹ç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹</summary>
     private float GetCollapseRisk()
     {
         float sumAllStability = 0f;
@@ -213,10 +213,11 @@ public class JengaManager : MonoBehaviour
 
             for (int k = 0; k < _blockExistsChecker[i].Length; k++)
             {
-                cash += _blockExistsChecker[i][k] switch
+                int target = _blockExistsChecker[i][k];
+                cash += target switch
                 {
-                    0 => _blockExistsChecker[i][k],
-                    _ => _blocks[_blockExistsChecker[i][k]].Stability,
+                    0 => target,
+                    _ => _blocks[target].Stability * _blocks[target].Weight,
                 };
             }
             sumAllStability += cash * (1.0f - 0.01f * i);
@@ -224,10 +225,11 @@ public class JengaManager : MonoBehaviour
         return 1f - (sumAllStability / (_blockExistsChecker.Count - 1));
     }
 
+    /// <summary>ã‚¸ã‚§ãƒ³ã‚¬ã‚’å¼•ãæŠœã„ãŸã¨ãã«å€’ã‚Œã‚‹ç¢ºç‡ã‚’å¼•ã„ãŸã‹åˆ¤å®šã™ã‚‹</summary>
     private bool IsJengaCollapse()
     {
         float collapseRisk = GetCollapseRisk();
-        Debug.Log($"“|‰ó—¦‚ÍA{collapseRisk * 100}%I");
+        Debug.Log($"å€’å£Šç‡ã¯ã€{collapseRisk * 100}%ï¼");
         return DataContainer.Instance.CollapseProbability <= collapseRisk;
     }
 
@@ -239,6 +241,6 @@ public class JengaManager : MonoBehaviour
         {
             block.Value.gameObject.AddComponent<Rigidbody>();
         }
-        Debug.Log("BREAKI");
+        Debug.Log("BREAKï¼");
     }
 }
