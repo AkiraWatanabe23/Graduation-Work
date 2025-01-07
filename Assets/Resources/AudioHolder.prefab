@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bgmClips:
   - _bgmType: 1
-    _bgmClip: {fileID: 0}
+    _clip: {fileID: 0}
   - _bgmType: 2
-    _bgmClip: {fileID: 0}
+    _clip: {fileID: 0}
   _seClips: []
