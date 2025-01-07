@@ -19,9 +19,6 @@ namespace Network
     public class NetworkModel
     {
         #region Variables
-        [Tooltip("開発者ページをアンロックするためのパスワード")]
-        [SerializeField]
-        private string _developerPassword = "";
         [Tooltip("リクエストに失敗した時に再接続を行う回数")]
         [Range(0, 10)]
         [SerializeField]
@@ -90,17 +87,10 @@ namespace Network
 
         public void ReceiveRoomID(string id) => _roomID = id;
 
-        /// <summary> パスワードのマッチ確認 </summary>
-        /// <param name="enteredWord"> 入力された文字列 </param>
-        /// <returns> 入力がパスワードとマッチしているかどうか </returns>
-        public bool UnlockDevelopMode(string enteredWord) => _developerPassword == enteredWord;
-
         /// <summary> 接続先のURLを作成する </summary>
         /// <param name="address"> 接続対象のIPAddress </param>
         /// <param name="port"> ポート番号 </param>
         public string CreateConnectionURL(string address, string port) => $"http://{address}:{port}/";
-
-        public void SetActivate(GameObject target, bool activate) => target.SetActive(activate);
 
         /// <summary> リクエストに対する一連の処理が正常に流れた時に返す文字列 </summary>
         private const string Success = "Request Success";
@@ -140,6 +130,7 @@ namespace Network
                     await Task.Delay(1, token);
                 }
 
+                //送信結果の確認
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     Debug.LogError(request.error);

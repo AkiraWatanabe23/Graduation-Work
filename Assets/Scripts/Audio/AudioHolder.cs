@@ -49,4 +49,5 @@ public enum BGMType
 public enum SEType
 {
     None,
+    Click,
 }
