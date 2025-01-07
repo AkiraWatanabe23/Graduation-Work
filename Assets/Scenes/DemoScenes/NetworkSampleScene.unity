@@ -2483,7 +2483,6 @@ GameObject:
   - component: {fileID: 1808670317}
   - component: {fileID: 1808670316}
   - component: {fileID: 1808670315}
-  - component: {fileID: 1808670318}
   m_Layer: 5
   m_Name: JoinRoom
   m_TagString: Untagged
@@ -2605,19 +2604,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1808670313}
   m_CullTransparentMesh: 1
---- !u!114 &1808670318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1808670313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c487581a50b26864898cea63b315d0c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _requestType: 4
 --- !u!1 &1854870181
 GameObject:
   m_ObjectHideFlags: 0
@@ -3013,14 +2999,6 @@ PrefabInstance:
       propertyPath: _networkView
       value: 
       objectReference: {fileID: 410451531}
-    - target: {fileID: 201109229211074714, guid: 46b138c9a951a3646b0e7d4c60502282, type: 3}
-      propertyPath: _playersCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 201109229211074714, guid: 46b138c9a951a3646b0e7d4c60502282, type: 3}
-      propertyPath: _networkModel._developerPassword
-      value: subzawa
-      objectReference: {fileID: 0}
     - target: {fileID: 5113359566173214338, guid: 46b138c9a951a3646b0e7d4c60502282, type: 3}
       propertyPath: m_Name
       value: NetworkPresenter
@@ -3087,25 +3065,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 783443181}
     - target: {fileID: 4434310250791994687, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
-      propertyPath: _passwordField
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4434310250791994687, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
-      propertyPath: _passwordPanel
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4434310250791994687, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
       propertyPath: _developerPanel
       value: 
       objectReference: {fileID: 2009156748}
-    - target: {fileID: 4434310250791994687, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
-      propertyPath: _joinRequestButton
-      value: 
-      objectReference: {fileID: 1808670318}
-    - target: {fileID: 4434310250791994687, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
-      propertyPath: <PasswordPanel>k__BackingField
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4434310250791994687, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
       propertyPath: _ipAddressFields.Array.data[0]
       value: 

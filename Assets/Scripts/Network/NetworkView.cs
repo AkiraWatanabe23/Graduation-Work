@@ -9,8 +9,6 @@ namespace Network
         [SerializeField]
         private InputField _roomIDField = default;
         [SerializeField]
-        private RequestButton _joinRequestButton = default;
-        [SerializeField]
         private Button _applyButton = default;
 
         [Header("=== For Developer ===")]
@@ -27,7 +25,7 @@ namespace Network
             _applyButton.onClick.AddListener(() =>
             {
                 presenter.PassingRoomID(_roomIDField.text.Trim());
-                presenter.SendPutRequest(_joinRequestButton, _roomIDField.text);
+                presenter.SendPutRequest(RequestType.JoinRoom, _roomIDField.text.Trim());
             });
         }
 

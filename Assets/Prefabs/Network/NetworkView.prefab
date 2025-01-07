@@ -44,12 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ffab6c2b3cb04e4d8f9298372d3b300, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _roomIDField: {fileID: 0}
+  _applyButton: {fileID: 0}
   _developerPanel: {fileID: 0}
-  _passwordField: {fileID: 0}
   _ipAddressFields:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  _roomIDField: {fileID: 0}
-  _joinRequestButton: {fileID: 0}
-  _applyButton: {fileID: 0}
