@@ -5,11 +5,12 @@ namespace Network
 {
     public class NetworkView : MonoBehaviour
     {
-        [Header("=== Join Room ===")]
         [SerializeField]
         private InputField _roomIDField = default;
         [SerializeField]
         private Button _applyButton = default;
+        [SerializeField]
+        private Button _createRoomButton = default;
 
         [Header("=== For Developer ===")]
         [SerializeField]
@@ -26,6 +27,11 @@ namespace Network
             {
                 presenter.PassingRoomID(_roomIDField.text.Trim());
                 presenter.SendPutRequest(RequestType.JoinRoom, _roomIDField.text.Trim());
+            });
+
+            _createRoomButton.onClick.AddListener(() =>
+            {
+                presenter.SelfRequest(RequestType.CreateRoom);
             });
         }
 

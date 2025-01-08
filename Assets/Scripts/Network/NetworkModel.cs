@@ -41,10 +41,11 @@ namespace Network
         private CancellationTokenSource _cancellationTokenSource = default;
         /// <summary> 処理の実行時間を調べる </summary>
         private Stopwatch _stopWatch = default;
-
+        /// <summary> ルーム作成時に発行されるID </summary>
+        private string _roomID = "";
         /// <summary> 同時プレイ可能人数 </summary>
         private int _maxConnectableCount = 0;
-        private string _roomID = "";
+        /// <summary> 自分を含めたプレイヤーのList </summary>
         private List<string> _roomPlayers = default;
 
         private Random _random = default;
@@ -55,24 +56,14 @@ namespace Network
 
         /// <summary> 自分を含めた現在の接続数 </summary>
         protected int CurrentConnectionCount => _roomPlayers == null ? 0 : _roomPlayers.Count;
-
-        public string SelfIPAddress { get; private set; }
         #endregion
 
         public void Initialize(int maxConnectableCount)
         {
             _maxConnectableCount = maxConnectableCount;
-            SelfIPAddress = GetSelfIPAddress();
 
             _cancellationTokenSource = new();
             _stopWatch = new();
-        }
-
-        /// <summary> 自分のマシンのIPアドレスを取得する </summary>
-        private string GetSelfIPAddress()
-        {
-            string hostname = Dns.GetHostName();
-            return Dns.GetHostAddresses(hostname)[1].ToString();
         }
 
         /// <summary> 文字列がURLとして成立しているか </summary>
@@ -92,10 +83,10 @@ namespace Network
         /// <param name="port"> ポート番号 </param>
         public string CreateConnectionURL(string address, string port) => $"http://{address}:{port}/";
 
+        #region Data Send
         /// <summary> リクエストに対する一連の処理が正常に流れた時に返す文字列 </summary>
         private const string Success = "Request Success";
 
-        #region Data Send
         /// <summary> Postリクエストを送信する </summary>
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPostRequest(WWWForm form, string[] addresses, CancellationToken token = default)
@@ -115,7 +106,7 @@ namespace Network
                 var send = request.SendWebRequest();
                 while (!send.isDone)
                 {
-                    if (token.IsCancellationRequested) { break; }
+                    if (token.IsCancellationRequested || _runCount >= _rerunCount) { break; }
                     if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
                     {
                         if (_runCount < _rerunCount)
@@ -170,7 +161,8 @@ namespace Network
 
                 while (!send.isDone)
                 {
-                    if (token.IsCancellationRequested) { break; }
+                    Debug.Log("sending...");
+                    if (token.IsCancellationRequested || _runCount >= _rerunCount) { break; }
                     if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
                     {
                         if (_runCount < _rerunCount)
