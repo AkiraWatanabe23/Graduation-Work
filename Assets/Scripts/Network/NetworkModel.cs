@@ -236,6 +236,9 @@ namespace Network
             return message switch
             {
                 "JoinRoom" => await JoinRoom(requestData),
+                "ChangeMaterial" => await ChangeMaterial(requestData),
+                "SelectBlock" => await SelectBlock(requestData),
+                "PlaceBlock" => await PlaceBlock(requestData),
                 "RecalculateTowerState" => await RecalculateTowerState(requestData),
                 _ => ""
             };
@@ -391,6 +394,56 @@ namespace Network
 
             await Task.Yield();
             _roomPlayers?.Add(playerID);
+            Debug.Log($"PlayersCount : {_roomPlayers.Count}");
+            return Success;
+        }
+
+        private async Task<string> ChangeMaterial(string requestData)
+        {
+            var splitData = requestData.Split(',');
+            var playerID = splitData[0];
+            var id = int.Parse(splitData[1]);
+            var material = splitData[2];
+
+            //===============================================================================
+            //todo : ここで更新処理を行う
+            //
+            //_blocks[id].material = material; のようなイメージ
+            //===============================================================================
+
+            await Task.Yield();
+            return Success;
+        }
+
+        private async Task<string> SelectBlock(string requestData)
+        {
+            var splitData = requestData.Split(',');
+            var playerID = splitData[0];
+            var id = int.Parse(splitData[1]);
+            var material = splitData[2];
+
+            //===============================================================================
+            //todo : ここで更新処理を行う
+            //
+            //_currentTarget = _blocks[id]; のようなイメージ
+            //===============================================================================
+
+            await Task.Yield();
+            return Success;
+        }
+
+        private async Task<string> PlaceBlock(string requestData)
+        {
+            var splitData = requestData.Split(',');
+            var playerID = splitData[0];
+            var id = int.Parse(splitData[1]);
+            var material = splitData[2];
+
+            //===============================================================================
+            //todo : ここで更新処理を行う
+            //===============================================================================
+
+            await Task.Yield();
             return Success;
         }
 
@@ -422,6 +475,9 @@ namespace Network
         ExitRoom,
         //Put
         JoinRoom,
+        ChangeMaterial,
+        SelectBlock,
+        PlaceBlock,
         RecalculateTowerState,
     }
 }
