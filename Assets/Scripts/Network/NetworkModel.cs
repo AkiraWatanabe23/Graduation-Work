@@ -41,29 +41,33 @@ namespace Network
         private CancellationTokenSource _cancellationTokenSource = default;
         /// <summary> 処理の実行時間を調べる </summary>
         private Stopwatch _stopWatch = default;
-        /// <summary> ルーム作成時に発行されるID </summary>
-        private string _roomID = "";
-        /// <summary> 同時プレイ可能人数 </summary>
-        private int _maxConnectableCount = 0;
-        /// <summary> 自分を含めたプレイヤーのList </summary>
-        private List<string> _roomPlayers = default;
 
         private Random _random = default;
+
+        private Dictionary<string, Func<string, Task<string>>> _requestEvents = default;
+
+        private readonly InGameLogic _inGameLogic = new();
 
         private const int UserIDLength = 8;
         /// <summary> UserIDに使用される文字 </summary>
         private const string CharLine = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-        /// <summary> 自分を含めた現在の接続数 </summary>
-        protected int CurrentConnectionCount => _roomPlayers == null ? 0 : _roomPlayers.Count;
         #endregion
+
+        public void RegisterEvent(RequestType request, Func<string, Task<string>> func)
+        {
+            _requestEvents ??= new();
+            var message = request.ToString();
+            if (_requestEvents.ContainsKey(message)) { return; }
+
+            _requestEvents.Add(message, func);
+        }
 
         public void Initialize(int maxConnectableCount)
         {
-            _maxConnectableCount = maxConnectableCount;
-
             _cancellationTokenSource = new();
             _stopWatch = new();
+
+            _inGameLogic.Initialize(this, maxConnectableCount);
         }
 
         /// <summary> 文字列がURLとして成立しているか </summary>
@@ -76,7 +80,7 @@ namespace Network
             return false;
         }
 
-        public void ReceiveRoomID(string id) => _roomID = id;
+        public void ReceiveRoomID(string id) => _inGameLogic.ReceiveRoomID(id);
 
         /// <summary> 接続先のURLを作成する </summary>
         /// <param name="address"> 接続対象のIPAddress </param>
@@ -84,9 +88,6 @@ namespace Network
         public string CreateConnectionURL(string address, string port) => $"http://{address}:{port}/";
 
         #region Data Send
-        /// <summary> リクエストに対する一連の処理が正常に流れた時に返す文字列 </summary>
-        private const string Success = "Request Success";
-
         /// <summary> Postリクエストを送信する </summary>
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPostRequest(WWWForm form, string[] addresses, CancellationToken token = default)
@@ -96,7 +97,7 @@ namespace Network
             for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
-                _hostURL = CreateConnectionURL(addresses[i], _roomID);
+                _hostURL = CreateConnectionURL(addresses[i], _inGameLogic.RoomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
                 if (token == default) { token = _cancellationTokenSource.Token; }
@@ -150,7 +151,7 @@ namespace Network
             for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
-                _hostURL = CreateConnectionURL(addresses[i], _roomID);
+                _hostURL = CreateConnectionURL(addresses[i], _inGameLogic.RoomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
                 if (token == default) { token = _cancellationTokenSource.Token; }
@@ -205,6 +206,7 @@ namespace Network
         public async Task<string> ReceiveSelfRequest(string id, string requestMessage)
         {
             Debug.Log(requestMessage);
+
             return requestMessage switch
             {
                 "CreateRoom" => CreateRoom(id),
@@ -218,11 +220,8 @@ namespace Network
         public async Task<string> ReceivePostRequest(string id, string requestMessage)
         {
             Debug.Log($"{id} {requestMessage}");
-            return requestMessage switch
-            {
-                "ExitRoom" => await ExitRoom(id),
-                _ => ""
-            };
+
+            return await _requestEvents[requestMessage]?.Invoke(id);
         }
 
         /// <summary> ID以外のパラメータもキーにして何か処理を行う場合 </summary>
@@ -233,54 +232,10 @@ namespace Network
             var message = parse[1];
 
             Debug.Log($"Request : {message}");
-            return message switch
-            {
-                "JoinRoom" => await JoinRoom(requestData),
-                "ChangeMaterial" => await ChangeMaterial(requestData),
-                "SelectBlock" => await SelectBlock(requestData),
-                "PlaceBlock" => await PlaceBlock(requestData),
-                "RecalculateTowerState" => await RecalculateTowerState(requestData),
-                _ => ""
-            };
+
+            return await _requestEvents[message]?.Invoke(requestData);
         }
         #endregion
-
-        #region Self Request
-        /// <summary> ルームの新規作成 </summary>
-        /// <param name="hostID"> ルームのホストを担うプレイヤーのID </param>
-        /// <returns> 新規作成されたルームのID（他プレイヤーはこのIDをキーにしてルームを検索する） </returns>
-        private string CreateRoom(string hostID)
-        {
-            if (CurrentConnectionCount > 0) { return "Room is already exist."; }
-
-            _roomPlayers ??= new();
-
-            _roomPlayers.Add(hostID);
-            //ルームIDを新規発行する
-            _random ??= new();
-            _roomID = _random.Next(0, 10000).ToString("0000");
-
-            //ここでルームへの入室待機処理の開始を行う
-            string redirectURL = $"http://*:{_roomID}/";
-            Debug.Log(redirectURL);
-
-            _listener = new();
-            try
-            {
-                _listener.Prefixes.Add(redirectURL);
-                _listener.Start();
-                Debug.Log("Server started");
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError(exception.Message);
-                return exception.Message;
-            }
-            //同時アクセスに対応できるように複数スレッドで実行する
-            for (int i = 0; i < _maxConnectableCount - 1; i++) { AccessWaiting(); }
-
-            return _roomID;
-        }
 
         private void AccessWaiting()
         {
@@ -330,6 +285,40 @@ namespace Network
             });
         }
 
+        #region Self Request
+        /// <summary> ルームの新規作成 </summary>
+        /// <param name="hostID"> ルームのホストを担うプレイヤーのID </param>
+        /// <returns> 新規作成されたルームのID（他プレイヤーはこのIDをキーにしてルームを検索する） </returns>
+        private string CreateRoom(string hostID)
+        {
+            _inGameLogic.CreateRoom(hostID);
+
+            //ルームIDを新規発行する
+            _random ??= new();
+            _inGameLogic.ReceiveRoomID(_random.Next(0, 10000).ToString("0000"));
+
+            //ここでルームへの入室待機処理の開始を行う
+            string redirectURL = $"http://*:{_inGameLogic.RoomID}/";
+            Debug.Log(redirectURL);
+
+            _listener = new();
+            try
+            {
+                _listener.Prefixes.Add(redirectURL);
+                _listener.Start();
+                Debug.Log("Server started");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogError(exception.Message);
+                return exception.Message;
+            }
+            //同時アクセスに対応できるように複数スレッドで実行する
+            for (int i = 0; i < _inGameLogic.MaxConnectableCount - 1; i++) { AccessWaiting(); }
+
+            return _inGameLogic.RoomID;
+        }
+
         /// <summary> IDの新規生成 </summary>
         private async Task<string> GenerateID()
         {
@@ -353,113 +342,7 @@ namespace Network
 
             _cancellationTokenSource = new();
 
-            return Success;
-        }
-        #endregion
-
-        #region Post Request
-        /// <summary> ルームから退出する </summary>
-        /// <param name="id"> 退出するプレイヤーのID </param>
-        /// <returns> 退出処理が正常に行われたらSuccess </returns>
-        private async Task<string> ExitRoom(string id)
-        {
-            //渡されたIDのプレイヤーがルームに存在しない場合、失敗
-            if (!_roomPlayers.Contains(id)) { return $"You`re not exist in this room : {_roomID}"; }
-
-            _roomPlayers.Remove(id);
-
-            await Task.Yield();
-            return Success;
-        }
-        #endregion
-
-        #region Put Request
-        /// <summary> 作成済のルームに対する参加リクエスト </summary>
-        /// <param name="requestData"> ルーム参加に必要なデータ（PlayerID, RoomID） </param>
-        /// <returns> ルーム参加が正常に行われたらSuccess </returns>
-        private async Task<string> JoinRoom(string requestData)
-        {
-            var splitData = requestData.Split(',');
-            var playerID = splitData[0];
-            var roomID = splitData[1];
-
-            //現在プレイ中 or ルームIDが異なる or ルームが満員→ルーム参加失敗
-
-            //===============================================================================
-            //todo : if (_isPlaying) { return "Game Playing"; } 的な処理で返す
-            //===============================================================================
-
-            if (roomID != _roomID) { return $"RoomID is not correct. {roomID}"; }
-            else if (_roomPlayers.Count + 1 > _maxConnectableCount) { return "Room is full."; }
-
-            await Task.Yield();
-            _roomPlayers?.Add(playerID);
-            Debug.Log($"PlayersCount : {_roomPlayers.Count}");
-            return Success;
-        }
-
-        private async Task<string> ChangeMaterial(string requestData)
-        {
-            var splitData = requestData.Split(',');
-            var playerID = splitData[0];
-            var id = int.Parse(splitData[1]);
-            var material = splitData[2];
-
-            //===============================================================================
-            //todo : ここで更新処理を行う
-            //
-            //_blocks[id].material = material; のようなイメージ
-            //===============================================================================
-
-            await Task.Yield();
-            return Success;
-        }
-
-        private async Task<string> SelectBlock(string requestData)
-        {
-            var splitData = requestData.Split(',');
-            var playerID = splitData[0];
-            var id = int.Parse(splitData[1]);
-            var material = splitData[2];
-
-            //===============================================================================
-            //todo : ここで更新処理を行う
-            //
-            //_currentTarget = _blocks[id]; のようなイメージ
-            //===============================================================================
-
-            await Task.Yield();
-            return Success;
-        }
-
-        private async Task<string> PlaceBlock(string requestData)
-        {
-            var splitData = requestData.Split(',');
-            var playerID = splitData[0];
-            var id = int.Parse(splitData[1]);
-            var material = splitData[2];
-
-            //===============================================================================
-            //todo : ここで更新処理を行う
-            //===============================================================================
-
-            await Task.Yield();
-            return Success;
-        }
-
-        /// <summary> ブロックの更新、それに伴う倒壊率の再計算 </summary>
-        /// <param name="requestData"> 更新するデータ群 </param>
-        /// <returns> 処理が正常に行われたらSuccess </returns>
-        private async Task<string> RecalculateTowerState(string requestData)
-        {
-            var splitData = requestData.Split(',');
-
-            //===============================================================================
-            //todo : ここで更新処理、計算処理を行う
-            //===============================================================================
-
-            await Task.Yield();
-            return Success;
+            return "Suspend Success";
         }
         #endregion
     }
@@ -475,6 +358,7 @@ namespace Network
         ExitRoom,
         //Put
         JoinRoom,
+        ChangeTurn,
         ChangeMaterial,
         SelectBlock,
         PlaceBlock,
