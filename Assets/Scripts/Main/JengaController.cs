@@ -88,10 +88,10 @@ public class JengaController : MonoBehaviour
     private void Build(int targetId)
     {
         //ブロックの座標の変更先を更新する
-        if (_placeCount == 0) { _updatePos.x -= _itemsPerLevel / 2; }
-        else if (_placeCount < _itemsPerLevel) { _updatePos.x++; }
-        else if (_placeCount == _itemsPerLevel) { _updatePos.z -= _itemsPerLevel / 2; }
-        else if (_placeCount < _itemsPerLevel * 2) { _updatePos.z++; }
+        if (_placeCount == 0) _updatePos.x -= _itemsPerLevel / 2;
+        else if (_placeCount < _itemsPerLevel) _updatePos.x++;
+        else if (_placeCount == _itemsPerLevel) _updatePos.z -= _itemsPerLevel / 2;
+        else if (_placeCount < _itemsPerLevel * 2) _updatePos.z++;
 
         //ブロックを１段ごとに互い違いとなるよう、向きを 90°回転させる
         if (_placeCount % _itemsPerLevel == 0)
