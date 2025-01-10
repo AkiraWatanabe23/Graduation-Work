@@ -24,7 +24,7 @@ public class MaterialController
     private Dictionary<MaterialType, (int Weight, Material Material)> _materialDatasDict = default;
 
     /// <summary> 初期化処理 </summary>
-    public void Initialize()
+    public void Initialize(DataContainer container)
     {
         _materialDatasDict = new();
         foreach (var item in _materialDatas)

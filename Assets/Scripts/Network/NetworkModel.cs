@@ -46,7 +46,7 @@ namespace Network
 
         private Dictionary<string, Func<string, Task<string>>> _requestEvents = default;
 
-        private readonly InGameLogic _inGameLogic = new();
+        private readonly NetworkEvents _inGameLogic = new();
 
         private const int UserIDLength = 8;
         /// <summary> UserIDに使用される文字 </summary>

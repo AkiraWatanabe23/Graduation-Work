@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-public class InGameData
+public class NetworkEventData
 {
     private GameState _gameState = GameState.None;
 
@@ -16,7 +16,7 @@ public class InGameData
     /// <summary> 自分の番かどうか </summary>
     public bool IsPlayableTurn => _gameState == GameState.MyTurn;
 
-    public InGameData(int maxConnectableCount)
+    public NetworkEventData(int maxConnectableCount)
     {
         MaxConnectableCount = maxConnectableCount;
         RoomPlayers = new();

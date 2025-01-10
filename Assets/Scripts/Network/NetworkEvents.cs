@@ -1,10 +1,10 @@
 ﻿using Network;
 using System.Threading.Tasks;
-using UnityEngine;
+using Debug = Constants.ConsoleLogs;
 
-public class InGameLogic
+public class NetworkEvents
 {
-    private InGameData _inGameData = default;
+    private NetworkEventData _inGameData = default;
 
     public string RoomID => _inGameData.RoomID;
     public int MaxConnectableCount => _inGameData.MaxConnectableCount;
