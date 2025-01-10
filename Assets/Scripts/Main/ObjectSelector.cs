@@ -1,7 +1,11 @@
+﻿using System;
 using UnityEngine;
 
 public class ObjectSelector : MonoBehaviour
 {
+    /// <summary> 自分が動かすブロックが選択されたときに実行される </summary>
+    protected Action<BlockData> OnSelectBlock { get; private set; }
+
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private Color _gizmosColor = Color.white;
 
@@ -11,13 +15,11 @@ public class ObjectSelector : MonoBehaviour
     private const int MAX_RAYCAST_DISTANCE = 100;
     private bool _isGameFinish = false;
 
-    private void OnEnable()
+    public void Initialize(DataContainer container)
     {
-        DataContainer.Instance.GameFinishRegister(GameFinish);
-    }
+        container.GameFinishRegister(GameFinish);
+        OnSelectBlock = (data) => container.SelectedBlockId = data.BlockId;
 
-    private void Start()
-    {
         _mainCamera = Camera.main;
     }
 
@@ -30,14 +32,12 @@ public class ObjectSelector : MonoBehaviour
         if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE, _layerMask)) return;
         if (!_hitResult.collider.TryGetComponent(out BlockData data)) return;
 
-        DataContainer.Instance.SelectedBlockId = data.BlockId;
-        DataContainer.Instance.CollapseProbability = Random.Range(0f, 1f);
+        OnSelectBlock?.Invoke(data);
     }
 
     private void GameFinish()
     {
         _isGameFinish = true;
-        DataContainer.Instance.GameFinishUnregister(GameFinish);
     }
 
     private void OnDrawGizmos()
@@ -45,4 +45,6 @@ public class ObjectSelector : MonoBehaviour
         Gizmos.color = _gizmosColor;
         Gizmos.DrawRay(_ray.origin, _ray.direction * MAX_RAYCAST_DISTANCE);
     }
+
+    private void OnDestroy() => OnSelectBlock = null;
 }
