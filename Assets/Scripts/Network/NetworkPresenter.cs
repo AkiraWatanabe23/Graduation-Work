@@ -25,12 +25,7 @@ public class NetworkPresenter : MonoBehaviour
 
     public NetworkModel Model => _networkModel;
 
-    private void Start()
-    {
-        Initialize();
-    }
-
-    private void Initialize()
+    public void Initialize()
     {
         _networkModel.Initialize(_playersCount);
         SelfRequest(RequestType.GenerateID);

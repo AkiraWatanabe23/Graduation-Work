@@ -34,6 +34,8 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
     private void Start()
     {
         VantanConnect.RegisterEventReceiver(this);
+        _networkPresenter?.Initialize();
+
         Initialize();
     }
 
@@ -45,8 +47,8 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
         if (input != null) { input.Initialize(_dataContainer); }
 
         _jengaCtrl.Initialize(_dataContainer);
-        _turnCtrl.Initialize(_dataContainer, _networkPresenter.Model);
-        _matCtrl.Initialize(_dataContainer, _networkPresenter.Model);
+        _turnCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
+        _matCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
     }
 
     public void OnEventCall(EventData data)
