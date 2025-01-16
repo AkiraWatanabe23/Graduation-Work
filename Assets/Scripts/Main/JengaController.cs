@@ -4,14 +4,10 @@ using UnityEngine;
 [Serializable]
 public class JengaController
 {
+    public BlockData BlockPrefab => _blockPrefab;
+
     [SerializeField, Tooltip("生成するジェンガ")]
     private BlockData _blockPrefab = null;
-    [SerializeField, Tooltip("何段、ジェンガを生成するか")]
-    private int _floorLevel = 10;
-    [SerializeField, Tooltip("1段当たりのジェンガの個数")]
-    private int _itemsPerLevel = 3;
-    [SerializeField]
-    private MaterialController _mateCtrler = new MaterialController();
 
     private JengaLogic _logic = new();
     private DataContainer _container = null;
@@ -24,7 +20,7 @@ public class JengaController
         if (_blockPrefab == null) throw new NullReferenceException($"Prefab is not found");
 
         _blockParent = new GameObject("Block Parent");
-        _logic.Initialize(_floorLevel, _itemsPerLevel, in _blockPrefab, _blockParent.transform);
+        //_logic.Initialize(_floorLevel, _itemsPerLevel, in _blockPrefab, _blockParent.transform);
         _container = container;
 
     }
