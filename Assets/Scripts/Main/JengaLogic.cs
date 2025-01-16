@@ -3,13 +3,61 @@ using UnityEngine;
 
 public class JengaLogic
 {
+    /// <summary>IDをキーにしてブロックを保持する</summary>
+    public Dictionary<int, BlockData> Blocks => _blocks;
+
+    ///// <summary>IDをキーにしてブロックを保持する</summary>
+    private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
+    /// <summary>ブロックがどの位置にあるかを保持する</summary>
+    private List<int[]> _blockMapping = new List<int[]>();
+
+    /// <param name="floorLevel">ジェンガが何段あるか</param>
+    /// <param name="itemsPerLevel">1段当たりブロックはいくつか</param>
+    public void Initialize(int floorLevel, int itemsPerLevel, in BlockData blockPrefab, Transform blockParent = null)
+    {
+        _blockMapping.Add(null);    // 「添え字」と「ジェンガの高さ」を揃えるため、０番目にnullを追加する
+        int blockId = 1;
+        int height = 0;
+        int index = 0;
+
+        // blocksとblockMappingの初期化
+        for (int i = 0; i < floorLevel * itemsPerLevel; i++, blockId++)
+        {
+            index = i % itemsPerLevel;
+
+            if (index == 0)
+            {
+                _blockMapping.Add(new int[itemsPerLevel]);
+                height++;
+            }
+            
+            BlockData block = Object.Instantiate(blockPrefab, blockParent);
+            _blocks.Add(blockId, block);
+            _blockMapping[height][index] = blockId;
+
+            // blockの初期化
+            float stability = index switch
+            {
+                1 => 0.10f,
+                _ => 0.45f,
+            };
+            block.UpdateData(blockId, height, stability, index, 1);
+        }
+
+        foreach (var listItem in _blockMapping)
+        {
+            if (listItem == null) continue;
+            Debug.Log(string.Join(' ', listItem));
+        }
+    }
+
     /// <summary>ジェンガが崩れてもおかしくない状態かを判定する</summary>
-    public bool IsUnstable(List<int[]> blockMapping)
+    public bool IsUnstable()
     {
         bool isNotCenterExist = true;   // 検索する段に中央のブロックが存在するか
         int blockCounter = 0;           // 検索する段にブロックがいくつ残っているか
 
-        foreach (var listItem in blockMapping)
+        foreach (var listItem in _blockMapping)
         {
             if (listItem == null) continue;
 
@@ -36,34 +84,34 @@ public class JengaLogic
     }
 
     /// <summary>ブロックを引き抜いたとき、ジェンガが崩壊する確率を計算する</summary>
-    private float GetCollapseRisk(Dictionary<int, BlockData> blocks, List<int[]> blockMapping)
+    private float GetCollapseRisk()
     {
         float sumAllStability = 0f;
 
-        for (int i = 0; i < blockMapping.Count; i++)
+        for (int i = 0; i < _blockMapping.Count; i++)
         {
-            if (blockMapping[i] == null) continue;
+            if (_blockMapping[i] == null) continue;
 
             float cash = 0f;
 
-            for (int k = 0; k < blockMapping[i].Length; k++)
+            for (int k = 0; k < _blockMapping[i].Length; k++)
             {
-                int target = blockMapping[i][k];
+                int target = _blockMapping[i][k];
                 cash += target switch
                 {
                     0 => target,
-                    _ => blocks[target].Stability * blocks[target].Weight,
+                    _ => _blocks[target].Stability * _blocks[target].Weight,
                 };
             }
             sumAllStability += cash * (1.0f - 0.01f * i);
         }
-        return 1f - (sumAllStability / (blockMapping.Count - 1));
+        return 1f - (sumAllStability / (_blockMapping.Count - 1));
     }
 
     /// <summary>ジェンガを引き抜いたときに倒れる確率を引いたか判定する</summary>
-    public bool IsCollapse(Dictionary<int, BlockData> blocks, List<int[]> blockMapping, float collapseProb)
+    public bool IsCollapse(float collapseProb)
     {
-        float collapseRisk = GetCollapseRisk(blocks, blockMapping);
+        float collapseRisk = GetCollapseRisk();
         Debug.Log($"倒壊率は、{collapseRisk * 100}%！");
         return collapseProb <= collapseRisk;
     }
