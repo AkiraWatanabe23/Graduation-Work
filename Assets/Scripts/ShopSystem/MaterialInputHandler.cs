@@ -43,7 +43,7 @@ public class MaterialInputHandler : MonoBehaviour
         _supervisor.MatCtrl.ChangeMaterial(block, _currentTarget);
         MaterialApply();
 
-        _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial);
+        _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
     }
 
     private void MaterialApply()

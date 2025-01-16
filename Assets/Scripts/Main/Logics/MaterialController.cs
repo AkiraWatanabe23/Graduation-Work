@@ -54,7 +54,7 @@ public class MaterialController
     private async Task<string> ChangeMaterial(string requestData)
     {
         var splitData = requestData.Split(',');
-        var playerID = splitData[0];
+        _ = splitData[0];
         var id = int.Parse(splitData[1]);
         var material = splitData[2];
 
