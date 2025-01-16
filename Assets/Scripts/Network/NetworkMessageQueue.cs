@@ -16,7 +16,7 @@ namespace Network
         /// <summary> 溜めておける未送信、送信中のメッセージ数 </summary>
         private const int MaxStackCount = 5;
 
-        public (UnityWebRequest request, Timer counter) CurrentMessageQueue
+        public (UnityWebRequest request, Timer counter) CurrentMessage
         {
             get
             {
