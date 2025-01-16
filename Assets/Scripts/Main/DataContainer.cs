@@ -7,7 +7,7 @@ public class DataContainer
 {
     public int LoopCount => _loopCount;
     public int PlayerPoint => _playerPoint;
-    public Dictionary<int, BlockData> Blocks { get; set; } = new Dictionary<int, BlockData>();
+    public Dictionary<int, BlockData> Blocks { get; private set; } = new Dictionary<int, BlockData>();
     public int SelectedBlockId
     {
         get => _selectedBlockID;
@@ -39,6 +39,15 @@ public class DataContainer
 
     private Action _initialize = null;
     private Action _gameFinish = null;
+
+    public DataContainer(int floorLevel, int itemsPerLevel, BlockData blockPrefab)
+    {
+        for (int i = 1; i <= floorLevel * itemsPerLevel; i++)
+        {
+            BlockData block = UnityEngine.Object.Instantiate(blockPrefab);
+            Blocks.Add(i, block);
+        }
+    }
 
     #region Register Invoke Events
     public void InitializeRegister(params Action[] actions)
@@ -72,5 +81,5 @@ public class DataContainer
     }
     #endregion
 
-    public void NextTurn(int turn) => CurrentTurn++;
+    public void NextTurn() => CurrentTurn++;
 }
