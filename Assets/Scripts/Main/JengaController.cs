@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class JengaController
 {
     [SerializeField, Tooltip("生成するジェンガ")]
@@ -13,41 +13,37 @@ public class JengaController
     [SerializeField]
     private MaterialController _mateCtrler = new MaterialController();
 
-    /// <summary>IDをキーにしてジェンガブロックを保持する辞書型</summary>
-    private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
-    /// <summary>ジェンガブロックがどの位置にあるかを確認するチェックシート</summary>
-    private List<int[]> _blockMapping = new List<int[]>();
-
     private JengaLogic _logic = new();
 
-    private Vector3 _generatePos = Vector3.zero;
-    private Quaternion _generateRot = Quaternion.identity;
+    private Vector3 _destination = Vector3.zero;
+    private GameObject _blockParent = null;
 
-    private void Start()
+    public void Initialize()
     {
         if (_blockPrefab == null) throw new NullReferenceException($"Prefab is not found");
+
+        _blockParent = new GameObject("Block Parent");
+        _logic.Initialize(_floorLevel, _itemsPerLevel, in _blockPrefab, _blockParent.transform);
+
+
     }
 
-    private void Update()
+    public void Update()
     {
-        
+        if (_logic.IsUnstable()/* || _logic.IsCollapse()*/)
+        {
+            GameFinish();
+        }
     }
 
-    private void BuildUp()
+    private void Place(int blockId)
     {
-        int placeCount = 0;
-
-        Build(0, ref placeCount);
-    }
-
-    private void Build(int blockId, ref int placeCount)
-    {
-        
+        _logic.Blocks[blockId].transform.position = _destination;
     }
 
     private void GameFinish()
     {
-        foreach (var block in _blocks)
+        foreach (var block in _logic.Blocks)
         {
             Rigidbody blockRb = block.Value.gameObject.AddComponent<Rigidbody>();
         }
