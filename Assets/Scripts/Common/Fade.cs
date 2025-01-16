@@ -17,6 +17,8 @@ public class Fade : SingletonMonoBehaviour<Fade>
 
     protected override bool DontDestroyOnLoad => true;
 
+    public bool IsFading { get; private set; }
+
     /// <summary> フェードイン開始 </summary>
     public Fade StartFadeIn()
     {
@@ -40,6 +42,7 @@ public class Fade : SingletonMonoBehaviour<Fade>
 
     private IEnumerator FadeIn()
     {
+        IsFading = true;
         _fadePanel.gameObject.SetActive(true);
 
         //α値（透明度）を 1 → 0 にする（少しずつ明るくする）
@@ -64,10 +67,12 @@ public class Fade : SingletonMonoBehaviour<Fade>
             foreach (var action in _onComplete) { action?.Invoke(); }
         }
         _onComplete = null;
+        IsFading = false;
     }
 
     private IEnumerator FadeOut()
     {
+        IsFading = true;
         _fadePanel.gameObject.SetActive(true);
 
         //α値（透明度）を 0 → 1 にする（少しずつ暗くする）
@@ -90,5 +95,6 @@ public class Fade : SingletonMonoBehaviour<Fade>
             foreach (var action in _onComplete) { action?.Invoke(); }
         }
         _onComplete = null;
+        IsFading = false;
     }
 }

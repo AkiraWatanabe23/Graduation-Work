@@ -39,6 +39,7 @@ public class DataContainer
     private Action _initialize = null;
     private Action _gameFinish = null;
 
+    #region Register Invoke Events
     public void InitializeRegister(params Action[] actions)
     {
         foreach (var action in actions)
@@ -68,4 +69,7 @@ public class DataContainer
         _gameFinish.Invoke();
         _gameFinish = null;
     }
+    #endregion
+
+    public void NextTurn(int turn) => CurrentTurn++;
 }
