@@ -1,150 +1,48 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JengaController : MonoBehaviour
+public class JengaController
 {
-    [SerializeField, Tooltip("生成するジェンガ")]
+    [SerializeField, Tooltip("��������W�F���K")]
     private BlockData _blockPrefab = null;
-    [SerializeField, Tooltip("何段、ジェンガを生成するか")]
+    [SerializeField, Tooltip("���i�A�W�F���K�𐶐����邩")]
     private int _floorLevel = 10;
-    [SerializeField, Tooltip("1段当たりのジェンガの個数")]
+    [SerializeField, Tooltip("1�i������̃W�F���K�̌�")]
     private int _itemsPerLevel = 3;
     [SerializeField]
     private MaterialController _mateCtrler = new MaterialController();
 
+    /// <summary>ID���L�[�ɂ��ăW�F���K�u���b�N��ێ����鎫���^</summary>
+    private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
+    /// <summary>�W�F���K�u���b�N���ǂ̈ʒu�ɂ��邩���m�F����`�F�b�N�V�[�g</summary>
+    private List<int[]> _blockMapping = new List<int[]>();
+
     private JengaLogic _logic = new();
 
-    private Vector3 _updatePos = Vector3.zero;
-    private Quaternion _updateRot = Quaternion.identity;
-    private int _blockIndexCounter = 0;
-    private int _placeCount = 0;
-
-    /// <summary>IDをキーにしてジェンガブロックを保持する辞書型</summary>
-    private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
-    /// <summary>ジェンガブロックがどの位置にあるかを確認するチェックシート</summary>
-    private List<int[]> _blockExistsChecker = new List<int[]>();
-
-    private void OnEnable()
-    {
-        DataContainer.Instance.GameFinishRegister(GameFinish);
-    }
+    private Vector3 _generatePos = Vector3.zero;
+    private Quaternion _generateRot = Quaternion.identity;
 
     private void Start()
     {
         if (_blockPrefab == null) throw new NullReferenceException($"Prefab is not found");
-
-        BuildUp();
-        InitBlockExistsChecker();
-        _mateCtrler.Initialize();
     }
 
     private void Update()
     {
-        if (_logic.IsNewBlockSelected(out int targetId))
-        {
-            Build(targetId);
-            ExpandBlockExistsChecker(targetId);
-
-            if (_logic.IsUnstable() 
-                || _logic.IsCollapse())
-            {
-                DataContainer.Instance.GameFinishInvoke();
-            }
-        }
+        
     }
 
-    private void BlockData(int targetId)
-    {
-        int oldHeight = _blocks[targetId].Height;
-        (int Height, int AssignedIndex) newDest = default /*変更予定*/;
-
-        int tmp = _blockExistsChecker[oldHeight][_blocks[targetId].AssignedIndex];
-        _blockExistsChecker[oldHeight][_blocks[targetId].AssignedIndex] = 0;
-        _blockExistsChecker[newDest.Height][newDest.AssignedIndex] = tmp;
-
-        _blocks[targetId].Height = newDest.Height;
-        _blocks[targetId].AssignedIndex = newDest.AssignedIndex;
-    }
-
-    /// <summary>ジェンガを指定された階層の分だけ組み立てる</summary>
     private void BuildUp()
     {
-        BlockData block = null;
-        GameObject blockParent = new GameObject("Blocks");
+        int placeCount = 0;
 
-        for (int i = 1; i <= _floorLevel * _itemsPerLevel; i++)
-        {
-            block = Instantiate(_blockPrefab, blockParent.transform);
-            block.BlockId = i;
-            block.AssignedIndex = AssignedIndexCounter();
-            _blocks.Add(i, block);
-            Build(i);
-        }
+        Build(0, ref placeCount);
     }
 
-    /// <summary>ジェンガを配置する</summary>
-    /// <param name="target">配置する対象のブロック</param>
-    private void Build(int targetId)
+    private void Build(int blockId, ref int placeCount)
     {
-        //ブロックの座標の変更先を更新する
-        if (_placeCount == 0) _updatePos.x -= _itemsPerLevel / 2;
-        else if (_placeCount < _itemsPerLevel) _updatePos.x++;
-        else if (_placeCount == _itemsPerLevel) _updatePos.z -= _itemsPerLevel / 2;
-        else if (_placeCount < _itemsPerLevel * 2) _updatePos.z++;
-
-        //ブロックを１段ごとに互い違いとなるよう、向きを 90°回転させる
-        if (_placeCount % _itemsPerLevel == 0)
-            _updateRot = Quaternion.AngleAxis(90.0f * _updatePos.y, Vector3.up);
-
-        //ブロックの座標・回転を更新
-        _blocks[targetId].transform.position = _updatePos;
-        _blocks[targetId].transform.rotation = _updateRot;
-        _placeCount++;
-
-        if (_placeCount % _itemsPerLevel == 0) _updatePos.Set(0.0f, ++_updatePos.y, 0.0f);
-        if (_placeCount % (_itemsPerLevel * 2) == 0) _placeCount = 0;
-    }
-
-    /// <summary>ジェンガブロックがどこにあるかを記録するチェックシートの初期化</summary>
-    private void InitBlockExistsChecker()
-    {
-        for (int i = 0, blockId = 0; i <= _floorLevel; i++)
-        {
-            int[] blockCheckItem = null;
-
-            if (0 < i)
-            {
-                blockCheckItem = new int[_itemsPerLevel];
-
-                for (int k = 0; k < _itemsPerLevel; k++)
-                {
-                    blockCheckItem[k] = ++blockId;
-                }
-            }
-            _blockExistsChecker.Add(blockCheckItem);
-        }
-    }
-
-    /// <summary></summary>
-    /// <param name="targetId">対象のジェンガブロックのID</param>
-    private void ExpandBlockExistsChecker(int targetId)
-    {
-        if (_blockExistsChecker.Count > _blocks[targetId].Height) return;
-
-        int[] blockCheckItem = new int[_itemsPerLevel];
-        Array.Fill(blockCheckItem, 0);
-        _blockExistsChecker.Add(blockCheckItem);
-    }
-
-    /// <summary>ブロックに与える添え字をカウントする</summary>
-    private int AssignedIndexCounter()
-    {
-        if (_blockIndexCounter % _itemsPerLevel == 0)
-        {
-            _blockIndexCounter = 0;
-        }
-        return _blockIndexCounter++;
+        
     }
 
     private void GameFinish()
@@ -153,8 +51,6 @@ public class JengaController : MonoBehaviour
         {
             Rigidbody blockRb = block.Value.gameObject.AddComponent<Rigidbody>();
         }
-        Debug.Log("BREAK！");
-
-        DataContainer.Instance.GameFinishUnregister(GameFinish);
+        Debug.Log("BREAK�I");
     }
 }
