@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 /// <summary> ゲーム全体に関与するデータを保持するクラス </summary>
@@ -6,7 +7,7 @@ public class DataContainer
 {
     public int LoopCount => _loopCount;
     public int PlayerPoint => _playerPoint;
-
+    public Dictionary<int, BlockData> Blocks { get; set; } = new Dictionary<int, BlockData>();
     public int SelectedBlockId
     {
         get => _selectedBlockID;
