@@ -35,14 +35,14 @@ public class AudioManager
     {
         get
         {
-            if (_instance == null) { Init(); }
+            if (_instance == null) { Initialize(); }
 
             return _instance;
         }
     }
 
     /// <summary> AudioManagerの初期化処理 </summary>
-    private static void Init()
+    private static void Initialize()
     {
         _audioObject = new GameObject("AudioManager");
         _instance = new();
