@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Network;
+using System;
+using System.Threading.Tasks;
 
 public class GameTurnController
 {
@@ -11,9 +13,11 @@ public class GameTurnController
     public bool IsPlayableTurn => _gameState == GameState.MyTurn;
 
     /// <summary> 初期化処理 </summary>
-    public void Initialize(DataContainer container)
+    public void Initialize(DataContainer container, NetworkModel model)
     {
         OnNextTurn = (count) => container.NextTurn(count);
+
+        model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
     }
 
     public void ChangeState(GameState next)
@@ -21,6 +25,12 @@ public class GameTurnController
         if (_gameState == next) { return; }
 
         _gameState = next;
+    }
+
+    private async Task<string> ChangeTurn(string key)
+    {
+        await Task.Yield();
+        return "";
     }
 }
 
