@@ -4,6 +4,11 @@ using VTNConnect;
 /// <summary> インゲームの各場面でのロジックを統括するクラス </summary>
 public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
 {
+    [SerializeField, Tooltip("何段、ジェンガを生成するか")]
+    private int _floorLevel = 10;
+    [SerializeField, Tooltip("1段当たりのジェンガの個数")]
+    private int _itemsPerLevel = 3;
+
     [SerializeField]
     private NetworkPresenter _networkPresenter = default;
 
@@ -34,7 +39,7 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
 
     private void Initialize()
     {
-        _dataContainer = new();
+        _dataContainer = new(_floorLevel, _itemsPerLevel, _jengaCtrl.BlockPrefab);
 
         var input = FindObjectOfType<ObjectSelector>();
         if (input != null) { input.Initialize(_dataContainer); }
