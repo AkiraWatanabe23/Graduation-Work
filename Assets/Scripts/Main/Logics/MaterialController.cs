@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Network;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Debug = Constants.ConsoleLogs;
 
@@ -21,16 +23,21 @@ public class MaterialController
     [SerializeField]
     private MaterialData[] _materialDatas = default;
 
+    private Dictionary<int, BlockData> _blockDict = default;
     private Dictionary<MaterialType, (int Weight, Material Material)> _materialDatasDict = default;
 
     /// <summary> 初期化処理 </summary>
-    public void Initialize(DataContainer container)
+    public void Initialize(DataContainer container, NetworkModel model)
     {
+        _blockDict = container.Blocks;
+
         _materialDatasDict = new();
         foreach (var item in _materialDatas)
         {
             _materialDatasDict.Add(item.MaterialType, (item.Weight, item.Material));
         }
+
+        model.RegisterEvent(RequestType.ChangeMaterial, ChangeMaterial);
     }
 
     /// <summary> ブロックの材質変化を行う </summary>
@@ -42,6 +49,19 @@ public class MaterialController
 
         Debug.Log($"Target Weight : {target.Weight} → {_materialDatasDict[next].Weight}");
         target.ChangeMaterial(_materialDatasDict[next]);
+    }
+
+    private async Task<string> ChangeMaterial(string requestData)
+    {
+        var splitData = requestData.Split(',');
+        var playerID = splitData[0];
+        var id = int.Parse(splitData[1]);
+        var material = splitData[2];
+
+        ChangeMaterial(_blockDict[id], (MaterialType)Enum.Parse(typeof(MaterialType), material));
+
+        await Task.Yield();
+        return "Request Success";
     }
 }
 

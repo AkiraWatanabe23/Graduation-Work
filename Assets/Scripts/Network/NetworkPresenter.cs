@@ -23,6 +23,8 @@ public class NetworkPresenter : MonoBehaviour
 
     private string[] _otherPlayersIPAddress = default;
 
+    public NetworkModel Model => _networkModel;
+
     private void Start()
     {
         Initialize();
@@ -39,6 +41,8 @@ public class NetworkPresenter : MonoBehaviour
     /// <summary> 各プレイヤーのIPAddressを取得する </summary>
     private void SetPlayersIPAddress()
     {
+        if (_otherPlayersIPAddress != null) { return; }
+
         _otherPlayersIPAddress = new string[_playersCount - 1];
         for (int i = 0; i < _otherPlayersIPAddress.Length; i++)
         {
