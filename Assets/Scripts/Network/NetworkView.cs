@@ -23,10 +23,13 @@ namespace Network
 
         public void Initialize(NetworkPresenter presenter)
         {
-            _applyButton.onClick.AddListener(() =>
+            _applyButton.onClick.AddListener(async () =>
             {
-                presenter.PassingRoomID(_roomIDField.text.Trim());
-                presenter.SendPutRequest(RequestType.JoinRoom, _roomIDField.text.Trim());
+                var result = await presenter.SendPutRequest(RequestType.JoinRoom, _roomIDField.text.Trim());
+                if (int.TryParse(result, out int value))
+                {
+                    //todo : ここで受け取った値をユーザーの手順とする
+                }
             });
 
             _createRoomButton.onClick.AddListener(() =>

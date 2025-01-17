@@ -18,6 +18,8 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
     private GameTurnController _turnCtrl = new();
     [SerializeField]
     private MaterialController _matCtrl = new();
+    [SerializeField]
+    private RoomController _roomCtrl = new();
 
     private DataContainer _dataContainer = default;
 
@@ -44,11 +46,17 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
         _dataContainer = new(_floorLevel, _itemsPerLevel, _jengaCtrl.BlockPrefab);
 
         var input = FindObjectOfType<ObjectSelector>();
-        if (input != null) { input.Initialize(_dataContainer); }
+        if (input != null) { input.Initialize(_dataContainer, _networkPresenter); }
 
         _jengaCtrl.Initialize(_dataContainer);
         _turnCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
         _matCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
+        _roomCtrl.Initialize(_networkPresenter?.Model);
+    }
+
+    private void Update()
+    {
+        _jengaCtrl.Update();
     }
 
     public void OnEventCall(EventData data)

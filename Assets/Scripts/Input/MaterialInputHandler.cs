@@ -28,7 +28,7 @@ public class MaterialInputHandler : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) { OnSelectBlock(); }
     }
 
-    private void OnSelectBlock()
+    private async void OnSelectBlock()
     {
         //変更対象がない場合、処理を実行しない
         if (_currentTarget == MaterialType.None) { return; }
@@ -50,16 +50,18 @@ public class MaterialInputHandler : MonoBehaviour
         if (_supervisor.MatCtrl.ChangeMaterial(block, _currentTarget))
         {
             OnChangeMaterial?.Invoke(_currentTarget);
-            _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
+            await _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
         }
         MaterialApply();
     }
 
+    /// <summary> 材質変更後に実行する </summary>
     private void MaterialApply()
     {
         _currentTarget = MaterialType.None;
     }
 
+    /// <summary> 変更対象の材質を設定する </summary>
     public void TargetSetting(MaterialType target)
     {
         if (_currentTarget != MaterialType.None)

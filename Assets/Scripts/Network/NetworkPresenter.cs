@@ -1,5 +1,5 @@
 ﻿using Network;
-using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using Debug = Constants.ConsoleLogs;
 using NetworkView = Network.NetworkView;
@@ -8,18 +8,8 @@ public class NetworkPresenter : MonoBehaviour
 {
     [SerializeField]
     private NetworkView _networkView = default;
-
-    [ReadOnly]
-    [SerializeField]
-    private string _playerID = "";
     [SerializeField]
     private NetworkModel _networkModel = new();
-
-    [Header("Model`s Parameter")]
-    [Range(2, 10)]
-    [Tooltip("同時プレイ可能人数")]
-    [SerializeField]
-    private int _playersCount = 2;
 
     private string[] _otherPlayersIPAddress = default;
 
@@ -27,8 +17,7 @@ public class NetworkPresenter : MonoBehaviour
 
     public void Initialize()
     {
-        _networkModel.Initialize(_playersCount);
-        SelfRequest(RequestType.GenerateID);
+        _networkModel.Initialize();
 
         _networkView.Initialize(this);
     }
@@ -38,7 +27,7 @@ public class NetworkPresenter : MonoBehaviour
     {
         if (_otherPlayersIPAddress != null) { return; }
 
-        _otherPlayersIPAddress = new string[_playersCount - 1];
+        _otherPlayersIPAddress = new string[3];
         for (int i = 0; i < _otherPlayersIPAddress.Length; i++)
         {
             _otherPlayersIPAddress[i] = _networkView.IPAddressFields[i].text.Trim();
@@ -47,39 +36,35 @@ public class NetworkPresenter : MonoBehaviour
 
     public async void SelfRequest(RequestType requestType)
     {
-        var requestResult = await _networkModel.ReceiveSelfRequest(_playerID, requestType.ToString());
-        if (_playerID == "")
-        {
-            _playerID = requestResult;
-            Debug.Log($"PlayerIDが発行されました : {_playerID}");
-        }
+        var requestResult = await _networkModel.ReceiveSelfRequest(requestType.ToString());
     }
 
-    public async void SendPostRequest(RequestType requestType)
+    public async Task<string> SendPostRequest(RequestType requestType)
     {
         //「誰が」「何をしたいか」を送信する
         var form = new WWWForm();
-        form.AddField("UserID", _playerID);
         form.AddField("RequestMessage", requestType.ToString());
 
         SetPlayersIPAddress();
         var requestResult = await _networkModel.SendPostRequest(form, _otherPlayersIPAddress);
         Debug.Log(requestResult);
+
+        return requestResult;
     }
 
-    public async void SendPutRequest(RequestType requestType, params string[] parameters)
+    public async Task<string> SendPutRequest(RequestType requestType, params string[] parameters)
     {
         SetPlayersIPAddress();
         var requestResult
             = await _networkModel.SendPutRequest(
-                $"{_playerID},{string.Join(",", parameters)}", requestType.ToString(), _otherPlayersIPAddress);
+                $"{string.Join(",", parameters)}", requestType.ToString(), _otherPlayersIPAddress);
         Debug.Log(requestResult);
+
+        return requestResult;
     }
 
     public void DevelopmentPasswordApply()
     {
         _networkView.SetActivate(_networkView.DeveloperPanel, true);
     }
-
-    public void PassingRoomID(string id) => _networkModel.ReceiveRoomID(id);
 }
