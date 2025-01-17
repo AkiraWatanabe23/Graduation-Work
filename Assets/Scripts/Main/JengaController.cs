@@ -17,17 +17,14 @@ public class JengaController
 
     public void Initialize(DataContainer container)
     {
-        if (_blockPrefab == null) throw new NullReferenceException($"Prefab is not found");
-
         _blockParent = new GameObject("Block Parent");
-        //_logic.Initialize(_floorLevel, _itemsPerLevel, in _blockPrefab, _blockParent.transform);
+        _logic.Initialize(container, _blockParent.transform);
         _container = container;
-
     }
 
     public void Update()
     {
-        if (_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability))
+        if (_logic.IsUnstable() || _logic.IsCollapse(_container.Blocks, _container.CollapseProbability))
         {
             GameFinish();
         }
