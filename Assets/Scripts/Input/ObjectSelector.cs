@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Network;
+using System;
 using UnityEngine;
 
 public class ObjectSelector : MonoBehaviour
@@ -15,10 +16,15 @@ public class ObjectSelector : MonoBehaviour
     private const int MAX_RAYCAST_DISTANCE = 100;
     private bool _isGameFinish = false;
 
-    public void Initialize(DataContainer container)
+    public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
         container.GameFinishRegister(GameFinish);
-        OnSelectBlock = (data) => container.SelectedBlockId = data.BlockId;
+        OnSelectBlock = async (data) =>
+        {
+            container.SelectedBlockId = data.BlockId;
+            //todo : どのブロックが選択されたかを他ユーザーに伝える処理
+            await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+        };
 
         _mainCamera = Camera.main;
     }

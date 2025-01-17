@@ -4,27 +4,25 @@ using System.Threading.Tasks;
 
 public class GameTurnController
 {
-    private GameState _gameState = GameState.None;
+    private int _playTurnIndex = 0;
+    private bool _isPlayableTurn = false;
 
     protected Action OnNextTurn { get; private set; }
 
-    public GameState GameState => _gameState;
     /// <summary> 自分の番かどうか </summary>
-    public bool IsPlayableTurn => _gameState == GameState.MyTurn;
+    public bool IsPlayableTurn => _isPlayableTurn;
 
     /// <summary> 初期化処理 </summary>
     public void Initialize(DataContainer container, NetworkModel model)
     {
-        OnNextTurn = () => container.NextTurn();
+        OnNextTurn = () =>
+        {
+            container.NextTurn();
+            //自分の番が回ってきたかの判定
+            _isPlayableTurn = container.CurrentTurn % 3 == _playTurnIndex;
+        };
 
         model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
-    }
-
-    public void ChangeState(GameState next)
-    {
-        if (_gameState == next) { return; }
-
-        _gameState = next;
     }
 
     private async Task<string> ChangeTurn(string _)
@@ -34,12 +32,4 @@ public class GameTurnController
         await Task.Yield();
         return "Request Success";
     }
-}
-
-public enum GameState
-{
-    None,
-    Title,
-    MyTurn,
-    OthersTurn
 }

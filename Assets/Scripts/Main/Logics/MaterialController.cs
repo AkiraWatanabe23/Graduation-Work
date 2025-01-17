@@ -57,9 +57,8 @@ public class MaterialController
     private async Task<string> ChangeMaterial(string requestData)
     {
         var splitData = requestData.Split(',');
-        _ = splitData[0];
-        var id = int.Parse(splitData[1]);
-        var material = splitData[2];
+        var id = int.Parse(splitData[0]);
+        var material = splitData[1];
 
         _ = ChangeMaterial(_blockDict[id], (MaterialType)Enum.Parse(typeof(MaterialType), material));
 

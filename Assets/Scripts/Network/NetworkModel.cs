@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -11,7 +10,6 @@ using System.Web;
 using UnityEngine;
 using UnityEngine.Networking;
 using Debug = Constants.ConsoleLogs;
-using Random = System.Random;
 
 namespace Network
 {
@@ -42,15 +40,9 @@ namespace Network
         /// <summary> 処理の実行時間を調べる </summary>
         private Stopwatch _stopWatch = default;
 
-        private Random _random = default;
-
         private Dictionary<string, Func<string, Task<string>>> _requestEvents = default;
 
-        private readonly NetworkEvents _inGameLogic = new();
-
-        private const int UserIDLength = 8;
-        /// <summary> UserIDに使用される文字 </summary>
-        private const string CharLine = "abcdefghijklmnopqrstuvwxyz0123456789";
+        private string _roomID = "";
         #endregion
 
         public void RegisterEvent(RequestType request, Func<string, Task<string>> func)
@@ -62,12 +54,10 @@ namespace Network
             _requestEvents.Add(message, func);
         }
 
-        public void Initialize(int maxConnectableCount)
+        public void Initialize()
         {
             _cancellationTokenSource = new();
             _stopWatch = new();
-
-            _inGameLogic.Initialize(this, maxConnectableCount);
         }
 
         /// <summary> 文字列がURLとして成立しているか </summary>
@@ -79,8 +69,6 @@ namespace Network
             }
             return false;
         }
-
-        public void ReceiveRoomID(string id) => _inGameLogic.ReceiveRoomID(id);
 
         /// <summary> 接続先のURLを作成する </summary>
         /// <param name="address"> 接続対象のIPAddress </param>
@@ -97,7 +85,7 @@ namespace Network
             for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
-                _hostURL = CreateConnectionURL(addresses[i], _inGameLogic.RoomID);
+                _hostURL = CreateConnectionURL(addresses[i], _roomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
                 if (token == default) { token = _cancellationTokenSource.Token; }
@@ -151,7 +139,7 @@ namespace Network
             for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
-                _hostURL = CreateConnectionURL(addresses[i], _inGameLogic.RoomID);
+                _hostURL = CreateConnectionURL(addresses[i], _roomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
                 if (token == default) { token = _cancellationTokenSource.Token; }
@@ -200,20 +188,40 @@ namespace Network
 
         #region Data Recipient
         /// <summary> 通信を介さない自己完結のリクエスト処理 </summary>
-        /// <param name="id"> 自分のID </param>
         /// <param name="requestMessage"> リクエスト内容 </param>
         /// <returns> リクエストに応じた処理結果 </returns>
-        public async Task<string> ReceiveSelfRequest(string id, string requestMessage)
+        public async Task<string> ReceiveSelfRequest(string requestMessage)
         {
             Debug.Log(requestMessage);
 
-            return requestMessage switch
+            var result = await _requestEvents[requestMessage]?.Invoke("");
+            switch (requestMessage)
             {
-                "CreateRoom" => CreateRoom(id),
-                "GenerateID" => await GenerateID(),
-                "RequestSuspended" => RequestSuspended(),
-                _ => ""
-            };
+                case "CreateRoom":
+                    //ここでルームへの入室待機処理の開始を行う
+                    _roomID = result;
+
+                    string redirectURL = $"http://*:{_roomID}/";
+                    Debug.Log(redirectURL);
+
+                    _listener = new();
+                    try
+                    {
+                        _listener.Prefixes.Add(redirectURL);
+                        _listener.Start();
+                        Debug.Log("Server started");
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogError(exception.Message);
+                        return exception.Message;
+                    }
+                    //同時アクセスに対応できるように複数スレッドで実行する
+                    for (int i = 0; i < 2; i++) { AccessWaiting(); }
+                    break;
+            }
+
+            return result;
         }
 
         /// <summary> IDのみをキーにして何か処理を行う場合 </summary>
@@ -285,54 +293,6 @@ namespace Network
             });
         }
 
-        #region Self Request
-        /// <summary> ルームの新規作成 </summary>
-        /// <param name="hostID"> ルームのホストを担うプレイヤーのID </param>
-        /// <returns> 新規作成されたルームのID（他プレイヤーはこのIDをキーにしてルームを検索する） </returns>
-        private string CreateRoom(string hostID)
-        {
-            _inGameLogic.CreateRoom(hostID);
-
-            //ルームIDを新規発行する
-            _random ??= new();
-            _inGameLogic.ReceiveRoomID(_random.Next(0, 10000).ToString("0000"));
-
-            //ここでルームへの入室待機処理の開始を行う
-            string redirectURL = $"http://*:{_inGameLogic.RoomID}/";
-            Debug.Log(redirectURL);
-
-            _listener = new();
-            try
-            {
-                _listener.Prefixes.Add(redirectURL);
-                _listener.Start();
-                Debug.Log("Server started");
-            }
-            catch (Exception exception)
-            {
-                Debug.LogError(exception.Message);
-                return exception.Message;
-            }
-            //同時アクセスに対応できるように複数スレッドで実行する
-            for (int i = 0; i < _inGameLogic.MaxConnectableCount - 1; i++) { AccessWaiting(); }
-
-            return _inGameLogic.RoomID;
-        }
-
-        /// <summary> IDの新規生成 </summary>
-        private async Task<string> GenerateID()
-        {
-            _random ??= new();
-            string newID = "";
-            await Task.Run(() =>
-            {
-                newID = new string(Enumerable.Repeat(CharLine, UserIDLength)
-                                    .Select(selected => selected[_random.Next(selected.Length)])
-                                    .ToArray());
-            });
-            return newID;
-        }
-
         /// <summary> 実行中のリクエスト処理を中断する </summary>
         private string RequestSuspended()
         {
@@ -344,7 +304,6 @@ namespace Network
 
             return "Suspend Success";
         }
-        #endregion
     }
 
     public enum RequestType
@@ -352,7 +311,6 @@ namespace Network
         None,
         //Self
         CreateRoom,
-        GenerateID,
         RequestSuspended,
         //Post
         ExitRoom,
