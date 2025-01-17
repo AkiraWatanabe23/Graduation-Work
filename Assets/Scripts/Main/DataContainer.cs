@@ -9,6 +9,7 @@ public class DataContainer
     public int PlayerPoint => _playerPoint;
     public int ItemsPerLevel { get; private set; } = -1;
     public Dictionary<int, BlockData> Blocks { get; private set; } = new Dictionary<int, BlockData>();
+    public List<int[]> BlockMapping { get; private set; } = new List<int[]>();
     public int SelectedBlockId
     {
         get => _selectedBlockID;
@@ -20,7 +21,7 @@ public class DataContainer
     }
     public float CollapseProbability { get; private set; } = 1.0f;
 
-    protected int CurrentTurn
+    public int CurrentTurn
     {
         get => _currentTurnCount;
         private set
@@ -44,11 +45,14 @@ public class DataContainer
     public DataContainer(int floorLevel, int itemsPerLevel, BlockData blockPrefab)
     {
         ItemsPerLevel = itemsPerLevel;
+        BlockMapping.Add(null);    // 「添え字」と「ブロックの高さ」を揃えるため、０番目にnullを追加する
 
-        for (int i = 1; i <= floorLevel * itemsPerLevel; i++)
+        for (int i = 0, blockId = 1; i < floorLevel * itemsPerLevel; i++, blockId++)
         {
+            if (i % itemsPerLevel == 0) BlockMapping.Add(new int[itemsPerLevel]);
+
             BlockData block = UnityEngine.Object.Instantiate(blockPrefab);
-            Blocks.Add(i, block);
+            Blocks.Add(blockId, block);
         }
     }
 

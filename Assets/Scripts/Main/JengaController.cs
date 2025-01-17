@@ -1,5 +1,5 @@
-﻿using System;
-using Unity.VisualScripting;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
 
 [Serializable]
@@ -25,9 +25,15 @@ public class JengaController
 
     public void Update()
     {
-        if (_logic.IsUnstable() || _logic.IsCollapse(_container.Blocks, _container.CollapseProbability))
+        if (_container.Blocks.ContainsKey(_container.SelectedBlockId))
         {
-            GameFinish();
+            if (_logic.IsUnstable(_container.BlockMapping) ||
+            _logic.IsCollapse(_container.Blocks, _container.BlockMapping, _container.CollapseProbability))
+            {
+                GameFinish();
+            }
+
+            Place(_container.SelectedBlockId, Vector3.zero, Quaternion.identity);
         }
     }
 
@@ -73,6 +79,11 @@ public class JengaController
     {
         _container.Blocks[blockId].transform.position = dest;
         _container.Blocks[blockId].transform.rotation *= angle;
+    }
+
+    private async UniTask PlaceSelector()
+    {
+        
     }
 
     private void GameFinish()
