@@ -7,6 +7,7 @@ public class DataContainer
 {
     public int LoopCount => _loopCount;
     public int PlayerPoint => _playerPoint;
+    public int ItemsPerLevel { get; private set; } = -1;
     public Dictionary<int, BlockData> Blocks { get; private set; } = new Dictionary<int, BlockData>();
     public int SelectedBlockId
     {
@@ -42,6 +43,8 @@ public class DataContainer
 
     public DataContainer(int floorLevel, int itemsPerLevel, BlockData blockPrefab)
     {
+        ItemsPerLevel = itemsPerLevel;
+
         for (int i = 1; i <= floorLevel * itemsPerLevel; i++)
         {
             BlockData block = UnityEngine.Object.Instantiate(blockPrefab);
