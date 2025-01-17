@@ -46,7 +46,7 @@ public class BlockData : MonoBehaviour
     }
 
     /// <summary> ブロックの材質変化を行う </summary>
-    public void ChangeMaterial((int Weight, Material Material) target)
+    public void ChangeMaterial((float Weight, Material Material) target)
     {
         if (_renderer == null) { _renderer = GetComponent<MeshRenderer>(); }
 

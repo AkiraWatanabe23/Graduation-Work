@@ -15,7 +15,7 @@ public class MaterialController
         [field: SerializeField]
         public MaterialType MaterialType { get; private set; } = MaterialType.None;
         [field: SerializeField]
-        public int Weight { get; private set; } = 1;
+        public float Weight { get; private set; } = 1;
         [field: SerializeField]
         public Material Material { get; private set; } = default;
     }
@@ -24,7 +24,7 @@ public class MaterialController
     private MaterialData[] _materialDatas = default;
 
     private Dictionary<int, BlockData> _blockDict = default;
-    private Dictionary<MaterialType, (int Weight, Material Material)> _materialDatasDict = default;
+    private Dictionary<MaterialType, (float Weight, Material Material)> _materialDatasDict = default;
 
     /// <summary> 初期化処理 </summary>
     public void Initialize(DataContainer container, NetworkModel model)
