@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Debug = Constants.ConsoleLogs;
 
 /// <summary> ショップで購入したデータをインゲームに反映させるためのインプットを管理するクラス </summary>
@@ -13,6 +14,9 @@ public class MaterialInputHandler : MonoBehaviour
     private MaterialType _currentTarget = MaterialType.None;
 
     private Camera _main = default;
+
+    public Action<MaterialType> OnChangeMaterial { get; set; }
+    public Action<MaterialType> OnCancelSelect { get; set; }
 
     private void Start()
     {
@@ -33,17 +37,22 @@ public class MaterialInputHandler : MonoBehaviour
         if (!Physics.Raycast(_main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
         {
             Debug.Log("衝突対象が検出されませんでした");
+            OnCancelSelect?.Invoke(_currentTarget);
+            MaterialApply();
             return;
         }
 
         //以下クリック対象が存在した場合の処理
-        if (!hit.collider.gameObject.TryGetComponent(out BlockData block)) { return; }
         if (_supervisor == null) { return; }
+        if (!hit.collider.gameObject.TryGetComponent(out BlockData block)) { return; }
 
-        _supervisor.MatCtrl.ChangeMaterial(block, _currentTarget);
+        //ローカル環境で材質の変更が成された場合のみ他ユーザーに情報を送る
+        if (_supervisor.MatCtrl.ChangeMaterial(block, _currentTarget))
+        {
+            OnChangeMaterial?.Invoke(_currentTarget);
+            _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
+        }
         MaterialApply();
-
-        _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
     }
 
     private void MaterialApply()

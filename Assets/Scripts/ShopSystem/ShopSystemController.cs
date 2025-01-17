@@ -24,6 +24,8 @@ public class ShopSystemController : SingletonMonoBehaviour<ShopSystemController>
         private Text _holdCountText = default;
 
         [field: SerializeField]
+        public GameObject BackImage { get; private set; }
+        [field: SerializeField]
         public Button PurchaseButton { get; private set; }
         [field: SerializeField]
         public Button UseButton { get; private set; }
@@ -91,11 +93,25 @@ public class ShopSystemController : SingletonMonoBehaviour<ShopSystemController>
                     return;
                 }
                 _inputHandler.TargetSetting(holder.MaterialType);
+                holder.BackImage.SetActive(true);
             });
 
             holder.HoldCount = 0;
+            holder.BackImage.SetActive(false);
         }
         _currentFragmentCountText.text = $"x {_blockFragmentCount:00}";
+
+        _inputHandler.OnChangeMaterial = (material) =>
+        {
+            var target = _materialPurchaseDict[material];
+
+            target.HoldCount--;
+            target.BackImage.SetActive(false);
+        };
+        _inputHandler.OnCancelSelect = (material) =>
+        {
+            _materialPurchaseDict[material].BackImage.SetActive(false);
+        };
     }
 
     /// <summary> 購入、欠片の減算処理 </summary>
@@ -117,5 +133,11 @@ public class ShopSystemController : SingletonMonoBehaviour<ShopSystemController>
     public void UpdateFragmentCount(int count)
     {
         BlockFragmentCount += count;
+    }
+
+    private void OnDestroy()
+    {
+        _inputHandler.OnChangeMaterial = null;
+        _inputHandler.OnCancelSelect = null;
     }
 }
