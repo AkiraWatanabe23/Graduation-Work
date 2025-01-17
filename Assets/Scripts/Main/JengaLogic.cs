@@ -3,47 +3,45 @@ using UnityEngine;
 
 public class JengaLogic
 {
-    /// <summary>IDをキーにしてブロックを保持する</summary>
-    public Dictionary<int, BlockData> Blocks => _blocks;
-
-    ///// <summary>IDをキーにしてブロックを保持する</summary>
-    private Dictionary<int, BlockData> _blocks = new Dictionary<int, BlockData>();
     /// <summary>ブロックがどの位置にあるかを保持する</summary>
     private List<int[]> _blockMapping = new List<int[]>();
 
     /// <param name="floorLevel">ジェンガが何段あるか</param>
     /// <param name="itemsPerLevel">1段当たりブロックはいくつか</param>
-    public void Initialize(int floorLevel, int itemsPerLevel, in BlockData blockPrefab, Transform blockParent = null)
+    public void Initialize(DataContainer container, Transform blockParent = null)
     {
         _blockMapping.Add(null);    // 「添え字」と「ジェンガの高さ」を揃えるため、０番目にnullを追加する
-        int blockId = 1;
+        int blockId = 0;
         int height = 0;
+        float stability = 0f;
         int index = 0;
 
         // blocksとblockMappingの初期化
-        for (int i = 0; i < floorLevel * itemsPerLevel; i++, blockId++)
+        foreach (var block in container.Blocks)
         {
-            index = i % itemsPerLevel;
+            index = blockId % container.ItemsPerLevel;
 
             if (index == 0)
             {
-                _blockMapping.Add(new int[itemsPerLevel]);
+                _blockMapping.Add(new int[container.ItemsPerLevel]);
                 height++;
             }
-            
-            BlockData block = Object.Instantiate(blockPrefab, blockParent);
-            _blocks.Add(blockId, block);
-            _blockMapping[height][index] = blockId;
+
+            _blockMapping[height][index] = ++blockId;
 
             // blockの初期化
-            float stability = index switch
+            stability = index switch
             {
                 1 => 0.10f,
                 _ => 0.45f,
             };
-            block.UpdateData(blockId, height, stability, index, 1);
+            block.Value.UpdateData(blockId, height, stability, index, 1.0f);
         }
+        DebugBlockMapping();
+    }
 
+    private void DebugBlockMapping()
+    {
         foreach (var listItem in _blockMapping)
         {
             if (listItem == null) continue;
@@ -84,7 +82,7 @@ public class JengaLogic
     }
 
     /// <summary>ブロックを引き抜いたとき、ジェンガが崩壊する確率を計算する</summary>
-    private float GetCollapseRisk()
+    private float GetCollapseRisk(Dictionary<int, BlockData> blocks)
     {
         float sumAllStability = 0f;
 
@@ -100,7 +98,7 @@ public class JengaLogic
                 cash += target switch
                 {
                     0 => target,
-                    _ => _blocks[target].Stability * _blocks[target].Weight,
+                    _ => blocks[target].Stability * blocks[target].Weight,
                 };
             }
             sumAllStability += cash * (1.0f - 0.01f * i);
@@ -109,9 +107,9 @@ public class JengaLogic
     }
 
     /// <summary>ジェンガを引き抜いたときに倒れる確率を引いたか判定する</summary>
-    public bool IsCollapse(float collapseProb)
+    public bool IsCollapse(Dictionary<int, BlockData> blocks, float collapseProb)
     {
-        float collapseRisk = GetCollapseRisk();
+        float collapseRisk = GetCollapseRisk(blocks);
         Debug.Log($"倒壊率は、{collapseRisk * 100}%！");
         return collapseProb <= collapseRisk;
     }
