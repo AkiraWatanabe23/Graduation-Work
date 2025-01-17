@@ -42,13 +42,16 @@ public class MaterialController
 
     /// <summary> ブロックの材質変化を行う </summary>
     /// <param name="target"> 対象となるブロック </param>
-    public void ChangeMaterial(BlockData target, MaterialType next)
+    public bool ChangeMaterial(BlockData target, MaterialType next)
     {
         //対象の材質のデータが存在しない場合、変更できない
-        if (!_materialDatasDict.ContainsKey(next)) { Debug.Log($"対象の材質のデータが存在しませんでした : {next}"); return; }
+        if (!_materialDatasDict.ContainsKey(next)) { Debug.Log($"対象の材質のデータが存在しませんでした : {next}"); return false; }
+        if (target.Weight == _materialDatasDict[next].Weight) { Debug.Log("材質の変化がないため、変更できません"); return false; }
 
         Debug.Log($"Target Weight : {target.Weight} → {_materialDatasDict[next].Weight}");
         target.ChangeMaterial(_materialDatasDict[next]);
+
+        return true;
     }
 
     private async Task<string> ChangeMaterial(string requestData)
@@ -58,7 +61,7 @@ public class MaterialController
         var id = int.Parse(splitData[1]);
         var material = splitData[2];
 
-        ChangeMaterial(_blockDict[id], (MaterialType)Enum.Parse(typeof(MaterialType), material));
+        _ = ChangeMaterial(_blockDict[id], (MaterialType)Enum.Parse(typeof(MaterialType), material));
 
         await Task.Yield();
         return "Request Success";
