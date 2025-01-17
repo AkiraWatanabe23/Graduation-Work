@@ -15,7 +15,7 @@ public class BlockData : MonoBehaviour
     public int AssignedIndex => _assignedIndex;
 
     /// <summary>このブロックの重さ</summary>
-    public int Weight => _weight;
+    public float Weight => _weight;
 
     [SerializeField, Tooltip("自分に与えられたID")]
     private int _blockId = -1;
@@ -26,7 +26,7 @@ public class BlockData : MonoBehaviour
     [SerializeField, Tooltip("チェックシート内における自分の添え字")]
     private int _assignedIndex = -1;
     [SerializeField, Tooltip("自分の重さ")]
-    private int _weight = -1;
+    private float _weight = -1;
 
     private MeshRenderer _renderer = default;
 
@@ -36,7 +36,7 @@ public class BlockData : MonoBehaviour
     /// <param name="stab">このブロックを引き抜いたときにジェンガ全体に与える影響度</param>
     /// <param name="index">このブロックが置かれている段の何番目にいるか</param>
     /// <param name="weight">このブロックの重さ</param>
-    public void UpdateData(int id,int height, float stab, int index, int weight)
+    public void UpdateData(int id,int height, float stab, int index, float weight)
     {
         _blockId = id;
         _height = height;
