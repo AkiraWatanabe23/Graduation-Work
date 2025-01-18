@@ -28,7 +28,7 @@ namespace Network
                 var result = await presenter.SendPutRequest(RequestType.JoinRoom, _roomIDField.text.Trim());
                 if (int.TryParse(result, out int value))
                 {
-                    //todo : ここで受け取った値をユーザーの手順とする
+                    GameLogicSupervisor.Instance.PlayTurnIndexSetting(value);
                 }
             });
 

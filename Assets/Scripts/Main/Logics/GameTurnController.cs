@@ -25,6 +25,8 @@ public class GameTurnController
         model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
     }
 
+    public void PlayTurnIndexSetting(int index) => _playTurnIndex = index;
+
     private async Task<string> ChangeTurn(string _)
     {
         OnNextTurn?.Invoke();
