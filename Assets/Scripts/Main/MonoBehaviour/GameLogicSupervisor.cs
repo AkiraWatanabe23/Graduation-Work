@@ -2,7 +2,7 @@
 using VTNConnect;
 
 /// <summary> インゲームの各場面でのロジックを統括するクラス </summary>
-public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
+public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, IVantanConnectEventReceiver
 {
     [SerializeField, Tooltip("何段、ジェンガを生成するか")]
     private int _floorLevel = 10;
@@ -29,9 +29,13 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
     public GameTurnController TurnCtrl => _turnCtrl;
     public MaterialController MatCtrl => _matCtrl;
 
+    public DataContainer DataContainer => _dataContainer;
+
     public bool IsPlayableTurn => _turnCtrl.IsPlayableTurn;
 
     public bool IsActive => true;
+
+    protected override bool DontDestroyOnLoad => false;
 
     private void Start()
     {
@@ -66,4 +70,6 @@ public class GameLogicSupervisor : MonoBehaviour, IVantanConnectEventReceiver
             case EventDefine.Cheer: break;
         }
     }
+
+    public void PlayTurnIndexSetting(int index) => _turnCtrl.PlayTurnIndexSetting(index);
 }
