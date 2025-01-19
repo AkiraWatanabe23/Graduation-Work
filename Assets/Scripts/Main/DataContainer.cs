@@ -15,7 +15,12 @@ public class DataContainer
         get => _selectedBlockID;
         set
         {
-            _selectedBlockID = value;
+            int newBlockId = value;
+            _selectedBlockID = (Blocks[newBlockId].Height >= BlockMapping.Count - 2) switch
+            {
+                true => -1,
+                false => newBlockId,
+            };
             CollapseProbability = Random.Range(0f, 1f);
         }
     }

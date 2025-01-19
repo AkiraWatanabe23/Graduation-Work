@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class JengaLogic
@@ -32,11 +33,15 @@ public class JengaLogic
 
     private void DebugBlockMapping(List<int[]> blockMapping)
     {
+        StringBuilder builder = new StringBuilder();
+
         foreach (var listItem in blockMapping)
         {
             if (listItem == null) continue;
-            Debug.Log(string.Join(' ', listItem));
+
+            builder.Append($"{string.Join(' ', listItem)}\n");
         }
+        Debug.Log(builder);
     }
 
     /// <summary>ジェンガが崩れてもおかしくない状態かを判定する</summary>
