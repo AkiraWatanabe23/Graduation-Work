@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,10 +52,19 @@ public class ShopSystemController : SingletonMonoBehaviour<ShopSystemController>
 
     [Header("=== UI ===")]
     [SerializeField]
+    private Button _shopPageButton = default;
+    [SerializeField]
+    private Image _arrowImage = default;
+    [SerializeField]
+    private Sprite[] _arrows = new Sprite[2];
+    [SerializeField]
+    private Image _rootImage = default;
+    [SerializeField]
     private Text _currentFragmentCountText = default;
     [SerializeField]
     private MaterialHolder[] _holders = default;
 
+    private bool _isOpenShop = false;
     private Dictionary<MaterialType, MaterialHolder> _materialPurchaseDict = default;
 
     protected int BlockFragmentCount
@@ -80,6 +90,20 @@ public class ShopSystemController : SingletonMonoBehaviour<ShopSystemController>
 
         _materialPurchaseDict = new();
 
+        _shopPageButton.onClick.AddListener(() =>
+        {
+            if (!_isOpenShop)
+            {
+                _isOpenShop = true;
+                _rootImage.rectTransform.DOLocalMoveX(-640f, 1f).OnComplete(() => _arrowImage.sprite = _arrows[1]);
+            }
+            else
+            {
+                _isOpenShop = false;
+                _rootImage.rectTransform.DOLocalMoveX(-1280f, 1f).OnComplete(() => _arrowImage.sprite = _arrows[0]);
+            }
+        });
+
         foreach (var holder in _holders)
         {
             _materialPurchaseDict.Add(holder.MaterialType, holder);
@@ -87,6 +111,8 @@ public class ShopSystemController : SingletonMonoBehaviour<ShopSystemController>
             holder.PurchaseButton.onClick.AddListener(() => Shopping(holder.MaterialType));
             holder.UseButton.onClick.AddListener(() =>
             {
+                if (!GameLogicSupervisor.Instance.IsPlayableTurn) { return; }
+
                 if (holder.HoldCount <= 0)
                 {
                     Debug.Log("対象のカードがありません");
