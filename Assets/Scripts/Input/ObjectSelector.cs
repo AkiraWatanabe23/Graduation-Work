@@ -1,5 +1,6 @@
 ﻿using Network;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ObjectSelector : MonoBehaviour
@@ -16,13 +17,17 @@ public class ObjectSelector : MonoBehaviour
     private const int MAX_RAYCAST_DISTANCE = 100;
     private bool _isGameFinish = false;
 
+    private DataContainer _dataContainer = default;
+
     public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
         container.GameFinishRegister(GameFinish);
+
+        presenter.Model.RegisterEvent(RequestType.SelectBlock, SelectBlock);
+
+        _dataContainer = container;
         OnSelectBlock = async (data) =>
         {
-            container.SelectedBlockId = data.BlockId;
-            //todo : どのブロックが選択されたかを他ユーザーに伝える処理
             await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
         };
 
@@ -31,14 +36,26 @@ public class ObjectSelector : MonoBehaviour
 
     private void Update()
     {
-        _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-
         if (_isGameFinish) return;
         if (!Input.GetMouseButtonDown(0)) return;
+        if (!GameLogicSupervisor.Instance.IsPlayableTurn) return;
+
+        _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+
         if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE, _layerMask)) return;
         if (!_hitResult.collider.TryGetComponent(out BlockData data)) return;
 
         OnSelectBlock?.Invoke(data);
+    }
+
+    private async Task<string> SelectBlock(string requestData)
+    {
+        var splitData = requestData.Split(',');
+        var id = int.Parse(splitData[0]);
+
+        _dataContainer.SelectedBlockId = id;
+        await Task.Yield();
+        return "Block Selected";
     }
 
     private void GameFinish()

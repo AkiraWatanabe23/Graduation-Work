@@ -320,6 +320,5 @@ namespace Network
         ChangeMaterial,
         SelectBlock,
         PlaceBlock,
-        RecalculateTowerState,
     }
 }
