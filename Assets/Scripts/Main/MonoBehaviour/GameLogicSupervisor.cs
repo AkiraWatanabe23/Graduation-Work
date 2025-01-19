@@ -52,7 +52,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         var input = FindObjectOfType<ObjectSelector>();
         if (input != null) { input.Initialize(_dataContainer, _networkPresenter); }
 
-        _jengaCtrl.Initialize(_dataContainer);
+        _jengaCtrl.Initialize(_dataContainer, _networkPresenter);
         _turnCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
         _matCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
         _roomCtrl.Initialize(_networkPresenter?.Model);
