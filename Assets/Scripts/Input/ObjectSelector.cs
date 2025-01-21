@@ -8,6 +8,8 @@ public class ObjectSelector : MonoBehaviour
     /// <summary> 自分が動かすブロックが選択されたときに実行される </summary>
     protected Action<BlockData> OnSelectBlock { get; private set; }
 
+    [SerializeField] private bool _debugMode = true;
+
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private Color _gizmosColor = Color.white;
 
@@ -38,13 +40,14 @@ public class ObjectSelector : MonoBehaviour
     {
         if (_isGameFinish) return;
         if (!Input.GetMouseButtonDown(0)) return;
-        if (!GameLogicSupervisor.Instance.IsPlayableTurn) return;
+        if (!GameLogicSupervisor.Instance.IsPlayableTurn && !_debugMode) return;
 
         _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE, _layerMask)) return;
+        if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE)) return;
         if (!_hitResult.collider.TryGetComponent(out BlockData data)) return;
 
+        Debug.Log($"hit ID : {data.BlockId}");
         OnSelectBlock?.Invoke(data);
     }
 
