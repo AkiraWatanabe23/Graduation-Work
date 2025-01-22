@@ -2,6 +2,7 @@
 using Extention;
 using Network;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -18,11 +19,13 @@ public class JengaController
 
     private Vector3 _destination = Vector3.zero;
     private Quaternion _rotation = Quaternion.identity;
+    private Vector3 _moveDir = Vector3.zero;
     private Vector3 _blockScale = Vector3.zero;
     private GameObject _blockParent = null;
-    private int _alreadySelectedId = -1;
+    private int _alreadySelectedId = 0;
 
     private BlockData[] _selectBoxes = null;
+    private int _selectBoxId = -1;
 
     private Action<int, Vector3, Quaternion> _onPlace = null;
 
@@ -30,9 +33,9 @@ public class JengaController
     {
         _blockScale = _blockPrefab.transform.localScale;
         _blockParent = new GameObject("Block Parent");
-        _logic.Initialize(container, _blockParent.transform);
         _container = container;
-        InitSelectBoxes(container);
+        _logic.Initialize(container);
+        InitSelectBoxes();
         BuildUp();
 
         presenter.Model.RegisterEvent(RequestType.PlaceBlock, PlaceBlock);
@@ -49,32 +52,27 @@ public class JengaController
         {
             _alreadySelectedId = _container.SelectedBlockId;
 
-            if (_logic.IsUnstable(_container.BlockMapping) ||
-            _logic.IsCollapse(_container.Blocks, _container.BlockMapping, _container.CollapseProbability))
+            await PlaceSelector();
+
+            if (_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability))
             {
                 GameFinish();
             }
 
-            //await PlaceSelector();
             _onPlace?.Invoke(_container.SelectedBlockId, _destination, _rotation);
         }
     }
 
-    public void NextDestinationReceiver(Vector3 dest, Quaternion rotation)
+    private void InitSelectBoxes()
     {
-        _destination = dest;
-        _rotation = rotation;
-    }
+        _selectBoxes = new BlockData[_container.ItemsPerLevel];
 
-    private void InitSelectBoxes(DataContainer container)
-    {
-        _selectBoxes = new BlockData[container.ItemsPerLevel];
-
-        for (int i = 0; i < _selectBoxes.Length; i++)
+        for (int i = 0, id = -1; i < _selectBoxes.Length; i++, id--)
         {
-            _selectBoxes[i] = UnityEngine.Object.Instantiate(_blockPrefab);
+            _selectBoxes[i] = GameObject.CreatePrimitive(PrimitiveType.Cube).AddComponent<BlockData>();
+            _selectBoxes[i].BlockId = id;
+            _selectBoxes[i].AssignedIndex = i;
             _selectBoxes[i].transform.localScale = _blockScale;
-            _selectBoxes[i].gameObject.AddComponent<SelectBox>();
             _selectBoxes[i].gameObject.SetActive(false);
         }
     }
@@ -82,14 +80,12 @@ public class JengaController
     /// <summary>ジェンガを組み立てる</summary>
     private void BuildUp()
     {
-        Vector3 moveDir = Vector3.zero; // ブロックの座標をずらす方向
-
         for (int i = 0; i < _container.Blocks.Count; i++)
         {
             if (i % _container.ItemsPerLevel == 0)
             {
                 _destination.Set(0.0f, _destination.y, 0.0f);
-                moveDir = Vector3.zero;
+                _moveDir = Vector3.zero;
 
                 if (i != 0)
                 {
@@ -100,21 +96,24 @@ public class JengaController
                 if (_container.Blocks[i + 1].Height % 2 == 1)   // 奇数段目のとき
                 {
                     _destination.x -= _blockScale.x * (_container.ItemsPerLevel / 2);
-                    moveDir.x = _blockScale.x;
+                    _moveDir.x = _blockScale.x;
                 }
                 else    // 偶数段目のとき
                 {
                     _destination.z -= _blockScale.x * (_container.ItemsPerLevel / 2);
-                    moveDir.z = _blockScale.x;
+                    _moveDir.z = _blockScale.x;
                 }
             }
             Place(_container.Blocks[i + 1].gameObject, _destination, _rotation);
-            _destination += moveDir;
+            _container.Blocks[i + 1].transform.SetParent(_blockParent.transform, false);
+            _destination += _moveDir;
         }
     }
 
     private void Place(int blockId, Vector3 destination, Quaternion rotation)
     {
+        if (_container.Blocks.ContainsKey(blockId).Invert()) return;
+
         Place(_container.Blocks[blockId].gameObject, destination, rotation);
     }
 
@@ -130,17 +129,33 @@ public class JengaController
         if (IsPlaceable().Invert())
         {
             _container.BlockMapping.Add(new int[_container.ItemsPerLevel]);
-            _destination.y += _blockScale.y;
+            _destination.Set(0.0f, _destination.y + _blockScale.y, 0.0f);
+            _moveDir = Vector3.zero;
 
             if (_container.BlockMapping.Count % 2 == 0)
             {
-                _destination.z = _blockScale.x * (_container.ItemsPerLevel / 2);
+                _destination.z = -_blockScale.x * (_container.ItemsPerLevel / 2);
+                _moveDir.z = _blockScale.x;
                 _rotation = Quaternion.AngleAxis(90.0f, Vector3.up);
             }
             else
             {
-                _destination.x = _blockScale.x * (_container.ItemsPerLevel / 2);
+                _destination.x = -_blockScale.x * (_container.ItemsPerLevel / 2);
+                _moveDir.x = _blockScale.x;
                 _rotation = Quaternion.AngleAxis(0.0f, Vector3.up);
+            }
+
+            foreach (var selectbox in _selectBoxes)
+            {
+                selectbox.transform.position = _destination;
+                _destination += _moveDir;
+                selectbox.transform.rotation = _rotation;
+                selectbox.Height = _container.BlockMapping.Count - 1;
+                selectbox.Stability = selectbox.AssignedIndex switch
+                {
+                    1 => 0.10f,
+                    _ => 0.45f,
+                };
             }
         }
 
@@ -148,13 +163,22 @@ public class JengaController
 
         for (int i = 0; i < highestFloor.Length; i++)
         {
-            if (highestFloor[i] == 0)
-            {
-                _selectBoxes[i].gameObject.SetActive(true);
-            }
+            if (highestFloor[i] == 0) _selectBoxes[i].gameObject.SetActive(true);
         }
 
-        await UniTask.WaitUntil(() => true);
+        await UniTask.WaitUntil(() => _container.SelectedBlockId < 0);
+
+        foreach (var box in _selectBoxes)
+        {
+            if (box.BlockId == _container.SelectedBlockId)
+            {
+                _container.Blocks[_alreadySelectedId].transform.position = box.transform.position;
+                _container.Blocks[_alreadySelectedId].transform.rotation = box.transform.rotation;
+                _logic.UpdateBlockInfo(_container.Blocks[_alreadySelectedId], box);
+            }
+
+            if(box.gameObject.activeSelf) box.gameObject.SetActive(false);
+        }
     }
 
     /// <summary>ジェンガの最上部にブロックを置く場所があるか</summary>
@@ -162,7 +186,7 @@ public class JengaController
     {
         int placeableCount = 0;
 
-        foreach (var item in _container.BlockMapping[_container.BlockMapping.Count])
+        foreach (var item in _container.BlockMapping[_container.BlockMapping.Count - 1])
         {
             if (item == 0) placeableCount++;
         }

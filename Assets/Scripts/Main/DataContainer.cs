@@ -16,9 +16,13 @@ public class DataContainer
         set
         {
             int newBlockId = value;
-            _selectedBlockID = (Blocks[newBlockId].Height >= BlockMapping.Count - 2) switch
+            _selectedBlockID = Blocks.ContainsKey(newBlockId) switch
             {
-                true => -1,
+                true => (Blocks[newBlockId].Height >= BlockMapping.Count - 2) switch
+                {
+                    true => 0,
+                    false => newBlockId,
+                },
                 false => newBlockId,
             };
             CollapseProbability = Random.Range(0f, 1f);
