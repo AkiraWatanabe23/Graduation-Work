@@ -27,23 +27,13 @@ public class RoomController
 
     private Random _random = default;
 
-    protected int CurrentPlayersCount
-    {
-        get => _currentPlayersCount;
-        private set
-        {
-            _currentPlayersCount = value;
-            _connectionCountText.text = $"Count : {_currentPlayersCount}";
-        }
-    }
-
     public void Initialize(NetworkModel model)
     {
         model.RegisterEvent(RequestType.CreateRoom, CreateRoom);
         model.RegisterEvent(RequestType.ExitRoom, ExitRoom);
         model.RegisterEvent(RequestType.JoinRoom, JoinRoom);
 
-        CurrentPlayersCount = 0;
+        _currentPlayersCount = 0;
         _isHost = false;
     }
 
@@ -53,7 +43,8 @@ public class RoomController
     {
         _isHost = true;
         //ルームを作成したユーザーが1人目に該当するため、直に代入
-        CurrentPlayersCount = 1;
+        _currentPlayersCount = 1;
+        _connectionCountText.text = $"Count : {_currentPlayersCount}";
 
         //ルームIDを新規発行する
         _random ??= new();
@@ -68,7 +59,7 @@ public class RoomController
     private async Task<string> ExitRoom(string _)
     {
         if (!_isHost) { return "I'm not room host"; }
-        CurrentPlayersCount--;
+        _currentPlayersCount--;
 
         await Task.Yield();
         return "Exit Success";
@@ -83,11 +74,18 @@ public class RoomController
         var roomID = splitData[0];
 
         //ルームIDが異なる or ルームが満員 → ルーム参加失敗
-        if (roomID != _roomID) { return $"RoomID is not correct. {roomID}"; }
-        else if (_currentPlayersCount + 1 > _maxConnectableCount) { return "Room is full."; }
+        if (roomID != _roomID) { Debug.Log($"RoomID is not correct. {roomID}"); return $"RoomID is not correct. {roomID}"; }
+        else if (_currentPlayersCount + 1 > _maxConnectableCount) { Debug.Log("Room is full."); return "Room is full."; }
 
-        await Task.Yield();
-        CurrentPlayersCount++;
+        //await Task.Yield();
+        await MainThreadDispatcher.RunAsync(async () =>
+        {
+            _currentPlayersCount++;
+            _connectionCountText.text = $"Count : {_currentPlayersCount}";
+            await Task.Yield();
+            return "";
+        });
+
         Debug.Log($"ルームへの参加を承認しました : 現在{_currentPlayersCount}人です");
         return (_currentPlayersCount - 1).ToString();
     }
