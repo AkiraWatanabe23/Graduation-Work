@@ -58,7 +58,7 @@ public class JengaController
             {
                 GameFinish();
             }
-
+            ShopSystemController.Instance.UpdateFragmentCount(_container.Blocks[_alreadySelectedId].Fragment);
             _onPlace?.Invoke(_container.SelectedBlockId, _destination, _rotation);
         }
     }

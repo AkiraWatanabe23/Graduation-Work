@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using UnityEngine;
 
 public class JengaLogic
@@ -32,7 +31,7 @@ public class JengaLogic
             };
             block.Value.AssignedIndex = index;
             block.Value.Weight = 1.0f;
-            block.Value.Fragment = 3;
+            block.Value.Fragment = Random.Range(1, 5);
         }
         DebugBlockMapping();
     }
@@ -59,6 +58,7 @@ public class JengaLogic
         _container.Blocks[from.BlockId].Height = to.Height;
         _container.Blocks[from.BlockId].Stability = to.Stability;
         _container.Blocks[from.BlockId].AssignedIndex = to.AssignedIndex;
+        _container.Blocks[from.BlockId].Fragment = Random.Range(1, 5);
     }
 
     /// <summary>ジェンガが崩れてもおかしくない状態かを判定する</summary>
