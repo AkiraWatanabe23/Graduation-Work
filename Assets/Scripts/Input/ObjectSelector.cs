@@ -34,7 +34,7 @@ public class ObjectSelector : MonoBehaviour
             false => async (data) =>
             {
                 await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
-            },
+            }
         };
 
         _mainCamera = Camera.main;
