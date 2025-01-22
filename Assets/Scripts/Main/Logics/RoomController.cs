@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = System.Random;
 
 [Serializable]
@@ -16,6 +17,9 @@ public class RoomController
     [SerializeField]
     private int _currentPlayersCount = 0;
 
+    [SerializeField]
+    private Text _connectionCountText = default;
+
     /// <summary> ルーム作成時に発行されるID </summary>
     private string _roomID = "";
     /// <summary> 自分がルームを建てた人かどうか </summary>
@@ -23,13 +27,23 @@ public class RoomController
 
     private Random _random = default;
 
+    protected int CurrentPlayersCount
+    {
+        get => _currentPlayersCount;
+        private set
+        {
+            _currentPlayersCount = value;
+            _connectionCountText.text = $"Count : {_currentPlayersCount}";
+        }
+    }
+
     public void Initialize(NetworkModel model)
     {
         model.RegisterEvent(RequestType.CreateRoom, CreateRoom);
         model.RegisterEvent(RequestType.ExitRoom, ExitRoom);
         model.RegisterEvent(RequestType.JoinRoom, JoinRoom);
 
-        _currentPlayersCount = 0;
+        CurrentPlayersCount = 0;
         _isHost = false;
     }
 
@@ -39,7 +53,7 @@ public class RoomController
     {
         _isHost = true;
         //ルームを作成したユーザーが1人目に該当するため、直に代入
-        _currentPlayersCount = 1;
+        CurrentPlayersCount = 1;
 
         //ルームIDを新規発行する
         _random ??= new();
@@ -54,7 +68,7 @@ public class RoomController
     private async Task<string> ExitRoom(string _)
     {
         if (!_isHost) { return "I'm not room host"; }
-        _currentPlayersCount--;
+        CurrentPlayersCount--;
 
         await Task.Yield();
         return "Exit Success";
@@ -73,7 +87,7 @@ public class RoomController
         else if (_currentPlayersCount + 1 > _maxConnectableCount) { return "Room is full."; }
 
         await Task.Yield();
-        _currentPlayersCount++;
+        CurrentPlayersCount++;
         Debug.Log($"ルームへの参加を承認しました : 現在{_currentPlayersCount}人です");
         return (_currentPlayersCount - 1).ToString();
     }

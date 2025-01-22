@@ -15,6 +15,14 @@ public class NetworkPresenter : MonoBehaviour
 
     public NetworkModel Model => _networkModel;
 
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape) && Input.GetKeyDown(KeyCode.Return))
+        {
+            _networkView.SetActivate(_networkView.DeveloperPanel, !_networkView.DeveloperPanel.activeSelf);
+        }
+    }
+
     public void Initialize()
     {
         _networkModel.Initialize();

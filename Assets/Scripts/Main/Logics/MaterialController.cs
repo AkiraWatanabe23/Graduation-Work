@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using VTNConnect;
 using Debug = Constants.ConsoleLogs;
 
 /// <summary> 各ブロックの材質の管理を行うクラス </summary>
@@ -59,6 +60,14 @@ public class MaterialController
         var splitData = requestData.Split(',');
         var id = int.Parse(splitData[0]);
         var material = splitData[1];
+
+        var targetMaterial = (MaterialType)Enum.Parse(typeof(MaterialType), material);
+
+        //VantanConnect対応 ==========================================
+        //EventData data = new(EventDefine.JengaInfo);
+        //data.DataPack("Material", (int)targetMaterial);
+        //VantanConnect.SendEvent(data);
+        // ===========================================================
 
         _ = ChangeMaterial(_blockDict[id], (MaterialType)Enum.Parse(typeof(MaterialType), material));
 

@@ -63,6 +63,8 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         _jengaCtrl.Update();
     }
 
+    public void PlayTurnIndexSetting(int index) => _turnCtrl.PlayTurnIndexSetting(index);
+
     public void OnEventCall(EventData data)
     {
         switch (data.EventCode)
@@ -70,6 +72,4 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
             case EventDefine.Cheer: break;
         }
     }
-
-    public void PlayTurnIndexSetting(int index) => _turnCtrl.PlayTurnIndexSetting(index);
 }
