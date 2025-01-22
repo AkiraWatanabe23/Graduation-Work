@@ -69,7 +69,7 @@ public class MaterialController
         //VantanConnect.SendEvent(data);
         // ===========================================================
 
-        _ = ChangeMaterial(_blockDict[id], (MaterialType)Enum.Parse(typeof(MaterialType), material));
+        _ = ChangeMaterial(_blockDict[id], targetMaterial);
 
         await Task.Yield();
         return "Request Success";
