@@ -28,9 +28,13 @@ public class ObjectSelector : MonoBehaviour
         presenter.Model.RegisterEvent(RequestType.SelectBlock, SelectBlock);
 
         _dataContainer = container;
-        OnSelectBlock = async (data) =>
+        OnSelectBlock = _debugMode switch
         {
-            await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+            true => (data) => _dataContainer.SelectedBlockId = data.BlockId,
+            false => async (data) =>
+            {
+                await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+            },
         };
 
         _mainCamera = Camera.main;
@@ -47,7 +51,7 @@ public class ObjectSelector : MonoBehaviour
         if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE)) return;
         if (!_hitResult.collider.TryGetComponent(out BlockData data)) return;
 
-        Debug.Log($"hit ID : {data.BlockId}");
+        Debug.Log($"hit ID : {data.BlockId} {_dataContainer.SelectedBlockId}");
         OnSelectBlock?.Invoke(data);
     }
 
