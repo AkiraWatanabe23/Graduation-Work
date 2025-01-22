@@ -58,6 +58,8 @@ namespace Network
         {
             _cancellationTokenSource = new();
             _stopWatch = new();
+
+            MainThreadDispatcher.SetMainThreadContext();
         }
 
         /// <summary> 文字列がURLとして成立しているか </summary>
@@ -135,6 +137,7 @@ namespace Network
         public async Task<string> SendPutRequest(string json, string requestMessage, string[] addresses, CancellationToken token = default)
         {
             int loopCount = _hostURL == "" ? addresses.Length : 1;
+            if (int.TryParse(json, out int _)) { _roomID = json; }
 
             for (int i = 0; i < loopCount; i++)
             {
