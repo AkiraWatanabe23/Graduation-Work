@@ -8,8 +8,6 @@ public class ObjectSelector : MonoBehaviour
     /// <summary> 自分が動かすブロックが選択されたときに実行される </summary>
     protected Action<BlockData> OnSelectBlock { get; private set; }
 
-    [SerializeField] private bool _debugMode = true;
-
     [SerializeField] private LayerMask _layerMask = 0;
     [SerializeField] private Color _gizmosColor = Color.white;
 
@@ -28,28 +26,34 @@ public class ObjectSelector : MonoBehaviour
         presenter.Model.RegisterEvent(RequestType.SelectBlock, SelectBlock);
 
         _dataContainer = container;
-        OnSelectBlock = _debugMode switch
+
+        OnSelectBlock = (async (data) =>
         {
-            true => (data) => _dataContainer.SelectedBlockId = data.BlockId,
-            false => async (data) =>
-            {
-                await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
-            }
-        };
+            await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+        });
+        //OnSelectBlock = _debugMode switch
+        //{
+        //    true => (data) => _dataContainer.SelectedBlockId = data.BlockId,
+        //    false => async (data) =>
+        //    {
+        //        await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+        //    }
+        //};
 
         _mainCamera = Camera.main;
     }
 
     private void Update()
     {
-        if (_isGameFinish) return;
-        if (!Input.GetMouseButtonDown(0)) return;
-        if (!GameLogicSupervisor.Instance.IsPlayableTurn && !_debugMode) return;
+        if (!Input.GetMouseButtonDown(0)) { Debug.Log("not input"); return; }
+        if (_isGameFinish) { Debug.Log("Game Finish"); return; }
+        if (!GameLogicSupervisor.Instance.IsGameStart) { Debug.Log("not game start yet"); return; }
+        if (!GameLogicSupervisor.Instance.IsPlayableTurn) { Debug.Log("not my turn"); return; }
 
         _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE)) return;
-        if (!_hitResult.collider.TryGetComponent(out BlockData data)) return;
+        if (!Physics.Raycast(_ray, out _hitResult, MAX_RAYCAST_DISTANCE)) { Debug.Log("not hit"); return; }
+        if (!_hitResult.collider.TryGetComponent(out BlockData data)) { Debug.Log("not get block"); return; }
 
         Debug.Log($"hit ID : {data.BlockId} {_dataContainer.SelectedBlockId}");
         OnSelectBlock?.Invoke(data);
