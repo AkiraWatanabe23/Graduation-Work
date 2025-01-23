@@ -148,6 +148,7 @@ namespace Network
                 if (token == default) { token = _cancellationTokenSource.Token; }
                 _stopWatch.Start();
 
+                Debug.Log(_hostURL);
                 using UnityWebRequest request = UnityWebRequest.Put(_hostURL, Encoding.UTF8.GetBytes(json + $"^{requestMessage}"));
                 var send = request.SendWebRequest();
 
@@ -248,7 +249,7 @@ namespace Network
         }
         #endregion
 
-        private void AccessWaiting()
+        public void AccessWaiting()
         {
             Task.Run(async () =>
             {
