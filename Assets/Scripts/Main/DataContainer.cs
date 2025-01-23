@@ -45,7 +45,7 @@ public class DataContainer
     /// <summary> 各プレイヤーの手番が何周したか </summary>
     private int _loopCount = 0;
     /// <summary> 現在の合計ターン数 </summary>
-    private int _currentTurnCount = 0;
+    private int _currentTurnCount = -1;
     /// <summary> プレイヤーが保持している得点 </summary>
     private int _playerPoint = 0;
 

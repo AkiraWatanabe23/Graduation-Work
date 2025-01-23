@@ -56,6 +56,14 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         _turnCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
         _matCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
         _roomCtrl.Initialize(_networkPresenter?.Model);
+
+#if !UNITY_EDITOR
+        VantanConnect.SystemReset();
+        VantanConnect.GameStart((VC_StatusCode code) =>
+        {
+            Debug.Log($"GameStart {code}");
+        });
+#endif
     }
 
     private void Update()
