@@ -37,15 +37,20 @@ public class GameTurnController
 
     private async Task<string> ChangeTurn(string _)
     {
-        OnNextTurn?.Invoke();
-
-        if (!_isGameStart)
+        await MainThreadDispatcher.RunAsync(async () =>
         {
-            _isGameStart = true;
-            _events?.Invoke();
-        }
+            OnNextTurn?.Invoke();
 
-        await Task.Yield();
+            if (!_isGameStart)
+            {
+                _isGameStart = true;
+                _events?.Invoke();
+            }
+
+            await Task.Yield();
+            return "Request Success";
+        });
+
         return "Request Success";
     }
 }

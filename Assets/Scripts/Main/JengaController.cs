@@ -2,7 +2,6 @@
 using Extention;
 using Network;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -25,9 +24,8 @@ public class JengaController
     private int _alreadySelectedId = 0;
 
     private BlockData[] _selectBoxes = null;
-    private int _selectBoxId = -1;
 
-    private Action<int, Vector3, Quaternion> _onPlace = null;
+    private Action<int, int> _onPlace = null;
 
     public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
@@ -39,9 +37,9 @@ public class JengaController
         BuildUp();
 
         presenter.Model.RegisterEvent(RequestType.PlaceBlock, PlaceBlock);
-        _onPlace = async (id, vector, quaternion) =>
+        _onPlace = async (id, next) =>
         {
-            await presenter.SendPutRequest(RequestType.PlaceBlock, id.ToString(), vector.ToString(), quaternion.ToString());
+            await presenter.SendPutRequest(RequestType.PlaceBlock, id.ToString(), next.ToString());
         };
     }
 
@@ -59,7 +57,7 @@ public class JengaController
                 GameFinish();
             }
             ShopSystemController.Instance.UpdateFragmentCount(_container.Blocks[_alreadySelectedId].Fragment);
-            _onPlace?.Invoke(_container.SelectedBlockId, _destination, _rotation);
+            _onPlace?.Invoke(_alreadySelectedId, _container.SelectedBlockId);
         }
     }
 
@@ -132,7 +130,7 @@ public class JengaController
             _destination.Set(0.0f, _destination.y + _blockScale.y, 0.0f);
             _moveDir = Vector3.zero;
 
-            if (_container.BlockMapping.Count % 2 == 0)
+            if (_container.BlockMapping.Count % 2 == 1)
             {
                 _destination.z = -_blockScale.x * (_container.ItemsPerLevel / 2);
                 _moveDir.z = _blockScale.x;
@@ -204,22 +202,17 @@ public class JengaController
 
     private async Task<string> PlaceBlock(string requestData)
     {
-        var splitData = requestData.Split(',');
-        var id = int.Parse(splitData[0]);
+        await MainThreadDispatcher.RunAsync(async () =>
+        {
+            var splitData = requestData.Split(',');
+            var id = int.Parse(splitData[0]);
+            var next = int.Parse(splitData[1]);
 
-        //Position
-        var posX = float.Parse(splitData[1].Trim('('));
-        var posY = float.Parse(splitData[2]);
-        var posZ = float.Parse(splitData[3].Trim(')'));
-
-        //Quaternion
-        var quatX = float.Parse(splitData[4].Trim('('));
-        var quatY = float.Parse(splitData[5]);
-        var quatZ = float.Parse(splitData[6]);
-        var quatW = float.Parse(splitData[7].Trim(')'));
-
-        Place(id, new(posX, posY, posZ), new Quaternion(quatX, quatY, quatZ, quatW));
-        await Task.Yield();
+            Debug.Log($"place {id}");
+            Place(id, _container.Blocks[next].gameObject.transform.position, _container.Blocks[next].gameObject.transform.rotation);
+            await Task.Yield();
+            return "Place Success";
+        });
         return "Place Success";
     }
 }

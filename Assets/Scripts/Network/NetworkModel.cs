@@ -255,6 +255,12 @@ namespace Network
             {
                 try
                 {
+                    if (_listener == null)
+                    {
+                        _listener = new();
+                        _listener.Prefixes.Add($"http://*:{_roomID}/");
+                    }
+
                     if (!_listener.IsListening) { _listener.Start(); }
 
                     var context = await _listener.GetContextAsync();
