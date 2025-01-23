@@ -29,6 +29,7 @@ namespace Network
                 if (int.TryParse(result, out int value))
                 {
                     GameLogicSupervisor.Instance.PlayTurnIndexSetting(value);
+                    presenter.AccessWaiting();
                 }
             });
 

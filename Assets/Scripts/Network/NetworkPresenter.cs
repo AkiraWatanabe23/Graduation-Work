@@ -76,6 +76,8 @@ public class NetworkPresenter : MonoBehaviour
         _networkView.SetActivate(_networkView.DeveloperPanel, true);
     }
 
+    public void AccessWaiting() => _networkModel.AccessWaiting();
+
     public async void GameStart()
     {
         await SendPutRequest(RequestType.ChangeTurn);
