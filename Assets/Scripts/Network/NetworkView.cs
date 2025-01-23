@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Network
@@ -29,6 +30,8 @@ namespace Network
                 if (int.TryParse(result, out int value))
                 {
                     GameLogicSupervisor.Instance.PlayTurnIndexSetting(value);
+
+                    await Task.Yield();
                     presenter.AccessWaiting();
                 }
             });
