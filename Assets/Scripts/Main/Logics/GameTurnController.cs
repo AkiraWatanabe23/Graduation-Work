@@ -1,11 +1,19 @@
 ﻿using Network;
 using System;
 using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.Events;
 
+[Serializable]
 public class GameTurnController
 {
+    [SerializeField]
+    private UnityEvent _events = default;
+
     private int _playTurnIndex = 0;
     private bool _isPlayableTurn = false;
+
+    private bool _isGameStart = false;
 
     protected Action OnNextTurn { get; private set; }
 
@@ -30,6 +38,12 @@ public class GameTurnController
     private async Task<string> ChangeTurn(string _)
     {
         OnNextTurn?.Invoke();
+
+        if (!_isGameStart)
+        {
+            _isGameStart = true;
+            _events?.Invoke();
+        }
 
         await Task.Yield();
         return "Request Success";

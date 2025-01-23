@@ -49,4 +49,12 @@ MonoBehaviour:
     _clip: {fileID: 0}
   - _bgmType: 2
     _clip: {fileID: 0}
-  _seClips: []
+  - _bgmType: 3
+    _clip: {fileID: 0}
+  _seClips:
+  - _seType: 1
+    _clip: {fileID: 0}
+  - _seType: 2
+    _clip: {fileID: 0}
+  - _seType: 3
+    _clip: {fileID: 0}

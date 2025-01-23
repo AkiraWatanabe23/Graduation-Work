@@ -2745,6 +2745,42 @@ PrefabInstance:
       propertyPath: _roomCtrl._connectionCountText
       value: 
       objectReference: {fileID: 1621508009}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 85170171}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetActive
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._events.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4096994167404202779, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
       propertyPath: m_Name
       value: SuperVisor
@@ -3925,6 +3961,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 911217325}
+        m_TargetAssemblyTypeName: NetworkPresenter, Assembly-CSharp
+        m_MethodName: GameStart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 5068041805664597094}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive

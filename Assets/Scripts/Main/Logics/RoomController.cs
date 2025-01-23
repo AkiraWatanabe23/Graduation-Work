@@ -83,7 +83,7 @@ public class RoomController
             _currentPlayersCount++;
             _connectionCountText.text = $"Count : {_currentPlayersCount}";
             await Task.Yield();
-            return "";
+            return "Count up Finish";
         });
 
         Debug.Log($"ルームへの参加を承認しました : 現在{_currentPlayersCount}人です");

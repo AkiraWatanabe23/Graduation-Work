@@ -44,10 +44,13 @@ public enum BGMType
     None,
     Title,
     InGame,
+    Result
 }
 
 public enum SEType
 {
     None,
+    BlockSelect,
     Click,
+    ChangeMaterial,
 }
