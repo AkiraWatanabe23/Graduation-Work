@@ -19,6 +19,7 @@ public class GameTurnController
 
     /// <summary> 自分の番かどうか </summary>
     public bool IsPlayableTurn => _isPlayableTurn;
+    public bool IsGameStart => _isGameStart;
 
     /// <summary> 初期化処理 </summary>
     public void Initialize(DataContainer container, NetworkModel model)

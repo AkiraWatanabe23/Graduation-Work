@@ -775,12 +775,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 207169339}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -391.6131, y: -1048.4836, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 843406708}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &207510070
 GameObject:
@@ -1793,6 +1793,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1288917909}
+  - {fileID: 207169342}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &848206549
@@ -2783,7 +2784,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4096994167404202779, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
       propertyPath: m_Name
-      value: SuperVisor
+      value: Supervisor
       objectReference: {fileID: 0}
     - target: {fileID: 8154764500154282812, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4232,7 +4233,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6942cc68731d84843aa55abccaf433ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debugMode: 1
   _layerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -6992,7 +6992,6 @@ SceneRoots:
   - {fileID: 1775514880}
   - {fileID: 1892511869}
   - {fileID: 843406708}
-  - {fileID: 207169342}
   - {fileID: 1956242527}
   - {fileID: 312072979}
   - {fileID: 976391947}

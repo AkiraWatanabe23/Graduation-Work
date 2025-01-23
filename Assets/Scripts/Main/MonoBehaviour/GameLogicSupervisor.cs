@@ -32,6 +32,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
     public DataContainer DataContainer => _dataContainer;
 
     public bool IsPlayableTurn => _turnCtrl.IsPlayableTurn;
+    public bool IsGameStart => _turnCtrl.IsGameStart;
 
     public bool IsActive => true;
 
