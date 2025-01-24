@@ -80,6 +80,7 @@ public class NetworkPresenter : MonoBehaviour
 
     public async void GameStart()
     {
+        _networkModel.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
         await SendPutRequest(RequestType.ChangeTurn);
     }
 }

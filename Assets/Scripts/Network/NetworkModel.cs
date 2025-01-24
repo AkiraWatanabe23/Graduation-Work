@@ -43,6 +43,8 @@ namespace Network
         private Dictionary<string, Func<string, Task<string>>> _requestEvents = default;
 
         private string _roomID = "";
+
+        public Dictionary<string, Func<string, Task<string>>> RequestEvents => _requestEvents;
         #endregion
 
         public void RegisterEvent(RequestType request, Func<string, Task<string>> func)
@@ -87,6 +89,7 @@ namespace Network
             for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
+
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 
@@ -137,11 +140,12 @@ namespace Network
         public async Task<string> SendPutRequest(string json, string requestMessage, string[] addresses, CancellationToken token = default)
         {
             int loopCount = _hostURL == "" ? addresses.Length : 1;
-            if (int.TryParse(json, out int _)) { _roomID = json; }
+            if (json.Length == 4 && int.TryParse(json, out int _)) { _roomID = json; }
 
             for (int i = 0; i < loopCount; i++)
             {
                 if (addresses[i] == "") { continue; }
+
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
 

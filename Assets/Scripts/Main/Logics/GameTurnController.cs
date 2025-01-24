@@ -3,16 +3,20 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 [Serializable]
 public class GameTurnController
 {
+    [SerializeField]
+    private Text _gameTurnText = default;
     [SerializeField]
     private UnityEvent _events = default;
 
     private int _playTurnIndex = 0;
     private bool _isPlayableTurn = false;
 
+    [SerializeField]
     private bool _isGameStart = false;
 
     protected Action OnNextTurn { get; private set; }
@@ -42,11 +46,14 @@ public class GameTurnController
         {
             OnNextTurn?.Invoke();
 
+            Debug.Log(_isGameStart);
             if (!_isGameStart)
             {
                 _isGameStart = true;
                 _events?.Invoke();
             }
+            _gameTurnText.text = _isPlayableTurn ? "Play Turn" : "Other Player Playing...";
+            Debug.Log(_isGameStart);
 
             await Task.Yield();
             return "Request Success";

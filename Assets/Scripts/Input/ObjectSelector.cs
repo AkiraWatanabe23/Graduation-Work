@@ -23,13 +23,14 @@ public class ObjectSelector : MonoBehaviour
     {
         container.GameFinishRegister(GameFinish);
 
-        presenter.Model.RegisterEvent(RequestType.SelectBlock, SelectBlock);
+        //presenter.Model.RegisterEvent(RequestType.SelectBlock, SelectBlock);
 
         _dataContainer = container;
 
         OnSelectBlock = (async (data) =>
         {
-            await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+            await presenter.SendPutRequest(RequestType.SelectBlock);
+            _dataContainer.SelectedBlockId = data.BlockId;
         });
         //OnSelectBlock = _debugMode switch
         //{
@@ -45,7 +46,7 @@ public class ObjectSelector : MonoBehaviour
 
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0)) { Debug.Log("not input"); return; }
+        if (!Input.GetMouseButtonDown(0)) { return; }
         if (_isGameFinish) { Debug.Log("Game Finish"); return; }
         if (!GameLogicSupervisor.Instance.IsGameStart) { Debug.Log("not game start yet"); return; }
         if (!GameLogicSupervisor.Instance.IsPlayableTurn) { Debug.Log("not my turn"); return; }
