@@ -181,11 +181,15 @@ public class JengaController
     }
 
     /// <summary> 他プレイヤーがブロックの選択を行った </summary>
-    private async Task<string> BlockSelected(string _)
+    private async Task<string> BlockSelected(string requestData)
     {
         await MainThreadDispatcher.RunAsync(async () =>
         {
-            await PlaceSelector();
+            var splitData = requestData.Split(',');
+            var id = int.Parse(splitData[0]);
+
+            _container.SelectedBlockId = id;
+            await Task.Yield();
             return "Selected";
         });
         return "Selected";

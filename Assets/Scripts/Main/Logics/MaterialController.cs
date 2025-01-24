@@ -57,21 +57,25 @@ public class MaterialController
 
     private async Task<string> ChangeMaterial(string requestData)
     {
-        var splitData = requestData.Split(',');
-        var id = int.Parse(splitData[0]);
-        var material = splitData[1];
+        await MainThreadDispatcher.RunAsync(async () =>
+        {
+            var splitData = requestData.Split(',');
+            var id = int.Parse(splitData[0]);
+            var material = splitData[1];
 
-        var targetMaterial = (MaterialType)Enum.Parse(typeof(MaterialType), material);
+            var targetMaterial = (MaterialType)Enum.Parse(typeof(MaterialType), material);
 
-        //VantanConnect対応 ==========================================
-        //EventData data = new(EventDefine.JengaInfo);
-        //data.DataPack("Material", (int)targetMaterial);
-        //VantanConnect.SendEvent(data);
-        // ===========================================================
+            //VantanConnect対応 ==========================================
+            //EventData data = new(EventDefine.JengaInfo);
+            //data.DataPack("Material", (int)targetMaterial);
+            //VantanConnect.SendEvent(data);
+            // ===========================================================
 
-        _ = ChangeMaterial(_blockDict[id], targetMaterial);
+            _ = ChangeMaterial(_blockDict[id], targetMaterial);
 
-        await Task.Yield();
+            await Task.Yield();
+            return "Change Material";
+        });
         return "Request Success";
     }
 }
