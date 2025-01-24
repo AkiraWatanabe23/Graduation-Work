@@ -187,8 +187,10 @@ public class JengaController
         {
             var splitData = requestData.Split(',');
             var id = int.Parse(splitData[0]);
+            var prob = float.Parse(splitData[1]);
 
             _container.SelectedBlockId = id;
+            _container.CollapseProbability = prob;
             await Task.Yield();
             return "Selected";
         });

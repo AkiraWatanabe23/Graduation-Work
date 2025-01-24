@@ -26,10 +26,9 @@ public class DataContainer
                 },
                 false => newBlockId,
             };
-            CollapseProbability = Random.Range(0f, 1f);
         }
     }
-    public float CollapseProbability { get; private set; } = 1.0f;
+    public float CollapseProbability { get; set; } = 1.0f;
 
     public int CurrentTurn
     {

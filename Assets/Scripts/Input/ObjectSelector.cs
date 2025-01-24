@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ObjectSelector : MonoBehaviour
 {
@@ -29,17 +30,10 @@ public class ObjectSelector : MonoBehaviour
 
         OnSelectBlock = (async (data) =>
         {
-            await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
+            _dataContainer.CollapseProbability = Random.Range(0f, 1f);
+            await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString(), _dataContainer.CollapseProbability.ToString());
             _dataContainer.SelectedBlockId = data.BlockId;
         });
-        //OnSelectBlock = _debugMode switch
-        //{
-        //    true => (data) => _dataContainer.SelectedBlockId = data.BlockId,
-        //    false => async (data) =>
-        //    {
-        //        await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString());
-        //    }
-        //};
 
         _mainCamera = Camera.main;
     }
