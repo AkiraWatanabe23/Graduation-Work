@@ -19,6 +19,8 @@ public class RoomController
 
     [SerializeField]
     private Text _connectionCountText = default;
+    [SerializeField]
+    private Text _roomIDText = default;
 
     /// <summary> ルーム作成時に発行されるID </summary>
     private string _roomID = "";
@@ -50,6 +52,8 @@ public class RoomController
         _random ??= new();
         _roomID = _random.Next(0, 10000).ToString("0000");
         await Task.Yield();
+
+        _roomIDText.text = $"RoomID : {_roomID}";
 
         return _roomID;
     }
