@@ -38,7 +38,7 @@ public class NetworkPresenter : MonoBehaviour
         _otherPlayersIPAddress = new string[3];
         for (int i = 0; i < _otherPlayersIPAddress.Length; i++)
         {
-            _otherPlayersIPAddress[i] = _networkView.IPAddressFields[i].text.Trim();
+            _otherPlayersIPAddress[i] = _networkView.AddressTexts[i].text.Trim();
         }
     }
 
