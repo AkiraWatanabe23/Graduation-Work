@@ -24,8 +24,6 @@ public class ObjectSelector : MonoBehaviour
     {
         container.GameFinishRegister(GameFinish);
 
-        //presenter.Model.RegisterEvent(RequestType.SelectBlock, SelectBlock);
-
         _dataContainer = container;
 
         OnSelectBlock = (async (data) =>
@@ -52,16 +50,6 @@ public class ObjectSelector : MonoBehaviour
 
         Debug.Log($"hit ID : {data.BlockId} {_dataContainer.SelectedBlockId}");
         OnSelectBlock?.Invoke(data);
-    }
-
-    private async Task<string> SelectBlock(string requestData)
-    {
-        var splitData = requestData.Split(',');
-        var id = int.Parse(splitData[0]);
-
-        _dataContainer.SelectedBlockId = id;
-        await Task.Yield();
-        return "Block Selected";
     }
 
     private void GameFinish()
