@@ -42,7 +42,7 @@ public class JengaController
         {
             await presenter.SendPutRequest(RequestType.PlaceBlock, id.ToString(), next.ToString());
 
-            presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
+            if (GameLogicSupervisor.Instance.IsPlayableTurn) { presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke(""); }
             await presenter.SendPutRequest(RequestType.ChangeTurn);
         };
     }
