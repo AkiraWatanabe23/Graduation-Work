@@ -49,6 +49,23 @@ MonoBehaviour:
   _networkPresenter: {fileID: 0}
   _jengaCtrl:
     _blockPrefab: {fileID: -4845482056928632616, guid: a438e7bb7256d684d90c5d57a6eab85a, type: 3}
+  _turnCtrl:
+    _gameTurnText: {fileID: 0}
+    _events:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   _matCtrl:
     _materialDatas:
     - <MaterialType>k__BackingField: 1
@@ -60,3 +77,7 @@ MonoBehaviour:
     - <MaterialType>k__BackingField: 3
       <Weight>k__BackingField: 0.5
       <Material>k__BackingField: {fileID: 2100000, guid: 01b8c5227993b3642ace4192905ef4c3, type: 2}
+  _roomCtrl:
+    _maxConnectableCount: 2
+    _currentPlayersCount: 0
+    _connectionCountText: {fileID: 0}

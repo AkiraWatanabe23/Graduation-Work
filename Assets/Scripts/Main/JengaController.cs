@@ -36,6 +36,7 @@ public class JengaController
         InitSelectBoxes();
         BuildUp();
 
+        presenter.Model.RegisterEvent(RequestType.SelectBlock, BlockSelected);
         presenter.Model.RegisterEvent(RequestType.PlaceBlock, PlaceBlock);
         _onPlace = async (id, next) =>
         {
@@ -175,8 +176,19 @@ public class JengaController
                 _logic.UpdateBlockInfo(_container.Blocks[_alreadySelectedId], box);
             }
 
-            if(box.gameObject.activeSelf) box.gameObject.SetActive(false);
+            if (box.gameObject.activeSelf) box.gameObject.SetActive(false);
         }
+    }
+
+    /// <summary> 他プレイヤーがブロックの選択を行った </summary>
+    private async Task<string> BlockSelected(string _)
+    {
+        await MainThreadDispatcher.RunAsync(async () =>
+        {
+            await PlaceSelector();
+            return "Selected";
+        });
+        return "Selected";
     }
 
     /// <summary>ジェンガの最上部にブロックを置く場所があるか</summary>
@@ -209,7 +221,18 @@ public class JengaController
             var next = int.Parse(splitData[1]);
 
             Debug.Log($"place {id}");
-            Place(id, _container.Blocks[next].gameObject.transform.position, _container.Blocks[next].gameObject.transform.rotation);
+            BlockData nextBlock = null;
+
+            foreach (var target in _selectBoxes)
+            {
+                if (target.BlockId == next)
+                {
+                    nextBlock = target;
+                    break;
+                }
+            }
+
+            Place(id, nextBlock.transform.position, nextBlock.transform.rotation);
             await Task.Yield();
             return "Place Success";
         });
