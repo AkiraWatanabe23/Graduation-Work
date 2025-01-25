@@ -53,7 +53,6 @@ public class GameTurnController
                 _events?.Invoke();
             }
             _gameTurnText.text = _isPlayableTurn ? "Play Turn" : "Other's Turn";
-            Debug.Log(_isGameStart);
 
             await Task.Yield();
             return "Request Success";

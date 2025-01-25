@@ -81,7 +81,6 @@ public class RoomController
         if (roomID != _roomID) { Debug.Log($"RoomID is not correct. {roomID}"); return $"RoomID is not correct. {roomID}"; }
         else if (_currentPlayersCount + 1 > _maxConnectableCount) { Debug.Log("Room is full."); return "Room is full."; }
 
-        //await Task.Yield();
         await MainThreadDispatcher.RunAsync(async () =>
         {
             _currentPlayersCount++;

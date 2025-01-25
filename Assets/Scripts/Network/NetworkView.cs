@@ -14,6 +14,7 @@ namespace Network
         [SerializeField]
         private Text _roomIDText = default;
 
+        [ReadOnly]
         [SerializeField]
         private Text _targetAddressText = default;
 
@@ -57,6 +58,8 @@ namespace Network
 
         public void InputAddressPad(string text)
         {
+            if (_targetAddressText == null) { return; }
+
             if (!int.TryParse(text, out int _) && text.Length > 1)
             {
                 _targetAddressText.text = "";
@@ -68,6 +71,8 @@ namespace Network
 
         public void InputNumberPad(string text)
         {
+            if (_roomIDText == null) { return; }
+
             if (!int.TryParse(text, out int _))
             {
                 _roomIDText.text = "";

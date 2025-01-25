@@ -32,6 +32,9 @@ namespace Network
         [ReadOnly]
         [SerializeField]
         private string _hostURL = "";
+        [ReadOnly]
+        [SerializeField]
+        private bool _isHost = false;
 
         private Stream _responseOutput = default;
         private HttpListener _listener = default;
@@ -84,7 +87,7 @@ namespace Network
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPostRequest(WWWForm form, string[] addresses, CancellationToken token = default)
         {
-            int loopCount = _hostURL == "" ? addresses.Length : 1;
+            int loopCount = _isHost ? addresses.Length : 1;
 
             for (int i = 0; i < loopCount; i++)
             {
@@ -128,7 +131,6 @@ namespace Network
 
                     _runCount = 0;
                     _stopWatch.Reset();
-                    return result;
                 }
             }
             //各URLに対してそれぞれリクエスト処理を行い、どこにも合致しなかったらリクエスト失敗
@@ -139,12 +141,12 @@ namespace Network
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPutRequest(string json, string requestMessage, string[] addresses, CancellationToken token = default)
         {
-            int loopCount = _hostURL == "" ? addresses.Length : 1;
+            int loopCount = _isHost ? addresses.Length : 1;
             if (json.Length == 4 && int.TryParse(json, out int _)) { _roomID = json; }
 
             for (int i = 0; i < loopCount; i++)
             {
-                if (addresses[i] == "") { continue; }
+                if (addresses[i] == "") { break; }
 
                 _hostURL = CreateConnectionURL(addresses[i], _roomID);
                 if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
@@ -186,7 +188,6 @@ namespace Network
 
                     _runCount = 0;
                     _stopWatch.Reset();
-                    return result;
                 }
             }
             //各URLに対してそれぞれリクエスト処理を行い、どこにも合致しなかったらリクエスト失敗
@@ -207,6 +208,7 @@ namespace Network
             {
                 case "CreateRoom":
                     //ここでルームへの入室待機処理の開始を行う
+                    _isHost = true;
                     _roomID = result;
 
                     string redirectURL = $"http://*:{_roomID}/";

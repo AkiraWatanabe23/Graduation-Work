@@ -12,6 +12,8 @@ public class NetworkPresenter : MonoBehaviour
     private NetworkModel _networkModel = new();
 
     private string[] _otherPlayersIPAddress = default;
+    /// <summary> リクエスト処理を実行中かどうか </summary>
+    private bool _isRequesting = false;
 
     public NetworkModel Model => _networkModel;
 
@@ -39,16 +41,20 @@ public class NetworkPresenter : MonoBehaviour
         for (int i = 0; i < _otherPlayersIPAddress.Length; i++)
         {
             _otherPlayersIPAddress[i] = _networkView.AddressTexts[i].text.Trim();
+            Debug.Log(_otherPlayersIPAddress[i]);
         }
     }
 
     public async void SelfRequest(RequestType requestType)
     {
-        var requestResult = await _networkModel.ReceiveSelfRequest(requestType.ToString());
+        _ = await _networkModel.ReceiveSelfRequest(requestType.ToString());
     }
 
     public async Task<string> SendPostRequest(RequestType requestType)
     {
+        if (_isRequesting) { return "他のリクエストを実行中です"; }
+
+        _isRequesting = true;
         //「誰が」「何をしたいか」を送信する
         var form = new WWWForm();
         form.AddField("RequestMessage", requestType.ToString());
@@ -57,17 +63,22 @@ public class NetworkPresenter : MonoBehaviour
         var requestResult = await _networkModel.SendPostRequest(form, _otherPlayersIPAddress);
         Debug.Log(requestResult);
 
+        _isRequesting = false;
         return requestResult;
     }
 
     public async Task<string> SendPutRequest(RequestType requestType, params string[] parameters)
     {
+        if (_isRequesting) { return "他のリクエストを実行中です"; }
+
+        _isRequesting = true;
         SetPlayersIPAddress();
         var requestResult
             = await _networkModel.SendPutRequest(
                 $"{string.Join(",", parameters)}", requestType.ToString(), _otherPlayersIPAddress);
         Debug.Log(requestResult);
 
+        _isRequesting = false;
         return requestResult;
     }
 
