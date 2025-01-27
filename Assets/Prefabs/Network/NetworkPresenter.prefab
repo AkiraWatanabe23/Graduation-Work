@@ -46,7 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkView: {fileID: 0}
   _networkModel:
-    _rerunCount: 3
+    _rerunCount: 2
     _executionTime: 1
     _runCount: 0
     _hostURL: 
+    _isHost: 0
