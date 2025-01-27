@@ -87,111 +87,132 @@ namespace Network
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPostRequest(WWWForm form, string[] addresses, CancellationToken token = default)
         {
-            int loopCount = _isHost ? addresses.Length : 1;
+            int loopCount = _isHost || !NetworkConsts.IsConnecting ? addresses.Length : 1;
+            Debug.Log($"{loopCount}回のループを実行します");
 
             for (int i = 0; i < loopCount; i++)
             {
-                if (addresses[i] == "") { continue; }
+                var result = await SendPostRequestForOne(form, addresses[i], token);
 
-                _hostURL = CreateConnectionURL(addresses[i], _roomID);
-                if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
-
-                if (token == default) { token = _cancellationTokenSource.Token; }
-                _stopWatch.Start();
-
-                using UnityWebRequest request = UnityWebRequest.Post(_hostURL, form);
-                var send = request.SendWebRequest();
-                while (!send.isDone)
-                {
-                    if (token.IsCancellationRequested || _runCount >= _rerunCount) { break; }
-                    if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
-                    {
-                        if (_runCount < _rerunCount)
-                        {
-                            _runCount++;
-                            _stopWatch.Reset();
-
-                            return await SendPostRequest(form, addresses, _cancellationTokenSource.Token);
-                        }
-                        else { continue; }
-                    }
-                    await Task.Delay(1, token);
-                }
-
-                //送信結果の確認
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogError(request.error);
-                    continue;
-                }
-                else
-                {
-                    var result = request.downloadHandler.text;
-                    Debug.Log($"Request Result : {result}");
-
-                    _runCount = 0;
-                    _stopWatch.Reset();
-                }
+                if (result != NetworkConsts.FailedMessage) { return result; }
             }
             //各URLに対してそれぞれリクエスト処理を行い、どこにも合致しなかったらリクエスト失敗
-            return "None";
+            return NetworkConsts.FailedMessage;
+        }
+
+        private async Task<string> SendPostRequestForOne(WWWForm form, string address, CancellationToken token = default)
+        {
+
+            if (address == "") { return "None"; }
+
+            _hostURL = CreateConnectionURL(address, _roomID);
+            if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); return $"URL未成立：{_hostURL}"; }
+
+            if (token == default) { token = _cancellationTokenSource.Token; }
+            _stopWatch.Start();
+
+            using UnityWebRequest request = UnityWebRequest.Post(_hostURL, form);
+            var send = request.SendWebRequest();
+            while (!send.isDone)
+            {
+                if (token.IsCancellationRequested || _runCount >= _rerunCount) { break; }
+                if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
+                {
+                    if (_runCount < _rerunCount)
+                    {
+                        _runCount++;
+                        _stopWatch.Reset();
+
+                        return await SendPostRequestForOne(form, address, _cancellationTokenSource.Token);
+                    }
+                    else { continue; }
+                }
+                await Task.Delay(1, token);
+            }
+
+            //送信結果の確認
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError(request.error);
+                return request.error;
+            }
+            else
+            {
+                var result = request.downloadHandler.text;
+                Debug.Log($"Request Result : {result}");
+
+                _runCount = 0;
+                _stopWatch.Reset();
+
+                return result;
+            }
         }
 
         /// <summary> Putリクエストを送信する </summary>
         /// <returns> 実行結果の文字列 </returns>
         public async Task<string> SendPutRequest(string json, string requestMessage, string[] addresses, CancellationToken token = default)
         {
-            int loopCount = _isHost ? addresses.Length : 1;
+            int loopCount = _isHost || !NetworkConsts.IsConnecting ? addresses.Length : 1;
+            Debug.Log($"{loopCount}回のループを実行します");
             if (json.Length == 4 && int.TryParse(json, out int _)) { _roomID = json; }
 
             for (int i = 0; i < loopCount; i++)
             {
-                if (addresses[i] == "") { break; }
+                var result = await SendPutRequestForOne(json, requestMessage, addresses[i], token);
 
-                _hostURL = CreateConnectionURL(addresses[i], _roomID);
-                if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); continue; }
-
-                if (token == default) { token = _cancellationTokenSource.Token; }
-                _stopWatch.Start();
-
-                Debug.Log(_hostURL);
-                using UnityWebRequest request = UnityWebRequest.Put(_hostURL, Encoding.UTF8.GetBytes(json + $"^{requestMessage}"));
-                var send = request.SendWebRequest();
-
-                while (!send.isDone)
-                {
-                    Debug.Log("sending...");
-                    if (token.IsCancellationRequested || _runCount >= _rerunCount) { break; }
-                    if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
-                    {
-                        if (_runCount < _rerunCount)
-                        {
-                            _runCount++;
-                            _stopWatch.Reset();
-
-                            return await SendPutRequest(json, requestMessage, addresses, _cancellationTokenSource.Token);
-                        }
-                        else { continue; }
-                    }
-                    await Task.Delay(1, token);
-                }
-
-                if (request.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogError(request.error);
-                    continue;
-                }
-                else
-                {
-                    var result = request.downloadHandler.text;
-                    Debug.Log($"Request Result : {result}");
-
-                    _runCount = 0;
-                    _stopWatch.Reset();
-                }
+                if (result != NetworkConsts.FailedMessage) { return result; }
             }
             //各URLに対してそれぞれリクエスト処理を行い、どこにも合致しなかったらリクエスト失敗
-            return "None";
+            return NetworkConsts.FailedMessage;
+        }
+
+        private async Task<string> SendPutRequestForOne(string json, string requestMessage, string address, CancellationToken token = default)
+        {
+            if (address == "") { return "None"; }
+
+            _hostURL = CreateConnectionURL(address, _roomID);
+            if (!IsValidURL(_hostURL)) { Debug.Log($"URL未成立：{_hostURL}"); return $"URL未成立：{_hostURL}"; }
+
+            if (token == default) { token = _cancellationTokenSource.Token; }
+            _stopWatch.Start();
+
+            Debug.Log(_hostURL);
+            using UnityWebRequest request = UnityWebRequest.Put(_hostURL, Encoding.UTF8.GetBytes(json + $"^{requestMessage}"));
+            var send = request.SendWebRequest();
+
+            while (!send.isDone)
+            {
+                Debug.Log("sending...");
+                if (token.IsCancellationRequested || _runCount >= _rerunCount) { break; }
+                if (_stopWatch.ElapsedMilliseconds >= _executionTime * 1000f)
+                {
+                    if (_runCount < _rerunCount)
+                    {
+                        _runCount++;
+                        _stopWatch.Reset();
+
+                        return await SendPutRequestForOne(json, requestMessage, address, _cancellationTokenSource.Token);
+                    }
+                    else { continue; }
+                }
+                await Task.Delay(1, token);
+            }
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError(request.error);
+                return NetworkConsts.FailedMessage;
+            }
+            else
+            {
+                var result = request.downloadHandler.text;
+                Debug.Log($"Request Result : {result}");
+
+                _runCount = 0;
+                _stopWatch.Reset();
+
+                return result;
+            }
         }
         #endregion
 
@@ -295,6 +316,7 @@ namespace Network
                     else if (context.Request.HttpMethod == "PUT")
                     {
                         responseString = await ReceivePutRequest(new StreamReader(context.Request.InputStream).ReadToEnd());
+                        Debug.Log(responseString);
                     }
 
                     var buffer = Encoding.UTF8.GetBytes(responseString);

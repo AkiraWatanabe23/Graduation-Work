@@ -11,9 +11,10 @@ public class NetworkPresenter : MonoBehaviour
     [SerializeField]
     private NetworkModel _networkModel = new();
 
-    private string[] _otherPlayersIPAddress = default;
     /// <summary> リクエスト処理を実行中かどうか </summary>
     private bool _isRequesting = false;
+
+    private static string[] _otherPlayersIPAddress = default;
 
     public NetworkModel Model => _networkModel;
 
@@ -35,7 +36,7 @@ public class NetworkPresenter : MonoBehaviour
     /// <summary> 各プレイヤーのIPAddressを取得する </summary>
     private void SetPlayersIPAddress()
     {
-        if (_otherPlayersIPAddress != null) { return; }
+        if (_otherPlayersIPAddress != null) { Debug.Log("既にアドレスが設定済です"); return; }
 
         _otherPlayersIPAddress = new string[3];
         for (int i = 0; i < _otherPlayersIPAddress.Length; i++)
@@ -73,6 +74,7 @@ public class NetworkPresenter : MonoBehaviour
 
         _isRequesting = true;
         SetPlayersIPAddress();
+
         var requestResult
             = await _networkModel.SendPutRequest(
                 $"{string.Join(",", parameters)}", requestType.ToString(), _otherPlayersIPAddress);
@@ -92,6 +94,8 @@ public class NetworkPresenter : MonoBehaviour
     public async void GameStart()
     {
         _networkModel.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
-        await SendPutRequest(RequestType.ChangeTurn);
+        var request = await SendPutRequest(RequestType.ChangeTurn);
+
+        Debug.Log(request);
     }
 }

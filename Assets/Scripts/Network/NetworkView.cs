@@ -13,7 +13,6 @@ namespace Network
 
         [SerializeField]
         private Text _roomIDText = default;
-
         [ReadOnly]
         [SerializeField]
         private Text _targetAddressText = default;

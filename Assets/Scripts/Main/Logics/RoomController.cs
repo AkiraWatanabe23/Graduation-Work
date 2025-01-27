@@ -54,7 +54,6 @@ public class RoomController
         await Task.Yield();
 
         _roomIDText.text = $"RoomID : {_roomID}";
-
         return _roomID;
     }
 
@@ -65,6 +64,7 @@ public class RoomController
         if (!_isHost) { return "I'm not room host"; }
         _currentPlayersCount--;
 
+        NetworkConsts.IsConnecting = false;
         await Task.Yield();
         return "Exit Success";
     }
@@ -89,6 +89,7 @@ public class RoomController
             return "Count up Finish";
         });
 
+        NetworkConsts.IsConnecting = true;
         Debug.Log($"ルームへの参加を承認しました : 現在{_currentPlayersCount}人です");
         return (_currentPlayersCount - 1).ToString();
     }
