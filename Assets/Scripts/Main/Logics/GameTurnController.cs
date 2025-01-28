@@ -13,11 +13,11 @@ public class GameTurnController
     [SerializeField]
     private UnityEvent _events = default;
 
-    private int _playTurnIndex = 0;
-    private bool _isPlayableTurn = false;
-
     [SerializeField]
     private bool _isGameStart = false;
+
+    private int _playTurnIndex = 0;
+    private bool _isPlayableTurn = false;
 
     protected Action OnNextTurn { get; private set; }
 
@@ -51,6 +51,8 @@ public class GameTurnController
             {
                 _isGameStart = true;
                 _events?.Invoke();
+
+                AudioManager.Instance.PlayBGM(BGMType.InGame);
             }
             _gameTurnText.text = _isPlayableTurn ? "Play Turn" : "Other's Turn";
 

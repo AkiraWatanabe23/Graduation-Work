@@ -76,7 +76,7 @@ public class AudioManager
             index++;
             if (clip.BGMType == bgm) { break; }
         }
-        if (index >= _soundHolder.BGMClips.Length) { Debug.LogError("指定したBGMが見つかりませんでした"); return; }
+        if (index >= _soundHolder.BGMClips.Length) { Debug.LogError($"指定したBGMが見つかりませんでした : {bgm}"); return; }
 
         Source.Stop();
 
@@ -95,7 +95,7 @@ public class AudioManager
             index++;
             if (clip.SEType == se) { break; }
         }
-        if (index >= _soundHolder.SEClips.Length) { Debug.LogError("指定したSEが見つかりませんでした"); return; }
+        if (index >= _soundHolder.SEClips.Length) { Debug.LogError($"指定したSEが見つかりませんでした {se}"); return; }
         //再生するSEを追加
         _seQueue.Enqueue(_soundHolder.SEClips[index].Clip);
 
