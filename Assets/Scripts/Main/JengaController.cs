@@ -49,13 +49,14 @@ public class JengaController
 
     public async void Update()
     {
-        if (_container.Blocks.ContainsKey(_container.SelectedBlockId)
-            && _alreadySelectedId != _container.SelectedBlockId)
+        if (_container.Blocks.ContainsKey(_container.SelectedBlockId)   // ブロックのIDが辞書に登録されているものか
+            && _alreadySelectedId != _container.SelectedBlockId)        // すでに移動させたブロックか
         {
             _alreadySelectedId = _container.SelectedBlockId;
 
             await PlaceSelector();
 
+            // ジェンガが崩れるか
             if (_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability))
             {
                 GameFinish();
@@ -65,6 +66,7 @@ public class JengaController
         }
     }
 
+    /// <summary>引き抜いたブロックをジェンガの最上段に置く際、置く場所を選択させるときに使う仮想ブロックの初期化</summary>
     private void InitSelectBoxes()
     {
         _selectBoxes = new BlockData[_container.ItemsPerLevel];
@@ -112,6 +114,7 @@ public class JengaController
         }
     }
 
+    /// <summary>ブロックの座標と回転を更新する</summary>
     private void Place(int blockId, Vector3 destination, Quaternion rotation)
     {
         if (_container.Blocks.ContainsKey(blockId).Invert()) return;
@@ -119,34 +122,36 @@ public class JengaController
         Place(_container.Blocks[blockId].gameObject, destination, rotation);
     }
 
-    /// <summary>ブロックの座標と回転を更新する</summary>
+    /// <summary>ゲームオブジェクトの座標と回転を更新する</summary>
     private void Place(GameObject target, Vector3 destination, Quaternion rotation)
     {
         target.transform.position = destination;
         target.transform.rotation *= rotation;
     }
 
+    /// <summary>ジェンガの最上段のどこにブロックを置くかを選択させ、ブロックを移動させる</summary>
     private async UniTask PlaceSelector()
     {
-        if (IsPlaceable().Invert())
+        if (IsPlaceable().Invert()) // チェックシートの最上段が埋まっていて、ブロックを置く場所がないとき
         {
-            _container.BlockMapping.Add(new int[_container.ItemsPerLevel]);
-            _destination.Set(0.0f, _destination.y + _blockScale.y, 0.0f);
+            _container.BlockMapping.Add(new int[_container.ItemsPerLevel]); // チェックシートの最上段を新たに追加
+            _destination.Set(0.0f, _destination.y + _blockScale.y, 0.0f);   // ブロックを配置する座標の更新
             _moveDir = Vector3.zero;
 
-            if (_container.BlockMapping.Count % 2 == 1)
+            if (_container.BlockMapping.Count % 2 == 1) // 最上段が奇数段目のとき
             {
                 _destination.z = -_blockScale.x * (_container.ItemsPerLevel / 2);
                 _moveDir.z = _blockScale.x;
                 _rotation = Quaternion.AngleAxis(90.0f, Vector3.up);
             }
-            else
+            else // 最上段が偶数段目のとき
             {
                 _destination.x = -_blockScale.x * (_container.ItemsPerLevel / 2);
                 _moveDir.x = _blockScale.x;
                 _rotation = Quaternion.AngleAxis(0.0f, Vector3.up);
             }
 
+            // ブロックを引き抜いた後、置く場所を選択させるときに使う仮想ブロックの初期化
             foreach (var selectbox in _selectBoxes)
             {
                 selectbox.transform.position = _destination;
@@ -161,6 +166,7 @@ public class JengaController
             }
         }
 
+        // ジェンガの最上段にブロックを置く場所があるかを検索する
         var highestFloor = _container.BlockMapping[_container.BlockMapping.Count - 1];
 
         for (int i = 0; i < highestFloor.Length; i++)
@@ -168,15 +174,15 @@ public class JengaController
             if (highestFloor[i] == 0) _selectBoxes[i].gameObject.SetActive(true);
         }
 
-        await UniTask.WaitUntil(() => _container.SelectedBlockId < 0);
+        await UniTask.WaitUntil(() => _container.SelectedBlockId < 0);  // 仮想ブロックが選択されるまで待機
 
-        foreach (var box in _selectBoxes)
+        foreach (var box in _selectBoxes)   // 選択された仮想ブロックの位置に引き抜いたブロックを移動させる
         {
             if (box.BlockId == _container.SelectedBlockId)
             {
                 _container.Blocks[_alreadySelectedId].transform.position = box.transform.position;
                 _container.Blocks[_alreadySelectedId].transform.rotation = box.transform.rotation;
-                _logic.UpdateBlockInfo(_container.Blocks[_alreadySelectedId], box);
+                _logic.UpdateBlockInfo(_container.Blocks[_alreadySelectedId], box); // ブロックのデータも更新する
             }
 
             if (box.gameObject.activeSelf) box.gameObject.SetActive(false);
@@ -205,13 +211,15 @@ public class JengaController
     {
         int placeableCount = 0;
 
+        // チェックシートの最上段を検索する
         foreach (var item in _container.BlockMapping[_container.BlockMapping.Count - 1])
         {
             if (item == 0) placeableCount++;
         }
-        return placeableCount > 0;
+        return placeableCount > 0;  // 最上段にブロックを置く空きがあるか
     }
 
+    /// <summary>ゲーム終了時に行う処理</summary>
     private void GameFinish()
     {
         foreach (var block in _container.Blocks)
