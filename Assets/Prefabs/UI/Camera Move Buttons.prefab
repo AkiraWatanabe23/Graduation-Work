@@ -88,7 +88,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 0, y: 0}
+  _rotateDirection: {x: 0, y: -1}
+  _selectColor: {r: 1, g: 1, b: 1, a: 1}
+  _pushColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &818911383809887136
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,7 +179,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 0, y: 0}
+  _rotateDirection: {x: -1, y: 0}
+  _selectColor: {r: 1, g: 1, b: 1, a: 1}
+  _pushColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1228727605780338991
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,7 +270,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 0, y: 0}
+  _rotateDirection: {x: 0, y: 1}
+  _selectColor: {r: 1, g: 1, b: 1, a: 1}
+  _pushColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &5125393442639601234
 GameObject:
   m_ObjectHideFlags: 0
@@ -322,6 +328,8 @@ MonoBehaviour:
   _vCam: {fileID: 0}
   _cameraRotateSpeed: 1
   _cameraZoomSpeed: 1
+  _cameraFovMin: 1
+  _cameraFovMax: 90
 --- !u!1 &8941317700149153599
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,4 +418,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 0, y: 0}
+  _rotateDirection: {x: 1, y: 0}
+  _selectColor: {r: 1, g: 1, b: 1, a: 1}
+  _pushColor: {r: 1, g: 1, b: 1, a: 1}
