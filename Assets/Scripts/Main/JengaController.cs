@@ -19,7 +19,7 @@ public class JengaController
     private Vector3 _destination = Vector3.zero;
     private Quaternion _rotation = Quaternion.identity;
     private Vector3 _moveDir = Vector3.zero;
-    private Vector3 _blockScale = Vector3.zero;
+    private Vector3 _blockSize = Vector3.zero;
     private GameObject _blockParent = null;
     private int _alreadySelectedId = 0;
 
@@ -29,7 +29,7 @@ public class JengaController
 
     public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
-        _blockScale = _blockPrefab.transform.localScale;
+        _blockSize = _blockPrefab.GetComponent<BoxCollider>().size;
         _blockParent = new GameObject("Block Parent");
         _container = container;
         _logic.Initialize(container);
@@ -76,7 +76,7 @@ public class JengaController
             _selectBoxes[i] = GameObject.CreatePrimitive(PrimitiveType.Cube).AddComponent<BlockData>();
             _selectBoxes[i].BlockId = id;
             _selectBoxes[i].AssignedIndex = i;
-            _selectBoxes[i].transform.localScale = _blockScale;
+            _selectBoxes[i].transform.localScale = _blockSize;
             _selectBoxes[i].gameObject.SetActive(false);
         }
     }
@@ -93,19 +93,19 @@ public class JengaController
 
                 if (i != 0)
                 {
-                    _destination.y += _blockScale.y;
+                    _destination.y += _blockSize.y;
                     _rotation *= Quaternion.AngleAxis(90.0f, Vector3.up);
                 }
 
                 if (_container.Blocks[i + 1].Height % 2 == 1)   // 奇数段目のとき
                 {
-                    _destination.x -= _blockScale.x * (_container.ItemsPerLevel / 2);
-                    _moveDir.x = _blockScale.x;
+                    _destination.x -= _blockSize.x * (_container.ItemsPerLevel / 2);
+                    _moveDir.x = _blockSize.x;
                 }
                 else    // 偶数段目のとき
                 {
-                    _destination.z -= _blockScale.x * (_container.ItemsPerLevel / 2);
-                    _moveDir.z = _blockScale.x;
+                    _destination.z -= _blockSize.x * (_container.ItemsPerLevel / 2);
+                    _moveDir.z = _blockSize.x;
                 }
             }
             Place(_container.Blocks[i + 1].gameObject, _destination, _rotation);
@@ -135,19 +135,19 @@ public class JengaController
         if (IsPlaceable().Invert()) // チェックシートの最上段が埋まっていて、ブロックを置く場所がないとき
         {
             _container.BlockMapping.Add(new int[_container.ItemsPerLevel]); // チェックシートの最上段を新たに追加
-            _destination.Set(0.0f, _destination.y + _blockScale.y, 0.0f);   // ブロックを配置する座標の更新
+            _destination.Set(0.0f, _destination.y + _blockSize.y, 0.0f);   // ブロックを配置する座標の更新
             _moveDir = Vector3.zero;
 
             if (_container.BlockMapping.Count % 2 == 1) // 最上段が奇数段目のとき
             {
-                _destination.z = -_blockScale.x * (_container.ItemsPerLevel / 2);
-                _moveDir.z = _blockScale.x;
+                _destination.z = -_blockSize.x * (_container.ItemsPerLevel / 2);
+                _moveDir.z = _blockSize.x;
                 _rotation = Quaternion.AngleAxis(90.0f, Vector3.up);
             }
             else // 最上段が偶数段目のとき
             {
-                _destination.x = -_blockScale.x * (_container.ItemsPerLevel / 2);
-                _moveDir.x = _blockScale.x;
+                _destination.x = -_blockSize.x * (_container.ItemsPerLevel / 2);
+                _moveDir.x = _blockSize.x;
                 _rotation = Quaternion.AngleAxis(0.0f, Vector3.up);
             }
 
