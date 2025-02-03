@@ -44,13 +44,22 @@ public enum BGMType
     None,
     Title,
     InGame,
-    Result
+    ResultWin,
+    ResultLose
 }
 
 public enum SEType
 {
     None,
-    BlockSelect,
-    Click,
+    ClickButton,
+    ClickNumberPad,
     ChangeMaterial,
+    GameStart,
+    MoveMetal,
+    MovePlastic,
+    MoveWood,
+    MyTurn,
+    SelectMetal,
+    SelectPlastic,
+    SelectWood,
 }

@@ -21,6 +21,7 @@ public class MaterialInputHandler : MonoBehaviour
     private void Start()
     {
         _main = Camera.main;
+        if (_supervisor == null) { _supervisor = FindObjectOfType<GameLogicSupervisor>(); }
     }
 
     private void Update()

@@ -51,10 +51,28 @@ MonoBehaviour:
     _clip: {fileID: 0}
   - _bgmType: 3
     _clip: {fileID: 0}
+  - _bgmType: 4
+    _clip: {fileID: 0}
   _seClips:
   - _seType: 1
     _clip: {fileID: 0}
   - _seType: 2
     _clip: {fileID: 0}
   - _seType: 3
+    _clip: {fileID: 0}
+  - _seType: 4
+    _clip: {fileID: 0}
+  - _seType: 5
+    _clip: {fileID: 0}
+  - _seType: 6
+    _clip: {fileID: 0}
+  - _seType: 7
+    _clip: {fileID: 0}
+  - _seType: 8
+    _clip: {fileID: 0}
+  - _seType: 9
+    _clip: {fileID: 0}
+  - _seType: 10
+    _clip: {fileID: 0}
+  - _seType: 11
     _clip: {fileID: 0}
