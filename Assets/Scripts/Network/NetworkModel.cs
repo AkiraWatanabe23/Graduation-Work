@@ -358,5 +358,6 @@ namespace Network
         ChangeMaterial,
         SelectBlock,
         PlaceBlock,
+        GameFinish,
     }
 }

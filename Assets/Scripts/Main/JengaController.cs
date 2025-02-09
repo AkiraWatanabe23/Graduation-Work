@@ -4,6 +4,7 @@ using Network;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using VTNConnect;
 
 [Serializable]
 public class JengaController
@@ -27,6 +28,8 @@ public class JengaController
 
     private Action<int, int> _onPlace = null;
 
+    private Action _onGameFinish = null;
+
     public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
         _blockSize = _blockPrefab.GetComponent<BoxCollider>().size;
@@ -45,6 +48,15 @@ public class JengaController
             if (GameLogicSupervisor.Instance.IsPlayableTurn) { presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke(""); }
             await presenter.SendPutRequest(RequestType.ChangeTurn);
         };
+
+        _onGameFinish = async () =>
+        {
+            GameFinish();
+            presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke("");
+
+            await presenter.SendPutRequest(RequestType.GameFinish);
+            container.GameFinishInvoke();
+        };
     }
 
     public async void Update()
@@ -59,7 +71,7 @@ public class JengaController
             // ジェンガが崩れるか
             if (_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability))
             {
-                GameFinish();
+                _onGameFinish?.Invoke();
             }
             ShopSystemController.Instance.UpdateFragmentCount(_container.Blocks[_alreadySelectedId].Fragment);
             _onPlace?.Invoke(_alreadySelectedId, _container.SelectedBlockId);

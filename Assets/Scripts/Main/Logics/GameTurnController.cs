@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using VTNConnect;
 
 [Serializable]
 public class GameTurnController
@@ -11,8 +12,15 @@ public class GameTurnController
     [SerializeField]
     private Text _gameTurnText = default;
     [SerializeField]
-    private UnityEvent _events = default;
+    private UnityEvent _gameStartEvent = default;
 
+    [Header("Result")]
+    [SerializeField]
+    private GameObject _resultObj = default;
+    [SerializeField]
+    private Text _resultText = default;
+
+    [ReadOnly]
     [SerializeField]
     private bool _isGameStart = false;
 
@@ -36,6 +44,7 @@ public class GameTurnController
         };
 
         model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
+        model.RegisterEvent(RequestType.GameFinish, GameFinish);
     }
 
     public void PlayTurnIndexSetting(int index) => _playTurnIndex = index;
@@ -50,11 +59,48 @@ public class GameTurnController
             if (!_isGameStart)
             {
                 _isGameStart = true;
-                _events?.Invoke();
+                _gameStartEvent?.Invoke();
 
                 AudioManager.Instance.PlayBGM(BGMType.InGame);
             }
             _gameTurnText.text = _isPlayableTurn ? "Play Turn" : "Other's Turn";
+
+            await Task.Yield();
+            return "Request Success";
+        });
+
+        return "Request Success";
+    }
+
+    /// <summary> ゲーム終了時に送信される(ゲームに負けたプレイヤーが送信する) </summary>
+    /// <param name="requestData"></param>
+    /// <returns></returns>
+    private async Task<string> GameFinish(string _)
+    {
+        await MainThreadDispatcher.RunAsync(async () =>
+        {
+            //ゲーム終了のメッセージがきたとき、自分のターンかどうか調べる
+
+#if !UNITY_EDITOR
+            //VantanConnect対応 ==========================================
+            EventData data = new(EventDefine.JengaInfo);
+            data.DataPack("GameFinish", _isPlayableTurn);
+            VantanConnect.SendEvent(data);
+            // ===========================================================
+#endif
+
+            //todo : 以下勝敗による演出等々
+            _resultObj.SetActive(true);
+            if (!_isPlayableTurn)
+            {
+                AudioManager.Instance.PlayBGM(BGMType.ResultWin);
+                _resultText.text = "You Win!!!";
+            }
+            else
+            {
+                AudioManager.Instance.PlayBGM(BGMType.ResultLose);
+                _resultText.text = "You Lose...";
+            }
 
             await Task.Yield();
             return "Request Success";
