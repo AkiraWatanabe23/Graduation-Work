@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using VTNConnect;
-using Random = UnityEngine.Random;
 
 /// <summary> ゲーム全体に関与するデータを保持するクラス </summary>
 public class DataContainer
@@ -96,7 +95,7 @@ public class DataContainer
         _gameFinish = null;
 
         //以下引数のbool値は勝ち、負けで分ける
-        VantanConnect.GameEnd(true, (VC_StatusCode code) =>
+        VantanConnect.GameEnd(GameLogicSupervisor.Instance.IsPlayableTurn, (VC_StatusCode code) =>
         {
             SceneLoader.FadeLoad(SceneName.Title);
         });

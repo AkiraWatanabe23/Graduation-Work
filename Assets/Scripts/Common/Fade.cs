@@ -13,6 +13,8 @@ public class Fade : SingletonMonoBehaviour<Fade>
     [SerializeField]
     private float _fadeTime = 1f;
 
+    /// <summary> フェード対象(初期設定のものと別のものをフェードさせる場合に使う) </summary>
+    private Image _fadeTarget = default;
     private Action[] _onComplete = default;
 
     protected override bool DontDestroyOnLoad => true;
@@ -20,15 +22,19 @@ public class Fade : SingletonMonoBehaviour<Fade>
     public bool IsFading { get; private set; }
 
     /// <summary> フェードイン開始 </summary>
-    public Fade StartFadeIn()
+    public Fade StartFadeIn(Image target = null)
     {
+        _fadeTarget = target == null ? _fadePanel : target;
+
         StartCoroutine(FadeIn());
         return this;
     }
 
     /// <summary> フェードアウト開始 </summary>
-    public Fade StartFadeOut()
+    public Fade StartFadeOut(Image target = null)
     {
+        _fadeTarget = target == null ? _fadePanel : target;
+
         StartCoroutine(FadeOut());
         return this;
     }
@@ -43,11 +49,11 @@ public class Fade : SingletonMonoBehaviour<Fade>
     private IEnumerator FadeIn()
     {
         IsFading = true;
-        _fadePanel.gameObject.SetActive(true);
+        _fadeTarget.gameObject.SetActive(true);
 
         //α値（透明度）を 1 → 0 にする（少しずつ明るくする）
         float alpha = 1f;
-        Color color = _fadePanel.color;
+        Color color = _fadeTarget.color;
 
         while (alpha > 0f)
         {
@@ -56,11 +62,11 @@ public class Fade : SingletonMonoBehaviour<Fade>
             if (alpha <= 0f) { alpha = 0f; }
 
             color.a = alpha;
-            _fadePanel.color = color;
+            _fadeTarget.color = color;
             yield return null;
         }
 
-        _fadePanel.gameObject.SetActive(false);
+        _fadeTarget.gameObject.SetActive(false);
 
         if (_onComplete != null)
         {
@@ -73,11 +79,11 @@ public class Fade : SingletonMonoBehaviour<Fade>
     private IEnumerator FadeOut()
     {
         IsFading = true;
-        _fadePanel.gameObject.SetActive(true);
+        _fadeTarget.gameObject.SetActive(true);
 
         //α値（透明度）を 0 → 1 にする（少しずつ暗くする）
         float alpha = 0f;
-        Color color = _fadePanel.color;
+        Color color = _fadeTarget.color;
 
         while (alpha < 1f)
         {
@@ -86,7 +92,7 @@ public class Fade : SingletonMonoBehaviour<Fade>
             if (alpha >= 1f) { alpha = 1f; }
 
             color.a = alpha;
-            _fadePanel.color = color;
+            _fadeTarget.color = color;
             yield return null;
         }
 
