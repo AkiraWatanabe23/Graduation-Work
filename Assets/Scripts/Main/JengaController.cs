@@ -237,6 +237,7 @@ public class JengaController
         foreach (var block in _container.Blocks)
         {
             Rigidbody blockRb = block.Value.gameObject.AddComponent<Rigidbody>();
+            //todo : rb.AddForce();
         }
         Debug.Log("BREAK！");
     }

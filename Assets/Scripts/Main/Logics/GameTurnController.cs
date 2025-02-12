@@ -19,6 +19,8 @@ public class GameTurnController
     private GameObject _resultObj = default;
     [SerializeField]
     private Text _resultText = default;
+    [SerializeField]
+    private Button _returnTitleButton = default;
 
     [ReadOnly]
     [SerializeField]
@@ -101,6 +103,10 @@ public class GameTurnController
                 AudioManager.Instance.PlayBGM(BGMType.ResultLose);
                 _resultText.text = "You Lose...";
             }
+            _returnTitleButton.onClick.AddListener(() =>
+            {
+                SceneLoader.FadeLoad(SceneName.InGame);
+            });
 
             await Task.Yield();
             return "Request Success";
