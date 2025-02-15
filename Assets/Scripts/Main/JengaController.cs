@@ -1,4 +1,5 @@
 ﻿using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Extention;
 using Network;
 using System;
@@ -35,7 +36,7 @@ public class JengaController
 
     public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
-        _blockSize = _blockPrefab.GetComponent<BoxCollider>().size;
+        _blockSize = _blockPrefab.transform.localScale;
         _blockParent = new GameObject("Block Parent");
         _container = container;
         _logic.Initialize(container);
@@ -99,7 +100,7 @@ public class JengaController
             _selectBoxes[i] = UnityEngine.Object.Instantiate(_blockPrefab);
             _selectBoxes[i].BlockId = id;
             _selectBoxes[i].AssignedIndex = i;
-            _selectBoxes[i].transform.localScale = _blockSize;
+            _selectBoxes[i].GetComponent<Renderer>().material.DOFade(0.5f, 0.0f);
             _selectBoxes[i].gameObject.SetActive(false);
         }
     }
