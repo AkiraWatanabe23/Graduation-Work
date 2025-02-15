@@ -13,6 +13,8 @@ public class JengaController
 
     [SerializeField, Tooltip("生成するジェンガ")]
     private BlockData _blockPrefab = null;
+    [SerializeField, Tooltip("ジェンガが倒壊するときにかける力")]
+    private float _corrapsePower = 1.0f;
 
     private JengaLogic _logic = new();
     private DataContainer _container = null;
@@ -25,6 +27,7 @@ public class JengaController
     private int _alreadySelectedId = 0;
 
     private BlockData[] _selectBoxes = null;
+    private Vector3[] _raycastPositions = null;
 
     private Action<int, int> _onPlace = null;
 
@@ -38,6 +41,14 @@ public class JengaController
         _logic.Initialize(container);
         InitSelectBoxes();
         BuildUp();
+
+        _raycastPositions = new Vector3[]
+        {
+            Vector3.forward * _blockSize.x * (_container.ItemsPerLevel / 2),
+            Vector3.back    * _blockSize.x * (_container.ItemsPerLevel / 2),
+            Vector3.left    * _blockSize.x * (_container.ItemsPerLevel / 2),
+            Vector3.right   * _blockSize.x * (_container.ItemsPerLevel / 2),
+        };
 
         presenter.Model.RegisterEvent(RequestType.SelectBlock, BlockSelected);
         presenter.Model.RegisterEvent(RequestType.PlaceBlock, PlaceBlock);
@@ -85,7 +96,7 @@ public class JengaController
 
         for (int i = 0, id = -1; i < _selectBoxes.Length; i++, id--)
         {
-            _selectBoxes[i] = GameObject.CreatePrimitive(PrimitiveType.Cube).AddComponent<BlockData>();
+            _selectBoxes[i] = UnityEngine.Object.Instantiate(_blockPrefab);
             _selectBoxes[i].BlockId = id;
             _selectBoxes[i].AssignedIndex = i;
             _selectBoxes[i].transform.localScale = _blockSize;
@@ -234,10 +245,30 @@ public class JengaController
     /// <summary>ゲーム終了時に行う処理</summary>
     private void GameFinish()
     {
+        int blockCount = 0;
+        int smallestBlockCount = int.MaxValue;
+        Vector3 corrapseDir = Vector3.zero;
+        RaycastHit[] hitResults = null;
+
+        foreach (var pos in _raycastPositions)
+        {
+            blockCount = Physics.RaycastNonAlloc(pos, Vector3.up, hitResults, /* MaxDistance */100);
+
+            if (smallestBlockCount > blockCount)
+            {
+                smallestBlockCount = blockCount;
+                corrapseDir = pos;
+            }
+            else if (smallestBlockCount == blockCount)
+            {
+                corrapseDir += pos;
+            }
+        }
+
         foreach (var block in _container.Blocks)
         {
             Rigidbody blockRb = block.Value.gameObject.AddComponent<Rigidbody>();
-            //todo : rb.AddForce();
+            blockRb.AddForce(corrapseDir.normalized * _corrapsePower, ForceMode.Impulse);
         }
         Debug.Log("BREAK！");
     }
