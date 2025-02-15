@@ -65,13 +65,15 @@ public class JengaController
 
         _onGameFinish = async () =>
         {
-            container.GameFinishInvoke();
             GameFinish();
 
             await Task.Delay(2000);
             presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke("");
 
             await presenter.SendPutRequest(RequestType.GameFinish);
+
+            await Task.Delay(3000);
+            container.GameFinishInvoke();
         };
     }
 
