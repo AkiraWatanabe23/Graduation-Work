@@ -56,17 +56,21 @@ public class JengaController
         {
             await presenter.SendPutRequest(RequestType.PlaceBlock, id.ToString(), next.ToString());
 
+            if (GameLogicSupervisor.Instance.IsGameFinish) { return; }
+
             if (GameLogicSupervisor.Instance.IsPlayableTurn) { presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke(""); }
             await presenter.SendPutRequest(RequestType.ChangeTurn);
         };
 
         _onGameFinish = async () =>
         {
+            container.GameFinishInvoke();
             GameFinish();
+
+            await Task.Delay(2000);
             presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke("");
 
             await presenter.SendPutRequest(RequestType.GameFinish);
-            container.GameFinishInvoke();
         };
     }
 

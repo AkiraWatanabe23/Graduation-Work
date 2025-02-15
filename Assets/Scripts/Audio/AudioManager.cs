@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-
 using Debug = Constants.ConsoleLogs;
 
 /// <summary> ゲーム内のサウンド管理クラス </summary>

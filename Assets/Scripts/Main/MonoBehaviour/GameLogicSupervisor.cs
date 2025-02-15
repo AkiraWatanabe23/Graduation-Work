@@ -36,6 +36,8 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
 
     public bool IsActive => true;
 
+    public bool IsGameFinish { get; set; }
+
     protected override bool DontDestroyOnLoad => false;
 
     private void Start()

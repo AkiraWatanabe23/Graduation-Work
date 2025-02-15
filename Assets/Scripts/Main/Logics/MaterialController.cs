@@ -74,7 +74,7 @@ public class MaterialController
             _ = ChangeMaterial(_blockDict[id], targetMaterial);
 
             await Task.Yield();
-            return "Change Material";
+            return "Request Success";
         });
         return "Request Success";
     }

@@ -1,4 +1,5 @@
-﻿using Network;
+﻿using DG.Tweening;
+using Network;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -93,18 +94,21 @@ public class GameTurnController
 
             //todo : 以下勝敗による演出等々
             _resultObj.SetActive(true);
+            AudioManager.Instance.StopBGM();
+
+            _resultText.text = "";
             if (!_isPlayableTurn)
             {
-                AudioManager.Instance.PlayBGM(BGMType.ResultWin);
-                _resultText.text = "You Win!!!";
+                _resultText.DOText("You Win!!!", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultWin));
             }
             else
             {
-                AudioManager.Instance.PlayBGM(BGMType.ResultLose);
-                _resultText.text = "You Lose...";
+                _resultText.DOText("You Lose...", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultLose));
             }
+
             _returnTitleButton.onClick.AddListener(() =>
             {
+                AudioManager.Instance.PlaySE(SEType.ClickButton);
                 SceneLoader.FadeLoad(SceneName.InGame);
             });
 

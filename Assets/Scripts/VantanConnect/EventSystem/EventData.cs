@@ -60,7 +60,7 @@ namespace VTNConnect
             var target = Payload.Where(p => p.Key == Key);
             if (target.Count() == 0)
             {
-                Debug.LogError($"データがNULLです");
+                Debug.LogError($"データがNULLです:" + Key);
                 return null;
             }
             return target.First();
@@ -74,7 +74,7 @@ namespace VTNConnect
         {
             var data = GetData(Key);
             if (data == null) return 0;
-            if (data.TypeName != "Integer" && !data.TypeName.StartsWith("Int"))
+            if (data.TypeName != "Integer" && !data.TypeName.StartsWith("Int") && data.TypeName != "number")
             {
                 Debug.LogWarning($"Intじゃない値かもしれません:{data.Data}({data.TypeName })");
             }
@@ -105,9 +105,10 @@ namespace VTNConnect
 
         #region 内部実装
         //シリアライズされるメンバ
-        [SerializeField] public int EventId = -1;
-        [SerializeField] protected int FromId = ProjectSettings.GameID;
-        [SerializeField] protected List<ParamData> Payload = new List<ParamData>();
+        [SerializeField] public EventDefine EventId;                                    // イベントコード(ルールシートを参照)
+        [SerializeField] protected int FromId = VantanConnect.GameID;                 // 誰から送信されたイベントか(自動付与)
+        [SerializeField] protected string GameHash = "";                                // ゲームハッシュ(自動付与)
+        [SerializeField] protected List<ParamData> Payload = new List<ParamData>();     // 補足情報
         //ここまで
 
         //主にコピーやイベントの変換に使う
@@ -116,16 +117,14 @@ namespace VTNConnect
             EventId = d.EventId;
             FromId = d.FromId;
             Payload = d.Payload;
+            GameHash = d.GameHash;
         }
 
         //新しいイベントの作成に使う
-        public EventData(int eventId)
-        {
-            EventId = eventId;
-        }
         public EventData(EventDefine eventId)
         {
-            EventId = (int)eventId;
+            EventId = eventId;
+            GameHash = VantanConnect.GameHash; //あんまりきれいではないが
         }
         #endregion
     }

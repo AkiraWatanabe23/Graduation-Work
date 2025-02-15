@@ -4,6 +4,6 @@ namespace VTNConnect
 {
     public class ProjectSettings
     {
-        public const int GameID = 5;
+        public const int GameID = 6;
     }
 }

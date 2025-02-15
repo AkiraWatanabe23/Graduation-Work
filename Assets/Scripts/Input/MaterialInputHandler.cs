@@ -51,7 +51,11 @@ public class MaterialInputHandler : MonoBehaviour
         if (_supervisor.MatCtrl.ChangeMaterial(block, _currentTarget))
         {
             OnChangeMaterial?.Invoke(_currentTarget);
-            await _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
+            var request = await _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
+            if (request == "Request Success")
+            {
+                await _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeTurn);
+            }
         }
         MaterialApply();
     }

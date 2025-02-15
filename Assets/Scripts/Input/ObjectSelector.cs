@@ -16,13 +16,12 @@ public class ObjectSelector : MonoBehaviour
     private Ray _ray = new();
     private RaycastHit _hitResult = new();
     private const int MAX_RAYCAST_DISTANCE = 100;
-    private bool _isGameFinish = false;
 
     private DataContainer _dataContainer = default;
 
     public void Initialize(DataContainer container, NetworkPresenter presenter)
     {
-        container.GameFinishRegister(GameFinish);
+        container.GameFinishRegister(() => GameLogicSupervisor.Instance.IsGameFinish = true);
 
         _dataContainer = container;
 
@@ -39,7 +38,7 @@ public class ObjectSelector : MonoBehaviour
     private void Update()
     {
         if (!Input.GetMouseButtonDown(0)) { return; }
-        if (_isGameFinish) { Debug.Log("Game Finish"); return; }
+        if (GameLogicSupervisor.Instance.IsGameFinish) { Debug.Log("Game Finished"); return; }
         if (!GameLogicSupervisor.Instance.IsGameStart) { Debug.Log("not game start yet"); return; }
         if (!GameLogicSupervisor.Instance.IsPlayableTurn) { Debug.Log("not my turn"); return; }
 
@@ -50,11 +49,6 @@ public class ObjectSelector : MonoBehaviour
 
         Debug.Log($"hit ID : {data.BlockId} {_dataContainer.SelectedBlockId}");
         OnSelectBlock?.Invoke(data);
-    }
-
-    private void GameFinish()
-    {
-        _isGameFinish = true;
     }
 
     private void OnDrawGizmos()
