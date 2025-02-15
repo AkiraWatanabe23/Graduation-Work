@@ -12,6 +12,7 @@ namespace VTNConnect
     {
         public int GameId;
         public int UserId = 0;
+        public int Option = 0;
     }
 
     /// <summary>
@@ -21,7 +22,6 @@ namespace VTNConnect
     public class GameStartResult : APIResponce
     {
         public string GameHash;
-        public GameInfo[] GameInfo;
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace VTNConnect
         /// <returns>特になし</returns>
         async public UniTask<GameStartResult> Request(GameStartRequest req)
         {
-            string request = String.Format("{0}/gamestart", VantanConnect.Environment.APIServerURI);
+            string request = String.Format("{0}/vc/gamestart", VantanConnect.Environment.APIServerURI);
             string json = await Network.WebRequest.PostRequest(request, req);
             var ret = JsonUtility.FromJson<GameStartResult>(json);
             return ret;

@@ -97,7 +97,7 @@ public class DataContainer
         //以下引数のbool値は勝ち、負けで分ける
         VantanConnect.GameEnd(GameLogicSupervisor.Instance.IsPlayableTurn, (VC_StatusCode code) =>
         {
-            SceneLoader.FadeLoad(SceneName.Title);
+            SceneLoader.FadeLoad(SceneName.InGame);
         });
     }
     #endregion
