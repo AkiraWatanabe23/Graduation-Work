@@ -34,6 +34,8 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
     public bool IsPlayableTurn => _turnCtrl.IsPlayableTurn;
     public bool IsGameStart => _turnCtrl.IsGameStart;
 
+    public int MaxConnectableCount => _roomCtrl.MaxConnectableCount;
+
     public bool IsActive => true;
 
     public bool IsGameFinish { get; set; }
