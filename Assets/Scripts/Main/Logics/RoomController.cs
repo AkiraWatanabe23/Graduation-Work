@@ -29,6 +29,8 @@ public class RoomController
 
     private Random _random = default;
 
+    public int MaxConnectableCount => _maxConnectableCount;
+
     public void Initialize(NetworkModel model)
     {
         model.RegisterEvent(RequestType.CreateRoom, CreateRoom);

@@ -46,7 +46,7 @@ public class GameTurnController
         {
             container.NextTurn();
             //自分の番が回ってきたかの判定
-            _isPlayableTurn = container.CurrentTurn % 3 == _playTurnIndex;
+            _isPlayableTurn = container.CurrentTurn % GameLogicSupervisor.Instance.MaxConnectableCount == _playTurnIndex;
         };
 
         model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
@@ -61,7 +61,6 @@ public class GameTurnController
         {
             OnNextTurn?.Invoke();
 
-            Debug.Log(_isGameStart);
             if (!_isGameStart)
             {
                 _isGameStart = true;
