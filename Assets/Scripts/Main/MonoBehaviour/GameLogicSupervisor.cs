@@ -46,7 +46,9 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         _networkPresenter?.Initialize();
 
         Initialize();
-        //Fade.Instance.StartFadeIn().OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.Title));
+#if !UNITY_EDITOR
+        Fade.Instance.StartFadeIn().OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.Title));
+#endif
     }
 
     private void Initialize()
@@ -61,13 +63,13 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         _matCtrl.Initialize(_dataContainer, _networkPresenter?.Model);
         _roomCtrl.Initialize(_networkPresenter?.Model);
 
-#if !UNITY_EDITOR
+        //VantanConnect対応 ==========================================
         VantanConnect.SystemReset();
         VantanConnect.GameStart((VC_StatusCode code) =>
         {
             Debug.Log($"GameStart {code}");
         });
-#endif
+        // ===========================================================
     }
 
     private void Update()
