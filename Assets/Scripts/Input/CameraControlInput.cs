@@ -17,10 +17,10 @@ public class CameraControlInput : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Start()
     {
-        if (transform.parent && transform.parent.TryGetComponent(out _receiver)) ;
+        if (transform.parent && transform.parent.TryGetComponent(out _receiver)) { }
         else throw new System.NullReferenceException($"{_receiver.GetType().Name} is not found");
 
-        if (TryGetComponent(out _myImage)) ;
+        if (TryGetComponent(out _myImage)) { }
         else throw new System.NullReferenceException();
     }
 

@@ -6767,6 +6767,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1621508009}
     - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _roomCtrl._maxConnectableCount
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _matCtrl._materialDatas.Array.data[1].<Weight>k__BackingField
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
       propertyPath: _turnCtrl._gameStartEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 85170171}

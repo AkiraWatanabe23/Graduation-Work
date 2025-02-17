@@ -83,7 +83,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
     {
         switch (data.EventCode)
         {
-            case EventDefine.Cheer: break;
+            case EventDefine.Cheer: Debug.Log("cheer"); break;
         }
     }
 }
