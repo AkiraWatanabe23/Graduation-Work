@@ -58,10 +58,7 @@ public class JengaController
 
             if (GameLogicSupervisor.Instance.IsGameFinish) { return; }
 
-            if (GameLogicSupervisor.Instance.IsPlayableTurn)
-            {
-                presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
-            }
+            presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
             await presenter.SendPutRequest(RequestType.ChangeTurn);
         };
 
@@ -70,7 +67,6 @@ public class JengaController
             Debug.Log(GameLogicSupervisor.Instance.IsPlayableTurn);
             GameFinish();
 
-            await Task.Delay(4000);
             presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke(container.CurrentTurn.ToString());
 
             await presenter.SendPutRequest(RequestType.GameFinish, container.CurrentTurn.ToString());
