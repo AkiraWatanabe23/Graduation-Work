@@ -30,6 +30,9 @@ public class GameTurnController
     private int _playTurnIndex = 0;
     private bool _isPlayableTurn = false;
 
+    /// <summary> リクエスト重複を防ぐためのフラグ </summary>
+    private bool _isGameFinish = false;
+
     protected Action OnNextTurn { get; private set; }
 
     /// <summary> 自分の番かどうか </summary>
@@ -80,6 +83,10 @@ public class GameTurnController
     {
         await MainThreadDispatcher.RunAsync(async () =>
         {
+            if (_isGameFinish) { return ""; }
+
+            _isGameFinish = true;
+
             //ゲーム終了のメッセージがきたとき、自分のターンかどうか調べる
             //VantanConnect対応 ==========================================
             EventData data = new(EventDefine.BadJengaInfo);
