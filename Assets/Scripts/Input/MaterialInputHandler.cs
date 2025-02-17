@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Network;
+using System;
 using UnityEngine;
 using Debug = Constants.ConsoleLogs;
 
@@ -15,6 +16,8 @@ public class MaterialInputHandler : MonoBehaviour
 
     private Camera _main = default;
 
+    private NetworkPresenter _presenter = default;
+
     public Action<MaterialType> OnChangeMaterial { get; set; }
     public Action<MaterialType> OnCancelSelect { get; set; }
 
@@ -22,6 +25,8 @@ public class MaterialInputHandler : MonoBehaviour
     {
         _main = Camera.main;
         if (_supervisor == null) { _supervisor = FindObjectOfType<GameLogicSupervisor>(); }
+
+        _presenter = _supervisor.NetworkPresenter;
     }
 
     private void Update()
@@ -51,10 +56,11 @@ public class MaterialInputHandler : MonoBehaviour
         if (_supervisor.MatCtrl.ChangeMaterial(block, _currentTarget))
         {
             OnChangeMaterial?.Invoke(_currentTarget);
-            var request = await _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
+            var request = await _supervisor.NetworkPresenter.SendPutRequest(RequestType.ChangeMaterial, block.BlockId.ToString(), _currentTarget.ToString());
             if (request == "Request Success")
             {
-                await _supervisor.NetworkPresenter.SendPutRequest(Network.RequestType.ChangeTurn);
+                _presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
+                _ = await _supervisor.NetworkPresenter.SendPutRequest(RequestType.ChangeTurn);
             }
         }
         MaterialApply();
