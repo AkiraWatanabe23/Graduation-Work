@@ -66,9 +66,9 @@ public class MaterialController
             var targetMaterial = (MaterialType)Enum.Parse(typeof(MaterialType), material);
 
             //VantanConnect対応 ==========================================
-            //EventData data = new(EventDefine.JengaInfo);
-            //data.DataPack("Material", (int)targetMaterial);
-            //VantanConnect.SendEvent(data);
+            EventData data = new(EventDefine.JengaInfo);
+            data.DataPack("Material", (int)targetMaterial);
+            VantanConnect.SendEvent(data);
             // ===========================================================
 
             _ = ChangeMaterial(_blockDict[id], targetMaterial);

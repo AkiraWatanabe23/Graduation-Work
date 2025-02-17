@@ -1,7 +1,7 @@
 ﻿using Network;
 using System;
-using System.Threading.Tasks;
 using UnityEngine;
+using VTNConnect;
 using Random = UnityEngine.Random;
 
 public class ObjectSelector : MonoBehaviour
@@ -30,6 +30,12 @@ public class ObjectSelector : MonoBehaviour
             _dataContainer.CollapseProbability = Random.Range(0f, 1f);
             await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString(), _dataContainer.CollapseProbability.ToString());
             _dataContainer.SelectedBlockId = data.BlockId;
+
+            //VantanConnect対応 ==========================================
+            EventData eventData = new(EventDefine.JengaInfo);
+            eventData.DataPack("SelectBlock", (int)data.Weight);
+            VantanConnect.SendEvent(eventData);
+            // ===========================================================
         });
 
         _mainCamera = Camera.main;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using VTNConnect;
 
 /// <summary> ゲーム全体に関与するデータを保持するクラス </summary>
 public class DataContainer
@@ -93,12 +92,6 @@ public class DataContainer
     {
         _gameFinish.Invoke();
         _gameFinish = null;
-
-        //以下引数のbool値は勝ち、負けで分ける
-        VantanConnect.GameEnd(GameLogicSupervisor.Instance.IsPlayableTurn, (VC_StatusCode code) =>
-        {
-            SceneLoader.FadeLoad(SceneName.InGame);
-        });
     }
     #endregion
 
