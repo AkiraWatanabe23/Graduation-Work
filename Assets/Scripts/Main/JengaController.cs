@@ -5,7 +5,6 @@ using Network;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
-using VTNConnect;
 
 [Serializable]
 public class JengaController
@@ -59,18 +58,22 @@ public class JengaController
 
             if (GameLogicSupervisor.Instance.IsGameFinish) { return; }
 
-            if (GameLogicSupervisor.Instance.IsPlayableTurn) { presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke(""); }
+            if (GameLogicSupervisor.Instance.IsPlayableTurn)
+            {
+                presenter.Model.RequestEvents[RequestType.ChangeTurn.ToString()]?.Invoke("");
+            }
             await presenter.SendPutRequest(RequestType.ChangeTurn);
         };
 
         _onGameFinish = async () =>
         {
+            Debug.Log(GameLogicSupervisor.Instance.IsPlayableTurn);
             GameFinish();
 
-            await Task.Delay(2000);
-            presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke("");
+            await Task.Delay(4000);
+            presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke(container.CurrentTurn.ToString());
 
-            await presenter.SendPutRequest(RequestType.GameFinish);
+            await presenter.SendPutRequest(RequestType.GameFinish, container.CurrentTurn.ToString());
 
             await Task.Delay(3000);
             container.GameFinishInvoke();

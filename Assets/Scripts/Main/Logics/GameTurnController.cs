@@ -76,16 +76,14 @@ public class GameTurnController
     }
 
     /// <summary> ゲーム終了時に送信される(ゲームに負けたプレイヤーが送信する) </summary>
-    /// <param name="requestData"></param>
-    /// <returns></returns>
-    private async Task<string> GameFinish(string _)
+    private async Task<string> GameFinish(string turn)
     {
         await MainThreadDispatcher.RunAsync(async () =>
         {
             //ゲーム終了のメッセージがきたとき、自分のターンかどうか調べる
             //VantanConnect対応 ==========================================
             EventData data = new(EventDefine.BadJengaInfo);
-            data.DataPack("GameFinish", _isPlayableTurn);
+            data.DataPack("JengaFinish", int.Parse(turn));
             VantanConnect.SendEvent(data);
             // ===========================================================
 
