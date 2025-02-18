@@ -13,6 +13,8 @@ public class JengaController
 
     [SerializeField, Tooltip("生成するジェンガ")]
     private BlockData _blockPrefab = null;
+    [SerializeField, Tooltip("ジェンガの底面かつ中心の位置となる座標")]
+    private Transform _generateBottomPos = null;
     [SerializeField, Tooltip("ジェンガが倒壊するときにかける力")]
     private float _corrapsePower = 1.0f;
 
@@ -122,7 +124,11 @@ public class JengaController
                 _destination.Set(0.0f, _destination.y, 0.0f);
                 _moveDir = Vector3.zero;
 
-                if (i != 0)
+                if (i == 0 && _generateBottomPos != null)
+                {
+                    _destination = _generateBottomPos.position;
+                }
+                else
                 {
                     _destination.y += _blockSize.y;
                     _rotation *= Quaternion.AngleAxis(90.0f, Vector3.up);
