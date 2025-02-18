@@ -47,7 +47,26 @@ public class GameTurnController
             container.NextTurn();
             //自分の番が回ってきたかの判定
             _isPlayableTurn = container.CurrentTurn % GameLogicSupervisor.Instance.MaxConnectableCount == _playTurnIndex;
+            if (_isPlayableTurn) { AudioManager.Instance.PlaySE(SEType.MyTurn); }
         };
+
+        container.GameFinishRegister(() =>
+        {
+            _resultObj.SetActive(true);
+            AudioManager.Instance.StopBGM();
+
+            _resultText.text = "";
+            if (!_isPlayableTurn)
+            {
+                Debug.Log("You Win!!!");
+                _resultText.DOText("You Win!!!", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultWin));
+            }
+            else
+            {
+                Debug.Log("You Lose...");
+                _resultText.DOText("You Lose...", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultLose));
+            }
+        });
 
         model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
         model.RegisterEvent(RequestType.GameFinish, GameFinish);
@@ -63,12 +82,13 @@ public class GameTurnController
 
             if (!_isGameStart)
             {
+                AudioManager.Instance.PlaySE(SEType.GameStart);
                 _isGameStart = true;
                 _gameStartEvent?.Invoke();
 
                 AudioManager.Instance.PlayBGM(BGMType.InGame);
             }
-            _gameTurnText.text = _isPlayableTurn ? "Play Turn" : "Other's Turn";
+            _gameTurnText.text = _isPlayableTurn ? "あなたの番です" : "他のプレイヤーの番です";
 
             await Task.Yield();
             return "Request Success";
@@ -92,21 +112,6 @@ public class GameTurnController
             data.DataPack("JengaFinish", int.Parse(turn));
             VantanConnect.SendEvent(data);
             // ===========================================================
-
-            _resultObj.SetActive(true);
-            AudioManager.Instance.StopBGM();
-
-            _resultText.text = "";
-            if (!_isPlayableTurn)
-            {
-                Debug.Log("You Win!!!");
-                _resultText.DOText("You Win!!!", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultWin));
-            }
-            else
-            {
-                Debug.Log("You Lose...");
-                _resultText.DOText("You Lose...", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultLose));
-            }
 
             _returnTitleButton.onClick.AddListener(() =>
             {

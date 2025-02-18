@@ -402,7 +402,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1568519434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -573,6 +573,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6886677879334895578, guid: e8b8747d34f965d43b20da19967780e8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -597,6 +601,10 @@ PrefabInstance:
     - target: {fileID: 5113359566173214338, guid: 46b138c9a951a3646b0e7d4c60502282, type: 3}
       propertyPath: m_Name
       value: NetworkPresenter
+      objectReference: {fileID: 0}
+    - target: {fileID: 5113359566173214338, guid: 46b138c9a951a3646b0e7d4c60502282, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8703503053378276697, guid: 46b138c9a951a3646b0e7d4c60502282, type: 3}
       propertyPath: m_LocalPosition.x
@@ -682,6 +690,10 @@ PrefabInstance:
     - target: {fileID: 4746562007741766990, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
       propertyPath: m_Name
       value: NetworkView
+      objectReference: {fileID: 0}
+    - target: {fileID: 4746562007741766990, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5087740698267593015, guid: a2a188a7caf449f4b947fccc1c42c362, type: 3}
       propertyPath: m_LocalPosition.x

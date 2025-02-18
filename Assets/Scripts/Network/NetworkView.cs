@@ -59,6 +59,7 @@ namespace Network
         {
             if (_targetAddressText == null) { return; }
 
+            AudioManager.Instance.PlaySE(SEType.ClickNumberPad);
             if (!int.TryParse(text, out int _) && text.Length > 1)
             {
                 _targetAddressText.text = "";
@@ -72,6 +73,7 @@ namespace Network
         {
             if (_roomIDText == null) { return; }
 
+            AudioManager.Instance.PlaySE(SEType.ClickNumberPad);
             if (!int.TryParse(text, out int _))
             {
                 _roomIDText.text = "";

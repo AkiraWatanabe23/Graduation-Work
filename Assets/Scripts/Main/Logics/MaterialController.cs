@@ -71,6 +71,7 @@ public class MaterialController
             VantanConnect.SendEvent(data);
             // ===========================================================
 
+            AudioManager.Instance.PlaySE(SEType.ChangeMaterial);
             _ = ChangeMaterial(_blockDict[id], targetMaterial);
 
             await Task.Yield();
