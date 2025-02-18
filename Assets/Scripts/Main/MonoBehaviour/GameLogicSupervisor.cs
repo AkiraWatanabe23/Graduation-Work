@@ -35,6 +35,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
     public bool IsGameStart => _turnCtrl.IsGameStart;
 
     public int MaxConnectableCount => _roomCtrl.MaxConnectableCount;
+    public int LoopCount => _dataContainer.LoopCount;
 
     public bool IsActive => true;
 

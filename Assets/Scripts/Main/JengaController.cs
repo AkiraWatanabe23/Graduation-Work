@@ -87,12 +87,20 @@ public class JengaController
 
             await PlaceSelector();
 
-            // ジェンガが崩れるか
-            if (_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability))
+            // ジェンガが崩れるか && ゲームがある程度進行したか
+            if ((_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability)) && GameLogicSupervisor.Instance.LoopCount >= 2)
             {
                 _onGameFinish?.Invoke();
             }
             ShopSystemController.Instance.UpdateFragmentCount(_container.Blocks[_alreadySelectedId].Fragment);
+
+            var se = _container.Blocks[_alreadySelectedId].Weight switch
+            {
+                0 => SEType.MovePlastic,
+                1 => SEType.MoveWood,
+                3 => SEType.MoveMetal,
+            };
+            AudioManager.Instance.PlaySE(se);
             _onPlace?.Invoke(_alreadySelectedId, _container.SelectedBlockId);
         }
     }

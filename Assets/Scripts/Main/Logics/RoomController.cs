@@ -48,7 +48,7 @@ public class RoomController
         _isHost = true;
         //ルームを作成したユーザーが1人目に該当するため、直に代入
         _currentPlayersCount = 1;
-        _connectionCountText.text = $"Count : {_currentPlayersCount}";
+        _connectionCountText.text = $"接続数 : {_currentPlayersCount}";
 
         //ルームIDを新規発行する
         _random ??= new();

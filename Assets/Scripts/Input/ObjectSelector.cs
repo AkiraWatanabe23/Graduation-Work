@@ -31,6 +31,14 @@ public class ObjectSelector : MonoBehaviour
             await presenter.SendPutRequest(RequestType.SelectBlock, data.BlockId.ToString(), _dataContainer.CollapseProbability.ToString());
             _dataContainer.SelectedBlockId = data.BlockId;
 
+            var clip = (int)data.Weight switch
+            {
+                0 => SEType.SelectPlastic,
+                1 => SEType.SelectWood,
+                3 => SEType.SelectMetal,
+            };
+            AudioManager.Instance.PlaySE(clip);
+
             //VantanConnect対応 ==========================================
             EventData eventData = new(EventDefine.JengaInfo);
             eventData.DataPack("SelectBlock", (int)data.Weight);
