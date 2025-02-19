@@ -90,6 +90,16 @@ public class GameTurnController
             }
             _gameTurnText.text = _isPlayableTurn ? "あなたの番です" : "他のプレイヤーの番です";
 
+            var sequence = DOTween.Sequence();
+            sequence.
+                Append(_gameTurnText.transform.DOScale(1.2f, 1f)).
+                AppendInterval(0.25f).
+                AppendCallback(() =>
+                {
+                    _gameTurnText.transform.DOScale(1.2f, 1f);
+                });
+
+
             await Task.Yield();
             return "Request Success";
         });
