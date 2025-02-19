@@ -44,7 +44,8 @@ public class MaterialInputHandler : MonoBehaviour
         {
             Debug.Log("衝突対象が検出されませんでした");
             OnCancelSelect?.Invoke(_currentTarget);
-            MaterialApply();
+
+            _currentTarget = MaterialType.None;
             return;
         }
 
@@ -63,12 +64,6 @@ public class MaterialInputHandler : MonoBehaviour
                 _ = await _supervisor.NetworkPresenter.SendPutRequest(RequestType.ChangeTurn);
             }
         }
-        MaterialApply();
-    }
-
-    /// <summary> 材質変更後に実行する </summary>
-    private void MaterialApply()
-    {
         _currentTarget = MaterialType.None;
     }
 

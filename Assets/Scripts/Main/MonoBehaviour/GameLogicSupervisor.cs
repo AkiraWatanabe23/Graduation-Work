@@ -49,9 +49,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         _networkPresenter?.Initialize();
 
         Initialize();
-#if !UNITY_EDITOR
         Fade.Instance.StartFadeIn().OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.Title));
-#endif
     }
 
     private void Initialize()
