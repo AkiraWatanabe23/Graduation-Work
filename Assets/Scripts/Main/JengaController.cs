@@ -74,6 +74,7 @@ public class JengaController
 
         _onGameFinish = async () =>
         {
+            GameLogicSupervisor.Instance.IsWinning = !GameLogicSupervisor.Instance.IsPlayableTurn;
             Debug.Log(GameLogicSupervisor.Instance.IsPlayableTurn);
             presenter.Model.RequestEvents[RequestType.GameFinish.ToString()]?.Invoke(container.CurrentTurn.ToString());
 

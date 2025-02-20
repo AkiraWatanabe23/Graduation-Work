@@ -5922,6 +5922,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1895043690}
     m_Modifications:
+    - target: {fileID: 1626666602430269987, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1626666602430269987, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f770cba3027868644984454f295405d0, type: 3}
+    - target: {fileID: 1800311325601385177, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1800311325601385177, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 43e9e9534dbced44d8adc26fb27a07c2, type: 3}
     - target: {fileID: 4164381693578446736, guid: 02b66303784a60141b5158980b5d4205, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6006,6 +6022,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Camera Move Buttons
       objectReference: {fileID: 0}
+    - target: {fileID: 5525931134076016838, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5525931134076016838, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: dd5ab83baa480ea44b966d7ca90d09bc, type: 3}
     - target: {fileID: 7925541068985187007, guid: 02b66303784a60141b5158980b5d4205, type: 3}
       propertyPath: _vCam
       value: 
@@ -6018,6 +6042,14 @@ PrefabInstance:
       propertyPath: _cameraFovMin
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 8170652152943064388, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8170652152943064388, guid: 02b66303784a60141b5158980b5d4205, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6c66740ca7c5be442861e536cee1f920, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12481,7 +12513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputHandler: {fileID: 0}
-  _blockFragmentCount: 0
+  _blockFragmentCount: 100
   _shopPageButton: {fileID: 1877383574}
   _arrowImage: {fileID: 1877383575}
   _arrows:
@@ -17675,6 +17707,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1956242527}
     m_Modifications:
     - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _floorLevel
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
       propertyPath: _networkPresenter
       value: 
       objectReference: {fileID: 911217325}
@@ -17694,6 +17730,14 @@ PrefabInstance:
       propertyPath: _turnCtrl._gameTurnText
       value: 
       objectReference: {fileID: 239625489}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _turnCtrl._gameTurnImage
+      value: 
+      objectReference: {fileID: 1043704419}
+    - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
+      propertyPath: _jengaCtrl._minimalLoopCount
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 685299822686986230, guid: d9468639536551e4fb12a1fcd3892dca, type: 3}
       propertyPath: _turnCtrl._returnTitleButton
       value: 
@@ -29026,7 +29070,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 911217325}
         m_TargetAssemblyTypeName: NetworkPresenter, Assembly-CSharp
         m_MethodName: GameStart
         m_Mode: 1

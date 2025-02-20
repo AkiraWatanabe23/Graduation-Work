@@ -11,6 +11,8 @@ using VTNConnect;
 public class GameTurnController
 {
     [SerializeField]
+    private Image _gameTurnImage = default;
+    [SerializeField]
     private Text _gameTurnText = default;
     [SerializeField]
     private UnityEvent _gameStartEvent = default;
@@ -56,7 +58,7 @@ public class GameTurnController
             AudioManager.Instance.StopBGM();
 
             _resultText.text = "";
-            if (!_isPlayableTurn)
+            if (!GameLogicSupervisor.Instance.IsWinning)
             {
                 Debug.Log("You Win!!!");
                 _resultText.DOText("You Win!!!", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultWin));
@@ -92,11 +94,11 @@ public class GameTurnController
 
             var sequence = DOTween.Sequence();
             sequence.
-                Append(_gameTurnText.transform.DOScale(1.2f, 1f)).
+                Append(_gameTurnImage.transform.DOScale(1.2f, 1f)).
                 AppendInterval(0.25f).
                 AppendCallback(() =>
                 {
-                    _gameTurnText.transform.DOScale(1.2f, 1f);
+                    _gameTurnImage.transform.DOScale(1f, 1f);
                 });
 
 
@@ -127,7 +129,7 @@ public class GameTurnController
             {
                 AudioManager.Instance.PlaySE(SEType.ClickButton);
                 //以下引数のbool値は勝ち、負けで分ける
-                VantanConnect.GameEnd(GameLogicSupervisor.Instance.IsPlayableTurn, (VC_StatusCode code) =>
+                VantanConnect.GameEnd(GameLogicSupervisor.Instance.IsWinning, (VC_StatusCode code) =>
                 {
                     SceneLoader.FadeLoad(SceneName.InGame);
                 });
