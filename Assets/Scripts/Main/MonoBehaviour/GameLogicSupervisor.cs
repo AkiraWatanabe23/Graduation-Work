@@ -40,6 +40,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
     public bool IsActive => true;
 
     public bool IsGameFinish { get; set; }
+    public bool IsWinning { get; set; } = false;
 
     protected override bool DontDestroyOnLoad => false;
 
@@ -75,6 +76,8 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
 
     private void Update()
     {
+        if (!IsPlayableTurn) { return; }
+
         _jengaCtrl.Update();
     }
 
