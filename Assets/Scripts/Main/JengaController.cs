@@ -18,6 +18,11 @@ public class JengaController
     [SerializeField, Tooltip("ジェンガが倒壊するときにかける力")]
     private float _corrapsePower = 1.0f;
 
+    [Range(2, 5)]
+    [Tooltip("ターンループを最低何周回すか")]
+    [SerializeField]
+    private int _minimalLoopCount = 2;
+
     private JengaLogic _logic = new();
     private DataContainer _container = null;
 
@@ -90,7 +95,7 @@ public class JengaController
             await PlaceSelector();
 
             // ジェンガが崩れるか && ゲームがある程度進行したか
-            if ((_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability)) && GameLogicSupervisor.Instance.LoopCount >= 2)
+            if ((_logic.IsUnstable() || _logic.IsCollapse(_container.CollapseProbability)) && GameLogicSupervisor.Instance.LoopCount >= _minimalLoopCount)
             {
                 _onGameFinish?.Invoke();
             }
