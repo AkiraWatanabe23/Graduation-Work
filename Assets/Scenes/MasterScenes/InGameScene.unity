@@ -861,7 +861,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -1185,9 +1185,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1678,9 +1678,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3122,7 +3122,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -4345,7 +4345,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -6387,7 +6387,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: AddressTextSetting
         m_Mode: 2
@@ -7283,7 +7283,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -7575,9 +7575,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7849,7 +7849,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -8524,7 +8524,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -8907,9 +8907,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12107,7 +12107,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -12245,7 +12245,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -13213,9 +13213,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -13822,7 +13822,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -13965,9 +13965,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -14705,9 +14705,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -15179,9 +15179,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16064,7 +16064,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: AddressTextSetting
         m_Mode: 2
@@ -17912,9 +17912,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18553,9 +18553,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18920,7 +18920,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -19110,7 +19110,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: InputNumberPad
         m_Mode: 5
@@ -19766,9 +19766,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -22718,9 +22718,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
-        m_MethodName: InputAddressPad
+        m_MethodName: InputNumberPad
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -24965,7 +24965,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2048024810}
         m_TargetAssemblyTypeName: Network.NetworkView, Assembly-CSharp
         m_MethodName: AddressTextSetting
         m_Mode: 2
