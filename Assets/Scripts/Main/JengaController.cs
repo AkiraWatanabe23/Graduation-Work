@@ -177,7 +177,7 @@ public class JengaController
     private void Place(GameObject target, Vector3 destination, Quaternion rotation)
     {
         target.transform.position = destination;
-        target.transform.rotation *= rotation;
+        target.transform.rotation = rotation;
     }
 
     /// <summary>ジェンガの最上段のどこにブロックを置くかを選択させ、ブロックを移動させる</summary>

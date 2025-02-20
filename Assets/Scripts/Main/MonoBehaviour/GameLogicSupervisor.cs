@@ -76,8 +76,6 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
 
     private void Update()
     {
-        if (!IsPlayableTurn) { return; }
-
         _jengaCtrl.Update();
     }
 
