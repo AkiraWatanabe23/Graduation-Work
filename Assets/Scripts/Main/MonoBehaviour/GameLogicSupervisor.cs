@@ -1,9 +1,19 @@
-﻿using UnityEngine;
+﻿using Cinemachine;
+using UnityEngine;
 using VTNConnect;
 
 /// <summary> インゲームの各場面でのロジックを統括するクラス </summary>
 public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, IVantanConnectEventReceiver
 {
+    [Header("For Camera")]
+    [SerializeField]
+    private CinemachineVirtualCamera _effectCamera = default;
+    [SerializeField]
+    private Transform _rotateCenter = default;
+    [Tooltip("何秒かけてカメラが1周するか")]
+    [SerializeField]
+    private int _rotatePeriod = 2;
+
     [SerializeField, Tooltip("何段、ジェンガを生成するか")]
     private int _floorLevel = 10;
     [SerializeField, Tooltip("1段当たりのジェンガの個数")]
@@ -50,6 +60,10 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
         _networkPresenter?.Initialize();
 
         Initialize();
+
+        //他のカメラよりも優先する
+        //_effectCamera.Priority = 100;
+
         Fade.Instance.StartFadeIn().OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.Title));
     }
 
@@ -76,10 +90,17 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
 
     private void Update()
     {
+        if (_effectCamera.gameObject.activeSelf)
+        {
+            _effectCamera.transform.RotateAround(_rotateCenter.position, Vector3.up, 360 / _rotatePeriod * Time.deltaTime);
+        }
+
         _jengaCtrl.Update();
     }
 
     public void PlayTurnIndexSetting(int index) => _turnCtrl.PlayTurnIndexSetting(index);
+
+    public void CancelEffect() => _effectCamera.gameObject.SetActive(false);
 
     public void OnEventCall(EventData data)
     {
