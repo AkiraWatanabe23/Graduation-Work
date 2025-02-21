@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class CameraControlInput : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
     [SerializeField, Tooltip("カメラの回転方向")]
-    private Vector2 _rotateDirection = Vector2.zero;
+    private Vector2 _moveDirection = Vector2.zero;
     [SerializeField, Tooltip("このオブジェクトとマウスポインターが重なったときの色")]
     private Color _selectColor = Color.white;
     [SerializeField, Tooltip("このオブジェクトが押されたときの色")]
@@ -27,7 +27,7 @@ public class CameraControlInput : MonoBehaviour, IPointerDownHandler, IPointerUp
     public void OnPointerDown(PointerEventData eventData)   // マウスが押されているとき
     {
         _receiver.IsCameraMove = true;
-        _receiver.RotateDirection = _rotateDirection;
+        _receiver.MoveDirection = _moveDirection;
     }
 
     public void OnPointerUp(PointerEventData eventData)     // マウスが離されたとき

@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 0, y: -1}
+  _moveDirection: {x: 0, y: 1}
   _selectColor: {r: 1, g: 1, b: 1, a: 1}
   _pushColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &818911383809887136
@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: -1, y: 0}
+  _moveDirection: {x: -1, y: 0}
   _selectColor: {r: 1, g: 1, b: 1, a: 1}
   _pushColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1228727605780338991
@@ -270,7 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 0, y: 1}
+  _moveDirection: {x: 0, y: -1}
   _selectColor: {r: 1, g: 1, b: 1, a: 1}
   _pushColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1599107730735846937
@@ -308,7 +308,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 64, y: 49}
+  m_SizeDelta: {x: 90.25, y: 56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5524311807164906563
 CanvasRenderer:
@@ -332,13 +332,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.78431374}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4968e60d11a665d489c1b7cf25009ef2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 748aaa2c19ea7b14d931a6dc4befa25e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _vCam: {fileID: 0}
-  _cameraRotateSpeed: 1
+  _cameraMoveSpeed: 1
   _cameraZoomSpeed: 1
   _cameraFovMin: 50
   _cameraFovMax: 120
@@ -570,6 +570,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 797e7168f4bd6484db7cb0ffc80d1e11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotateDirection: {x: 1, y: 0}
+  _moveDirection: {x: 1, y: 0}
   _selectColor: {r: 1, g: 1, b: 1, a: 1}
   _pushColor: {r: 1, g: 1, b: 1, a: 1}
