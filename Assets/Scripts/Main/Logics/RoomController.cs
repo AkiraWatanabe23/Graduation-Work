@@ -86,7 +86,7 @@ public class RoomController
         await MainThreadDispatcher.RunAsync(async () =>
         {
             _currentPlayersCount++;
-            _connectionCountText.text = $"Count : {_currentPlayersCount}";
+            _connectionCountText.text = $"接続数 : {_currentPlayersCount}";
             await Task.Yield();
             return "Count up Finish";
         });
