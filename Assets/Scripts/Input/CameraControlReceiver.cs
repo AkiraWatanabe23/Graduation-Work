@@ -6,13 +6,13 @@ using UnityEngine;
 public class CameraControlReceiver : MonoBehaviour
 {
     public bool IsCameraMove { get; set; } = false;
-    public Vector3 RotateDirection { get; set; } = Vector3.zero;
+    public Vector3 MoveDirection { get; set; } = Vector3.zero;
 
     [SerializeField, Tooltip("操作するカメラ本体")]
     private CinemachineVirtualCamera _vCam = null;
-    [SerializeField, Range(0.0f, 1.0f)]
-    private float _cameraRotateSpeed = 1.0f;
-    [SerializeField, Range(0.0f, 1.0f)]
+    [SerializeField, Range(0.0f, 10.0f)]
+    private float _cameraMoveSpeed = 1.0f;
+    [SerializeField, Range(0.0f, 10.0f)]
     private float _cameraZoomSpeed = 1.0f;
     [SerializeField, Range(1.0f, 90.0f)]
     private float _cameraFovMin = 0.0f;
@@ -51,19 +51,16 @@ public class CameraControlReceiver : MonoBehaviour
 
     private void RotateCamera()
     {
-        if (RotateDirection.x == 0)
+        if (MoveDirection.x == 0)
         {
-            _axis = Vector3.Cross(
-                _vCam.transform.up - _vCam.transform.forward,
-                -_vCam.transform.up - _vCam.transform.forward);
-            _moveValue = RotateDirection.y;
+            Vector3 vec = _vCam.transform.position;
+            vec.y += MoveDirection.y * (1.0f / 50.0f);
+            _vCam.transform.position = vec;
         }
-        else if(RotateDirection.y == 0)
+        else if (MoveDirection.y == 0)
         {
-            _axis = Vector3.up;
-            _moveValue = RotateDirection.x;
+            _vCam.transform.RotateAround(_center, Vector3.up, MoveDirection.x * _cameraMoveSpeed);
         }
-        _vCam.transform.RotateAround(_center, _axis, _moveValue * _cameraRotateSpeed);
     }
 
     private void ZoomCamera()

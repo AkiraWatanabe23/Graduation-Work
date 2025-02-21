@@ -1,4 +1,5 @@
-﻿using Cysharp.Threading.Tasks;
+﻿using Cinemachine;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Extention;
 using Network;
@@ -32,6 +33,7 @@ public class JengaController
     private Vector3 _blockSize = Vector3.zero;
     private GameObject _blockParent = null;
     private int _alreadySelectedId = 0;
+    private Sequence _sequence = DOTween.Sequence();
 
     private BlockData[] _selectBoxes = null;
     private Vector3[] _raycastPositions = null;
@@ -233,6 +235,7 @@ public class JengaController
             {
                 _container.Blocks[_alreadySelectedId].transform.position = box.transform.position;
                 _container.Blocks[_alreadySelectedId].transform.rotation = box.transform.rotation;
+                //await BlockMoveAnimation(_container.Blocks[_alreadySelectedId], box);
                 _logic.UpdateBlockInfo(_container.Blocks[_alreadySelectedId], box); // ブロックのデータも更新する
             }
 
@@ -268,6 +271,22 @@ public class JengaController
             if (item == 0) placeableCount++;
         }
         return placeableCount > 0;  // 最上段にブロックを置く空きがあるか
+    }
+
+    private async UniTask BlockMoveAnimation(BlockData from, BlockData to)
+    {
+        Vector3 cameraPos = GameObject.FindObjectOfType<CinemachineVirtualCamera>().gameObject.transform.position;
+        float moveScalar = (cameraPos - from.transform.position).magnitude/ 2.0f;
+
+        _sequence.Append((from.Height % 2) switch
+                         {
+                             0 => from.transform.DOMoveX(moveScalar, 1.0f),
+                             1 => from.transform.DOMoveZ(moveScalar, 1.0f),
+                         })
+                 .Append(from.transform.DOMoveY(to.transform.position.y, 1.0f))
+                 .Join(from.transform.DORotateQuaternion(to.transform.rotation, 0.50f))
+                 .Append(from.transform.DOMove(to.transform.position, 1.0f));
+        await _sequence.Play().AsyncWaitForCompletion();
     }
 
     /// <summary>ゲーム終了時に行う処理</summary>
