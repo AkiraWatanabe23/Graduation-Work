@@ -61,9 +61,6 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
 
         Initialize();
 
-        //他のカメラよりも優先する
-        //_effectCamera.Priority = 100;
-
         Fade.Instance.StartFadeIn().OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.Title));
     }
 
@@ -100,7 +97,7 @@ public class GameLogicSupervisor : SingletonMonoBehaviour<GameLogicSupervisor>, 
 
     public void PlayTurnIndexSetting(int index) => _turnCtrl.PlayTurnIndexSetting(index);
 
-    public void CancelEffect() => _effectCamera.gameObject.SetActive(false);
+    public void EffectSwitch(bool flag) => _effectCamera.gameObject.SetActive(flag);
 
     public void OnEventCall(EventData data)
     {
