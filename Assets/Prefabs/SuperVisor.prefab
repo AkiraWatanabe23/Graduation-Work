@@ -44,6 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75618f97492bdc744aa480d55e5999df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _effectCamera: {fileID: 0}
+  _rotateCenter: {fileID: 0}
+  _rotatePeriod: 14
   _floorLevel: 9
   _itemsPerLevel: 3
   _networkPresenter: {fileID: 0}
@@ -70,21 +73,47 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 685299822686986230}
+          m_TargetAssemblyTypeName: GameLogicSupervisor, Assembly-CSharp
+          m_MethodName: EffectSwitch
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
     _resultObj: {fileID: 0}
-    _resultText: {fileID: 0}
+    _resultTexts:
+    - {fileID: 0}
+    - {fileID: 0}
     _returnTitleButton: {fileID: 0}
     _isGameStart: 0
   _matCtrl:
     _materialDatas:
     - <MaterialType>k__BackingField: 1
       <Weight>k__BackingField: 1
-      <Material>k__BackingField: {fileID: 2100000, guid: 71ad5b0895a540f448c9081bbb6bee2a, type: 2}
+      <Material>k__BackingField: {fileID: 2100000, guid: be6cedc343ff8144aaf2641424f38b93, type: 2}
     - <MaterialType>k__BackingField: 2
       <Weight>k__BackingField: 3
-      <Material>k__BackingField: {fileID: 2100000, guid: 2f46e3a8be674f244ab6a767523d5877, type: 2}
+      <Material>k__BackingField: {fileID: 2100000, guid: f11ea7541aed02c4bbb4f59631b41ff6, type: 2}
     - <MaterialType>k__BackingField: 3
       <Weight>k__BackingField: 0.5
-      <Material>k__BackingField: {fileID: 2100000, guid: 668541e4342c8ac4497dad5f6b8940ed, type: 2}
+      <Material>k__BackingField: {fileID: 2100000, guid: 01b8c5227993b3642ace4192905ef4c3, type: 2}
   _roomCtrl:
     _maxConnectableCount: 2
     _currentPlayersCount: 0
