@@ -21,7 +21,7 @@ public class GameTurnController
     [SerializeField]
     private GameObject _resultObj = default;
     [SerializeField]
-    private Text _resultText = default;
+    private Text[] _resultTexts = default;
     [SerializeField]
     private Button _returnTitleButton = default;
 
@@ -57,17 +57,35 @@ public class GameTurnController
             _resultObj.SetActive(true);
             AudioManager.Instance.StopBGM();
 
-            _resultText.text = "";
-            if (!GameLogicSupervisor.Instance.IsWinning)
+            _resultTexts[0].text = "";
+            _resultTexts[1].text = "";
+
+            var sequence = DOTween.Sequence();
+            if (GameLogicSupervisor.Instance.IsWinning)
             {
                 Debug.Log("You Win!!!");
-                _resultText.DOText("You Win!!!", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultWin));
+                sequence
+                    .AppendCallback(() =>
+                    {
+                        _resultTexts[0].DOText("あなたの勝ちです!!", 1.5f);
+                        _resultTexts[1].DOText("あなたの勝ちです!!", 1.5f);
+                    })
+                    .OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultWin));
+
             }
             else
             {
                 Debug.Log("You Lose...");
-                _resultText.DOText("You Lose...", 1.5f).OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultLose));
+                sequence
+                    .AppendCallback(() =>
+                    {
+                        _resultTexts[0].DOText("あなたの負けです...", 1.5f);
+                        _resultTexts[1].DOText("あなたの負けです...", 1.5f);
+                    })
+                    .OnComplete(() => AudioManager.Instance.PlayBGM(BGMType.ResultLose));
             }
+            //カメラを回す
+            GameLogicSupervisor.Instance.EffectSwitch(true);
         });
 
         model.RegisterEvent(RequestType.ChangeTurn, ChangeTurn);
