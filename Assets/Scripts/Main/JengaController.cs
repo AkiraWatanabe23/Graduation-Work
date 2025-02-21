@@ -233,9 +233,9 @@ public class JengaController
         {
             if (box.BlockId == _container.SelectedBlockId)
             {
-                _container.Blocks[_alreadySelectedId].transform.position = box.transform.position;
-                _container.Blocks[_alreadySelectedId].transform.rotation = box.transform.rotation;
-                //await BlockMoveAnimation(_container.Blocks[_alreadySelectedId], box);
+                //_container.Blocks[_alreadySelectedId].transform.position = box.transform.position;
+                //_container.Blocks[_alreadySelectedId].transform.rotation = box.transform.rotation;
+                await BlockMoveAnimation(_container.Blocks[_alreadySelectedId], box);
                 _logic.UpdateBlockInfo(_container.Blocks[_alreadySelectedId], box); // ブロックのデータも更新する
             }
 
